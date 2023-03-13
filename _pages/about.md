@@ -1,5 +1,5 @@
 ---
-layout: about
+layout: aboutnew
 title: About
 permalink: /
 subtitle: >
