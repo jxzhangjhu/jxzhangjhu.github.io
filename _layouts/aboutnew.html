@@ -3,8 +3,6 @@ layout: default
 ---
 
 <div class="post">
-
-
   <article>
     <div class="row">
         <div class="col-sm-3">
@@ -17,7 +15,7 @@ layout: default
             <h1 class="post-title">
             {% if site.title == "blank" %}<span class="font-weight-bold">{{ site.first_name }}</span> {{ site.middle_name }} {{ site.last_name }}{% else %}{{ site.title }}{% endif %}
             </h1>
-            <p class="desc">{{ page.description }}</p>
+            <p class="desc">{{ page.subtitle }}</p>
             <div class="social">
                 <div class="contact-icons">
                 {% include social.html %}
@@ -32,22 +30,31 @@ layout: default
     </div>
 
 
-    {% if page.news %}
-      {% include news.html %}
-    {% endif %}
+    <!-- News -->
+    {% if page.news -%}
+      <h2><a href="{{ '/news/' | relative_url }}" style="color: inherit;">news</a></h2>
+      {%- include news.html %}
+    {%- endif %}
 
-    {% if page.selected_papers %}
-      {% include selected_papers.html %}
-    {% endif %}
+    <!-- Selected papers -->
+    {% if page.selected_papers -%}
+      <h2><a href="{{ '/publications/' | relative_url }}" style="color: inherit;">selected publications</a></h2>
+      {%- include selected_papers.html %}
+    {%- endif %}
 
-    {% if page.social %}
-    <div class="social">
-      <div class="contact-icons">
-        {% include social.html %}
+    <!-- Social -->
+    {%- if page.social %}
+      <div class="social">
+        <div class="contact-icons">
+          {% include social.html %}
+        </div>
+
+        <div class="contact-note">
+          {{ site.contact_note }}
+        </div>
+        
       </div>
-      <div class="contact-note">{{ site.contact_note }}</div>
-    </div>
-    {% endif %}
+    {%- endif %}
   </article>
 
 </div>
