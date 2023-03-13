@@ -12,6 +12,7 @@ services:
       - .:/srv/jekyll
 =======
     image: amirpourmand/al-folio
+    platform: linux/amd64
     container_name: al-folio-website
     command: bash -c "
       rm -f Gemfile.lock
