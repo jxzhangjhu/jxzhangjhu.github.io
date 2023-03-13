@@ -13,14 +13,18 @@ layout: default
 </style>
 {% endif %}
 
+<<<<<<< HEAD
 {% assign url_beginning = page.url | slice: 0, 6 %}
 
+=======
+>>>>>>> 320fd374 (Initial commit)
 <div class="post">
 
   <header class="post-header">
     <h1 class="post-title">{{ page.title }}</h1>
     <p class="post-meta">{{ page.date | date: "%B %-d, %Y" }}{%- if page.author -%} • {{ page.author }}{%- endif -%}{%- if page.meta -%} • {{ page.meta }}{%- endif -%}</p>
     <p class="post-tags">
+<<<<<<< HEAD
       {% if url_beginning == '/blog/' -%}
       <a href="{{ year | prepend: '/blog/' | prepend: site.baseurl}}"> <i class="fa-solid fa-calendar fa-sm"></i> {{ year }} </a>
       {% else %}
@@ -35,24 +39,39 @@ layout: default
           <i class="fa-solid fa-hashtag fa-sm"></i> {{ tag }} &nbsp;
           {%- endif %}
 
+=======
+      <a href="{{ year | prepend: '/blog/' | prepend: site.baseurl}}"> <i class="fas fa-calendar fa-sm"></i> {{ year }} </a>
+      {%- if tags != "" %}
+      &nbsp; &middot; &nbsp;
+        {% for tag in page.tags -%}
+        <a href="{{ tag | slugify | prepend: '/blog/tag/' | prepend: site.baseurl}}">
+          <i class="fas fa-hashtag fa-sm"></i> {{ tag }}</a> &nbsp;
+>>>>>>> 320fd374 (Initial commit)
           {% endfor -%}
       {% endif %}
 
       {%- if categories != "" %}
       &nbsp; &middot; &nbsp;
         {% for category in page.categories -%}
+<<<<<<< HEAD
           {% if url_beginning == '/blog/' -%}
           <a href="{{ category | slugify | prepend: '/blog/category/' | prepend: site.baseurl}}"> <i class="fa-solid fa-tag fa-sm"></i> {{ category }}</a> &nbsp;
           {% else %}
           <i class="fa-solid fa-tag fa-sm"></i> {{ category }} &nbsp;
           {%- endif %}
         {% endfor -%}
+=======
+        <a href="{{ category | slugify | prepend: '/blog/category/' | prepend: site.baseurl}}">
+          <i class="fas fa-tag fa-sm"></i> {{ category }}</a> &nbsp;
+          {% endfor -%}
+>>>>>>> 320fd374 (Initial commit)
       {% endif %}
 
     </p>
   </header>
 
   <article class="post-content">
+<<<<<<< HEAD
     {% if page.toc and page.toc.beginning %}
     <div id="table-of-contents">
       {% toc %}
@@ -72,6 +91,11 @@ layout: default
   </div>
   {%- endif %}
 
+=======
+    {{ content }}
+  </article>
+
+>>>>>>> 320fd374 (Initial commit)
   {%- if site.related_blog_posts.enabled -%}
     {%- if page.related_posts == null or page.related_posts -%}
       {% include related_posts.html %}
@@ -81,7 +105,11 @@ layout: default
   {%- if site.disqus_shortname and page.disqus_comments -%}
     {% include disqus.html %}
   {%- endif %}
+<<<<<<< HEAD
   {%- if site.giscus and page.giscus_comments -%}
+=======
+  {%- if site.giscus.repo and page.giscus_comments -%}
+>>>>>>> 320fd374 (Initial commit)
     {% include giscus.html %}
   {%- endif -%}
 

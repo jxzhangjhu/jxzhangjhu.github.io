@@ -51,12 +51,26 @@
                   {%- endif -%}
                 </a>
               </li>
+<<<<<<< HEAD
+=======
+              {% if site.blog_nav_title %}
+              <!-- Blog -->
+              <li class="nav-item {% if page.url contains 'blog' %}active{% endif %}">
+                <a class="nav-link" href="{{ '/blog/' | relative_url }}">{{ site.blog_nav_title }}
+                  {%- if page.url contains 'blog' -%}
+                  <span class="sr-only">(current)</span>
+                  {%- endif -%}
+                </a>
+              </li>
+              {%- endif %}
+>>>>>>> 320fd374 (Initial commit)
 
               <!-- Other pages -->
               {%- assign sorted_pages = site.pages | sort: "nav_order" -%}
               {%- for p in sorted_pages -%}
               {%- if p.nav and p.autogen == nil -%}
               {%- if p.dropdown %}
+<<<<<<< HEAD
               {%- assign has_active_child = false -%}
               {%- for child in p.children -%}
               {%- if page.title == child.title -%}
@@ -66,6 +80,11 @@
               <li class="nav-item dropdown {% if page.title == p.title or has_active_child %}active{% endif %}">
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ p.title }}
                   {%- if page.title == p.title or has_active_child -%}
+=======
+              <li class="nav-item dropdown {% if page.title == p.title %}active{% endif %}">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ p.title }}
+                  {%- if page.title == p.title -%}
+>>>>>>> 320fd374 (Initial commit)
                   <span class="sr-only">(current)</span>
                   {%- endif -%}
                 </a>
@@ -74,12 +93,17 @@
                   {%- if child.title == 'divider' %}
                   <div class="dropdown-divider"></div>
                   {%- else %}
+<<<<<<< HEAD
                   <a class="dropdown-item {% if page.title == child.title %}active{% endif %}" href="{{ child.permalink | relative_url }}">{{ child.title }}</a>
+=======
+                  <a class="dropdown-item" href="{{ child.permalink | relative_url }}">{{ child.title }}</a>
+>>>>>>> 320fd374 (Initial commit)
                   {%- endif -%}
                   {% endfor %}
                 </div>
               </li>
               {%- else %}
+<<<<<<< HEAD
               <li class="nav-item {% if page.url contains p.permalink %}active{% endif %}">
                 {%- if p.permalink contains '/blog/' %}
                 {%- assign url = '/blog/' -%}
@@ -88,6 +112,11 @@
                 {%- endif -%}
                 <a class="nav-link" href="{{ url | relative_url }}">{{ p.title }}
                   {%- if page.url contains p.url -%}
+=======
+              <li class="nav-item {% if page.title == p.title %}active{% endif %}">
+                <a class="nav-link" href="{{ p.url | relative_url }}">{{ p.title }}
+                  {%- if page.title == p.title -%}
+>>>>>>> 320fd374 (Initial commit)
                   <span class="sr-only">(current)</span>
                   {%- endif -%}
                 </a>
@@ -100,8 +129,13 @@
               <!-- Toogle theme mode -->
               <li class="toggle-container">
                 <button id="light-toggle" title="Change theme">
+<<<<<<< HEAD
                   <i class="fa-solid fa-moon"></i>
                   <i class="fa-solid fa-sun"></i>
+=======
+                  <i class="fas fa-moon"></i>
+                  <i class="fas fa-sun"></i>
+>>>>>>> 320fd374 (Initial commit)
                 </button>
               </li>
               {%- endif %}

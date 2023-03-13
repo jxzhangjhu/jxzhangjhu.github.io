@@ -4,7 +4,11 @@ title: projects
 permalink: /projects/
 description: A growing collection of your cool projects.
 nav: true
+<<<<<<< HEAD
 nav_order: 3
+=======
+nav_order: 2
+>>>>>>> 320fd374 (Initial commit)
 display_categories: [work, fun]
 horizontal: false
 ---

@@ -6,6 +6,7 @@ let toggleTheme = (theme) => {
   } else {
     setTheme("dark");
   }
+<<<<<<< HEAD
 };
 
 
@@ -58,6 +59,30 @@ let setTheme = (theme) => {
           "--global-bg-color"
         ) + "ee", // + 'ee' for trasparency.
     });
+=======
+}
+
+
+let setTheme = (theme) =>  {
+  transTheme();
+  setHighlight(theme);
+  setGiscusTheme(theme);
+
+  if (theme) {
+    document.documentElement.setAttribute("data-theme", theme);
+  }
+  else {
+    document.documentElement.removeAttribute("data-theme");
+  }
+  localStorage.setItem("theme", theme);
+
+  // Updates the background of medium-zoom overlay.
+  if (typeof medium_zoom !== 'undefined') {
+    medium_zoom.update({
+      background: getComputedStyle(document.documentElement)
+          .getPropertyValue('--global-bg-color') + 'ee',  // + 'ee' for trasparency.
+    })
+>>>>>>> 320fd374 (Initial commit)
   }
 };
 
@@ -70,6 +95,7 @@ let setHighlight = (theme) => {
     document.getElementById("highlight_theme_dark").media = "none";
     document.getElementById("highlight_theme_light").media = "";
   }
+<<<<<<< HEAD
 };
 
 
@@ -78,10 +104,22 @@ let setGiscusTheme = (theme) => {
     const iframe = document.querySelector("iframe.giscus-frame");
     if (!iframe) return;
     iframe.contentWindow.postMessage({ giscus: message }, "https://giscus.app");
+=======
+}
+
+
+let setGiscusTheme = (theme) => {
+
+  function sendMessage(message) {
+    const iframe = document.querySelector('iframe.giscus-frame');
+    if (!iframe) return;
+    iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+>>>>>>> 320fd374 (Initial commit)
   }
 
   sendMessage({
     setConfig: {
+<<<<<<< HEAD
       theme: theme,
     },
   });
@@ -128,12 +166,20 @@ let setMermaidTheme = (theme) => {
     observer.observe(observable, observerOptions);
   }
 };
+=======
+      theme: theme
+    }
+  });
+
+}
+>>>>>>> 320fd374 (Initial commit)
 
 
 let transTheme = () => {
   document.documentElement.classList.add("transition");
   window.setTimeout(() => {
     document.documentElement.classList.remove("transition");
+<<<<<<< HEAD
   }, 500);
 };
 
@@ -143,10 +189,22 @@ let initTheme = (theme) => {
     const userPref = window.matchMedia;
     if (userPref && userPref("(prefers-color-scheme: dark)").matches) {
       theme = "dark";
+=======
+  }, 500)
+}
+
+
+let initTheme = (theme) => {
+  if (theme == null || theme == 'null') {
+    const userPref = window.matchMedia;
+    if (userPref && userPref('(prefers-color-scheme: dark)').matches) {
+        theme = 'dark';
+>>>>>>> 320fd374 (Initial commit)
     }
   }
 
   setTheme(theme);
+<<<<<<< HEAD
 };
 
 
@@ -160,3 +218,9 @@ document.addEventListener('DOMContentLoaded', function() {
         toggleTheme(localStorage.getItem("theme"));
     });
 });
+=======
+}
+
+
+initTheme(localStorage.getItem("theme"));
+>>>>>>> 320fd374 (Initial commit)

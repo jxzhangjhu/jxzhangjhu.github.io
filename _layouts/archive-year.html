@@ -5,7 +5,11 @@ layout: default
 <div class="post">
 
   <header class="post-header">
+<<<<<<< HEAD
     <h1 class="post-title"> <i class="fa-solid fa-calendar fa-sm"></i> {{ page.date | date: "%Y" }} </h1>
+=======
+    <h1 class="post-title"> <i class="fas fa-calendar fa-sm"></i> {{ page.date | date: "%Y" }} </h1>
+>>>>>>> 320fd374 (Initial commit)
     <p class="post-description"> an archive of posts from this year </p>
   </header>
 
@@ -16,6 +20,7 @@ layout: default
         <tr>
           <th scope="row">{{ post.date | date: "%b %-d, %Y" }}</th>
           <td>
+<<<<<<< HEAD
             {% if post.redirect == blank %}
             <a class="post-link" href="{{ post.url | relative_url }}">{{ post.title }}</a>
             {% elsif post.redirect contains '://' %}
@@ -23,6 +28,9 @@ layout: default
             {% else %}
             <a class="post-link" href="{{ post.redirect | relative_url }}">{{ post.title }}</a>
             {% endif %}
+=======
+              <a class="post-link" href="{{ post.url | relative_url }}">{{ post.title }}</a>
+>>>>>>> 320fd374 (Initial commit)
           </td>
         </tr>
       {% endfor %}

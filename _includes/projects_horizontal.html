@@ -8,7 +8,11 @@
       <div class="row g-0">
         {%- if project.img -%}
         <div class="card-img col-md-6">
+<<<<<<< HEAD
           {% include figure.html path=project.img sizes="(min-width: 768px) 156px, 50vw" alt="project thumbnail" %}
+=======
+          {% include figure.html path=project.img alt="project thumbnail" %}
+>>>>>>> 320fd374 (Initial commit)
         </div>
         <div class="col-md-6">
         {%- else -%}
@@ -21,11 +25,19 @@
               {%- if project.github -%}
               <div class="github-icon">
                 <div class="icon" data-toggle="tooltip" title="Code Repository">
+<<<<<<< HEAD
                   <a href="{{ project.github }}"><i class="fa-brands fa-github gh-icon"></i></a>
                 </div>
                 {%- if project.github_stars -%}
                 <span class="stars" data-toggle="tooltip" title="GitHub Stars">
                   <i class="fa-solid fa-star"></i>
+=======
+                  <a href="{{ project.github }}"><i class="fab fa-github gh-icon"></i></a>
+                </div>
+                {%- if project.github_stars -%}
+                <span class="stars" data-toggle="tooltip" title="GitHub Stars">
+                  <i class="fas fa-star"></i>
+>>>>>>> 320fd374 (Initial commit)
                   <span id="{{ project.github_stars }}-stars"></span>
                 </span>
                 {%- endif -%}

@@ -1,84 +1,674 @@
 ---
 ---
 
-@string{aps = {American Physical Society,}}
+Buttons:
+- `abbr`: Adds an abbreviation to the left of the entry. You can add links to these by creating a venue.yaml-file in the _data folder and adding entries that match.
+- `abstract`: Adds an "Abs" button that expands a hidden text field when clicked to show the abstract text
+- `arxiv`: Adds a link to the Arxiv website (Note: only add the arxiv identifier here - the link is generated automatically)
+- `bibtex_show`: Adds a "Bib" button that expands a hidden text field with the full bibliography entry
+- `html`: Inserts an "HTML" button redirecting to the user-specified link
+- `pdf`: Adds a "PDF" button redirecting to a specified file (if a full link is not specified, the file will be assumed to be placed in the /assets/pdf/ directory)
+- `supp`: Adds a "Supp" button to a specified file (if a full link is not specified, the file will be assumed to be placed in the /assets/pdf/ directory)
+- `blog`: Adds a "Blog" button redirecting to the specified link
+- `code`: Adds a "Code" button redirecting to the specified link
+- `poster`: Adds a "Poster" button redirecting to a specified file (if a full link is not specified, the file will be assumed to be placed in the /assets/pdf/ directory)
+- `video`: Adds a "Video" button redirecting to a specified file (if a full link is not specified, the file will be assumed to be placed in the /assets/video/ directory)
+- `slides`: Adds a "Slides" button redirecting to a specified file (if a full link is not specified, the file will be assumed to be placed in the /assets/pdf/ directory)
+- `website`: Adds a "Website" button redirecting to the specified link
+- `altmetric`: Adds an [Altmetric](https://www.altmetric.com/) badge (Note: if DOI is provided just use `true`, otherwise only add the altmetric identifier here - the link is generated automatically)
+- `dimensions`: Adds a [Dimensions](https://www.dimensions.ai/) badge (Note: if DOI or PMID is provided just use `true`, otherwise only add the Dimensions' identifier here - the link is generated automatically)
 
-@book{einstein1956investigations,
-  bibtex_show={true},
-  title={Investigations on the Theory of the Brownian Movement},
-  author={Einstein, Albert},
-  year={1956},
-  publisher={Courier Corporation},
-  preview={brownian-motion.gif}
+
+
+
+
+
+# NeurIPS 2023
+@inproceedings{zhang2023interactive,
+  title={Interactive Multi-fidelity Learning for Cost-effective Adaptation of Language Model with Sparse Human Supervision},
+  author={Zhang, Jiaxin and Li, Zhuohang and Das, Kamalika and Kumar, Sricharan},
+  booktitle={Advances in Neural Information Processing Systems},
+  year={2023},
+  abbr = {NeurIPS 2023},
+  arxiv = {2310.20153},
+  pdf = {https://arxiv.org/abs/2310.20153},
+  poster = {publications/NeurIPS2023_poster.pdf},
+  slides = {publications/Neurips2023_slides.pdf},
+  video = {https://recorder-v3.slideslive.com/?share=89213&s=fefbf7e9-d66b-4cfd-ad46-0b5779467504},
+  selected = {true},
+  abstract={Large language models (LLMs) have demonstrated remarkable capabilities in various tasks. However, their suitability for domain-specific tasks, is limited due to their immense scale at deployment, susceptibility to misinformation, and more importantly, high data annotation costs. We propose a novel Interactive Multi-Fidelity Learning (IMFL) framework for the cost-effective development of small domain-specific LMs under limited annotation budgets. Our approach formulates the domain-specific fine-tuning process as a multi-fidelity learning problem, focusing on identifying the optimal acquisition strategy that balances between low-fidelity automatic LLM annotations and high-fidelity human annotations to maximize model performance. We further propose an exploration-exploitation query strategy that enhances annotation diversity and informativeness, incorporating two innovative designs: 1) prompt retrieval that selects in-context examples from human-annotated samples to improve LLM annotation, and 2) variable batch size that controls the order for choosing each fidelity to facilitate knowledge distillation, ultimately enhancing annotation quality. Extensive experiments on financial and medical tasks demonstrate that IMFL achieves superior performance compared with single fidelity annotations. Given a limited budget of human annotation, IMFL significantly outperforms the human annotation baselines in all four tasks and achieves very close performance as human annotations on two of the tasks. These promising results suggest that the high human annotation costs in domain-specific tasks can be significantly reduced by employing IMFL, which utilizes fewer human annotations, supplemented with cheaper and faster LLM (e.g., GPT-3.5) annotations to achieve comparable performance.} 
 }
 
-@article{einstein1950meaning,
-  abbr={AJP},
-  bibtex_show={true},
-  title={The meaning of relativity},
-  author={Einstein, Albert and Taub, AH},
-  journal={American Journal of Physics},
-  volume={18},
-  number={6},
-  pages={403--404},
-  year={1950},
-  publisher={American Association of Physics Teachers}
+# EMNLP 2023
+@inproceedings{zhang2023sac3,
+  title={SAC$^3$: Reliable Hallucination Detection in Black-Box Language Models via Semantic-aware Cross-check Consistency},
+  author={Zhang, Jiaxin and Li, Zhuohang and Das, Kamalika and Malin, Bradley and Kumar, Sricharan},
+  booktitle={Proceedings of the 2023 Conference on Empirical Methods in Natural Language Processing},
+  year={2023},
+  abbr = {EMNLP 2023},
+  arxiv = {2311.01740},
+  pdf = {https://arxiv.org/abs/2311.01740},
+  code = {https://github.com/intuit/sac3},
+  selected = {true},
+  abstract={Hallucination detection is a critical step toward understanding the trustworthiness of modern language models (LMs). To achieve this goal, we re-examine existing detection approaches based on the self-consistency of LMs and uncover two types of hallucinations resulting from 1) question-level and 2) model-level, which cannot be effectively identified through self-consistency check alone. Building upon this discovery, we propose a novel sampling-based method, i.e., semantic-aware cross-check consistency (SAC3) that expands on the principle of self-consistency checking. Our SAC3 approach incorporates additional mechanisms to detect both question-level and model-level hallucinations by leveraging advances including semantically equivalent question perturbation and cross-model response consistency checking. Through extensive and systematic empirical analysis, we demonstrate that SAC3 outperforms the state of the art in detecting both non-factual and factual statements across multiple question-answering and open-domain generation benchmarks.},
 }
 
-@article{PhysRev.47.777,
-  abbr={PhysRev},
-  title={Can Quantum-Mechanical Description of Physical Reality Be Considered Complete?},
-  author={Einstein, A. and Podolsky, B. and Rosen, N.},
-  abstract={In a complete theory there is an element corresponding to each element of reality. A sufficient condition for the reality of a physical quantity is the possibility of predicting it with certainty, without disturbing the system. In quantum mechanics in the case of two physical quantities described by non-commuting operators, the knowledge of one precludes the knowledge of the other. Then either (1) the description of reality given by the wave function in quantum mechanics is not complete or (2) these two quantities cannot have simultaneous reality. Consideration of the problem of making predictions concerning a system on the basis of measurements made on another system that had previously interacted with it leads to the result that if (1) is false then (2) is also false. One is thus led to conclude that the description of reality as given by a wave function is not complete.},
-  journal={Phys. Rev.},
-  volume={47},
-  issue={10},
-  pages={777--780},
-  numpages={0},
-  year={1935},
-  month={May},
-  publisher=aps,
-  doi={10.1103/PhysRev.47.777},
-  url={http://link.aps.org/doi/10.1103/PhysRev.47.777},
-  html={https://journals.aps.org/pr/abstract/10.1103/PhysRev.47.777},
-  pdf={example_pdf.pdf},
-  altmetric={248277},
-  dimensions={true},
-  selected={true}
+
+# WACV 2024
+@inproceedings{zhang2023robustness,
+  title={DECDM: Document Enhancement using Cycle-Consistent Diffusion Models},
+  author={Zhang, Jiaxin and Rimchala, Joy and Mouatadid, Lalla and Das, Kamalika and Kumar, Sricharan},
+  booktitle={IEEE/CVF Winter Conference on Applications of Computer Vision (WACV)},
+  year={2024},
+  abbr = {WACV 2024},
+  selected = {true},
+  abstract = {The performance of optical character recognition (OCR) heavily relies on document image quality, which is crucial for automatic document processing and document intelligence. However, most existing document enhancement methods require supervised data pairs, which raises concerns about data separation and privacy protection, and makes it challenging to adapt these methods to new domain pairs. To address these issues, we propose DECDM, an end-to-end document-level image translation method inspired by recent advances in diffusion models. Our method overcomes the limitations of paired training by independently training the source (noisy input) and target (clean output) models, making it possible to apply domain-specific diffusion models to other pairs. DECDM trains on one dataset at a time, eliminating the need to scan both datasets concurrently, and effectively preserving data privacy from the source or target domain. We also introduce simple data augmentation strategies to improve character-glyph conservation during translation. We compare DECDM with state-of-the-art methods on multiple synthetic data and benchmark datasets, such as document denoising and shadow removal, and demonstrate the superiority of performance quantitatively and qualitatively.}
 }
 
-@article{einstein1905molekularkinetischen,
-  title={{\"U}ber die von der molekularkinetischen Theorie der W{\"a}rme geforderte Bewegung von in ruhenden Fl{\"u}ssigkeiten suspendierten Teilchen},
-  author={Einstein, A.},
-  journal={Annalen der physik},
-  volume={322},
+
+# WACV 2024
+@inproceedings{zhang2023robustness,
+  title={On the Quantification of Image Reconstruction Uncertainty without Training Data},
+  author={Zhang, Jiaxin and Bi, Sirui and Fung, Victor},
+  booktitle={IEEE/CVF Winter Conference on Applications of Computer Vision (WACV)},
+  year={2024},
+  abbr = {WACV 2024},
+  selected = {true},
+  abstract = {Computational imaging plays a pivotal role in determining hidden information from sparse measurements. A robust inverse solver is crucial to fully characterize the uncertainty induced by these measurements, as it allows for the estimation of the complete posterior of unrecoverable targets. This, in turn, facilitates a probabilistic interpretation of observational data for decision-making. In this study, we propose a deep variational framework that leverages a deep generative model to learn an approximate posterior distribution to effectively quantify image reconstruction uncertainty without the need for training data. We parameterize the target posterior using a flow-based model and minimize their Kullback-Leibler (KL) divergence to achieve accurate uncertainty estimation. To bolster stability, we introduce a robust flow-based model with bi-directional regularization and enhance expressivity through gradient boosting. Additionally, we incorporate a space-filling design to achieve substantial variance reduction on both latent prior space and target posterior space. We validate our method on several benchmark tasks and two real-world applications, namely fastMRI and black hole image reconstruction. Our results indicate that our method provides reliable and high-quality image reconstruction with robust uncertainty estimation.}
+}
+
+# ICLR 2023 workshop
+@inproceedings{zhang2023robustness,
+  title={On the Robustness of Diffusion Inversion in Image Manipulation},
+  author={Zhang, Jiaxin and Das, Kamalika and Kumar, Sricharan},
+  booktitle={ICLR 2023 Workshop on Trustworthy and Reliable Large-Scale Machine Learning Models},
+  year={2023},
+  abbr = {ICLR 2023},
+  pdf = {https://openreview.net/forum?id=fr8kurMWJIP},
+  abstract = {Text-guided image editing is a rapidly growing field due to the development of large diffusion models. In this work, we present an effective approach to address the key step of real image editing, known as ``inversion", which involves finding the initial noise vector that reconstructs the input image when conditioned on a text prompt. Existing works on conditional inversion is often unstable and inaccurate, leading to distorted image manipulation. To address these challenges, our method starts by analyzing the inconsistent assumptions and accumulative errors that contribute to the ill-posedness of mathematical inverse problems. We then introduce learnable latent variables as bias correction to approximate invertible and bijective inversion. We perform latent trajectory optimization with a prior to fully invert the image by optimizing the bias correction on the unconditional text prompt and initial noise vector. Our method is based on the publicly Stable Diffusion model and is extensively evaluated on a variety of images and prompt editing, demonstrating high accuracy, robustness, and quality compared to state-of-the-art baseline approaches.}
+}
+
+# NeurIPS 2023 workshop
+@inproceedings{cui2023dcr,
+  title={A Divide-Conquer-Reasoning Approach to Consistency Evaluation and Improvement in Blackbox Large Language Models},
+  author={Cui, Wendi and Zhang, Jiaxin and Li, Zhuohang and Lopez, Damien and Das, Kamalika and Malin Bradley  and Kumar, Sricharan},
+  booktitle={NeurIPS 2023 Workshop on Socially Responsible Language Modelling Research},
+  year={2023},
+  abbr = {NeurIPS 2023},
+  pdf = {https://openreview.net/pdf?id=WcGXAxhC81},
+  selected = {true},
+  poster = {publications/NeurIPS2023_poster_workshop.pdf},
+  abstract ={Evaluating the quality and variability of text generated by Large Language Models (LLMs) poses a significant, yet unresolved research challenge. Traditional evaluation methods, such as ROUGE and BERTScore, which measure token similarity, often fail to capture the holistic semantic equivalence. This results in a low correlation with human judgments and intuition, which is especially problematic in high-stakes applications like healthcare and finance where reliability, safety, and robust decision-making are highly critical. This work proposes an automated framework for evaluating the consistency of LLM-generated texts using a divide-and-conquer strategy. Unlike existing LLM-based evaluators that operate at the paragraph level, our method employs a divide-and-conquer evaluator (DCE) that breaks down the comparison between two generated responses into individual sentences, each evaluated based on predefined criteria. To facilitate this approach, we introduce an automatic metric converter (AMC) that translates the output from DCE into an interpretable numeric score. Beyond the consistency evaluation, we further present a reason-assisted improver (RAI) that leverages the analytical reasons with explanations identified by DCE to generate new responses aimed at reducing these inconsistencies. Through comprehensive and systematic empirical analysis, we show that our approach outperforms state-of-the-art methods by a large margin (e.g., +19.3% and +24.3% on the SummEval dataset) in evaluating the consistency of LLM generation across multiple benchmarks in semantic, factual, and summarization consistency tasks. Our approach also substantially reduces nearly 90% output inconsistencies, showing promise for effective hallucination mitigation and reduction.}
+}
+
+# ICASSP 2023
+@inproceedings{li2023speech,
+  title={Speech Privacy Leakage from Shared Gradients in Distributed Learning},
+  author={Li, Zhuohang and Zhang, Jiaxin and Liu, Jian},
+  booktitle={ICASSP 2023-2023 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)},
+  pages={1--5},
+  year={2023},
+  organization={IEEE},
+  pdf={https://arxiv.org/pdf/2302.10441.pdf},
+  % selected={true},
+  abbr={ICASSP 2023},
+  arxiv = {2302.10441},
+  abstract={Distributed machine learning paradigms, such as federated learning, have been recently adopted in many privacy-critical applications for speech analysis. However, such frameworks are vulnerable to privacy leakage attacks from shared gradients. Despite extensive efforts in the image domain, the exploration of speech privacy leakage from gradients is quite limited. In this paper, we explore methods for recovering private speech/speaker information from the shared gradients in distributed learning settings. We conduct experiments on a keyword spotting model with two different types of speech features to quantify the amount of leaked information by measuring the similarity between the original and recovered speech signals. We further demonstrate the feasibility of inferring various levels of side-channel information, including speech content and speaker identity, under the distributed learning framework without accessing the user's data.} 
+}
+
+# AAAI 2023
+@article{zhang2022accelerating,
+  title={Accelerating Inverse Learning via Intelligent Localization with Exploratory Sampling},
+  author={Zhang, Jiaxin and Bi, Sirui and Fung, Victor},
+  journal={Proceedings of the AAAI Conference on Artificial Intelligence},
+  year={2023},
+  pdf={https://arxiv.org/pdf/2212.01016.pdf},
+  code={https://github.com/jxzhangjhu/MatDesINNe},
+  selected={true},
+  abbr={AAAI 2023},
+  arxiv = {2212.01016},
+  abstract={In the scope of "AI for Science", solving inverse problems is a longstanding challenge in materials and drug discovery, where the goal is to determine the hidden structures given a set of desirable properties. Deep generative models are recently proposed to solve inverse problems, but these currently use expensive forward operators and struggle in precisely localizing the exact solutions and fully exploring the parameter spaces without missing solutions. In this work, we propose a novel approach (called iPage) to accelerate the inverse learning process by leveraging probabilistic inference from deep invertible models and deterministic optimization via fast gradient descent. Given a target property, the learned invertible model provides a posterior over the parameter space; we identify these posterior samples as an intelligent prior initialization which enables us to narrow down the search space. We then perform gradient descent to calibrate the inverse solutions within a local region. Meanwhile, a space-filling sampling is imposed on the latent space to better explore and capture all possible solutions. We evaluate our approach on three benchmark tasks and two created datasets with real-world applications from quantum chemistry and additive manufacturing, and find our method achieves superior performance compared to several state-of-the-art baseline methods.} 
+
+}
+
+# AAAI 2023
+@article{wangautonf,
+  title={AutoNF: Automated Architecture Optimization of Normalizing Flows Using a Mixture Distribution Formulation},
+  author={Wang, Yu and Drgona, Jan and Zhang, Jiaxin and NS, Karthik Somayaji and Liu, Frank Y and Schram, Malachi and Li, Peng},
+  journal={Proceedings of the AAAI Conference on Artificial Intelligence},
+  year={2023},
+  pdf={https://openreview.net/pdf?id=GDUfz1phf06},
+  selected={true},
+  abbr={AAAI 2023},
+  abstract={Normalizing flows (NF) build upon invertible neural networks and have wide applications in probabilistic modeling. Currently, building a powerful yet computationally efficient flow model relies on empirical fine-tuning over a large design space. While introducing neural architecture search (NAS) to NF is desirable, the invertibility constraint of NF brings new challenges to existing NAS methods whose application is limited to unstructured neural networks. Developing efficient NAS methods specifically for NF remains an open problem. We present AutoNF, the first automated NF architectural optimization framework. First, we present a new mixture distribution formulation that allows efficient differentiable architecture search of flow models without violating the invertibility constraint. Second, under the new formulation, we convert the original NP-hard combinatorial NF architectural optimization problem to an unconstrained continuous relaxation admitting the discrete optimal architectural solution, circumventing the loss of optimality due to binarization in architectural optimization.   We evaluate AutoNF with various density estimation datasets and show its superior performance-cost trade-offs over a set of existing hand-crafted baselines.} 
+}
+
+
+@article{fung2022atomic,
+  title={Atomic structure generation from reconstructing structural fingerprints},
+  author={Fung, Victor and Jia, Shuyi and Zhang, Jiaxin and Bi, Sirui and Yin, Junqi and Ganesh, P},
+  journal={Machine Learning: Science and Technology},
+  volume={3},
+  number={4},
+  pages={045018},
+  year={2022},
+  publisher={IOP Publishing},
+  abbr={AI4Science},
+}
+
+@article{wei2023data,
+  title={Data driven modeling of interfacial traction--separation relations using a thermodynamically consistent neural network},
+  author={Wei, Congjie and Zhang, Jiaxin and Liechti, Kenneth M and Wu, Chenglin},
+  journal={Computer Methods in Applied Mechanics and Engineering},
+  volume={404},
+  pages={115826},
+  year={2023},
+  publisher={Elsevier},
+  abbr={AI4Science},
+}
+
+@inproceedings{sun2022self,
+  title={Self-supervised Novelty Detection for Continual Learning: A Gradient-Based Approach Boosted by Binary Classification},
+  author={Sun, Jingbo and Yang, Li and Zhang, Jiaxin and Liu, Frank and Halappanavar, Mahantesh and Fan, Deliang and Cao, Yu},
+  booktitle={Continual Semi-Supervised Learning: First International Workshop, CSSL 2021, Virtual Event, August 19--20, 2021, Revised Selected Papers},
+  pages={118--133},
+  year={2022},
+  organization={Springer},
+  abbr={IJCAI Workshop},
+}
+
+@article{liu2022machine,
+  title={Machine learning for high-entropy alloys: progress, challenges and opportunities},
+  author={Liu, Xianglin and Zhang, Jiaxin and Pei, Zongrui},
+  journal={Progress in Materials Science},
+  pages={101018},
+  year={2022},
+  publisher={Elsevier},
+  abbr={AI4Science},
+}
+
+@inproceedings{meerza2022fair,
+  title={Fair and Privacy-Preserving Alzheimer's Disease Diagnosis Based on Spontaneous Speech Analysis via Federated Learning},
+  author={Meerza, Syed Irfan Ali and Li, Zhuohang and Liu, Luyang and Zhang, Jiaxin and Liu, Jian},
+  booktitle={2022 44th Annual International Conference of the IEEE Engineering in Medicine \& Biology Society (EMBC)},
+  pages={1362--1365},
+  year={2022},
+  organization={IEEE},
+  abbr={EMBC},
+}
+
+@inproceedings{cui2022privacy,
+  title={Privacy-preserving Speech-based Depression Diagnosis via Federated Learning},
+  author={Cui, Yue and Li, Zhuohang and Liu, Luyang and Zhang, Jiaxin and Liu, Jian},
+  booktitle={2022 44th Annual International Conference of the IEEE Engineering in Medicine \& Biology Society (EMBC)},
+  pages={1371--1374},
+  year={2022},
+  organization={IEEE},
+  abbr={EMBC},
+}
+
+# CVPR 2022
+@inproceedings{li2022auditing,
+  title={Auditing Privacy Defenses in Federated Learning via Generative Gradient Leakage},
+  author={Li, Zhuohang and Zhang, Jiaxin and Liu, Luyang and Liu, Jian},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  pages={10132--10142},
+  year={2022},
+  pdf={https://openaccess.thecvf.com/content/CVPR2022/papers/Li_Auditing_Privacy_Defenses_in_Federated_Learning_via_Generative_Gradient_Leakage_CVPR_2022_paper.pdf},
+  selected={true},
+  abbr={CVPR 2022},
+  arxiv = {2203.15696}, 
+  code={https://github.com/zhuohangli/GGL},
+  abstract={Federated Learning (FL) framework brings privacy benefits to distributed learning systems by allowing multiple clients to participate in a learning task under the coordination of a central server without exchanging their private data. However, recent studies have revealed that private information can still be leaked through shared gradient information. To further protect user's privacy, several defense mechanisms have been proposed to prevent privacy leakage via gradient information degradation methods, such as using additive noise or gradient compression before sharing it with the server. In this work, we validate that the private training data can still be leaked under certain defense settings with a new type of leakage, ie, Generative Gradient Leakage (GGL). Unlike existing methods that only rely on gradient information to reconstruct data, our method leverages the latent space of generative adversarial networks (GAN) learned from public image datasets as a prior to compensate for the informational loss during gradient degradation. To address the nonlinearity caused by the gradient operator and the GAN model, we explore various gradient-free optimization methods (eg, evolution strategies and Bayesian optimization) and empirically show their superiority in reconstructing high-quality images from gradients compared to gradient-based optimizers. We hope the proposed method can serve as a tool for empirically measuring the amount of privacy leakage to facilitate the design of more robust defense mechanisms.} 
+}
+
+@inproceedings{lu2022invertible,
+  title={Invertible neural networks for E3SM land model calibration and simulation},
+  author={Lu, Dan and Ricciuto, Daniel M and Zhang, Jiaxin},
+  booktitle={ICLR 2022 Workshop on AI for Earth and Space Science},
+  year={2022},
+  abbr={AI4Science},
+}
+
+# AAAI 2022
+@inproceedings{sun2022gradient,
+  title={Gradient-based Novelty Detection Boosted by Self-supervised Binary Classification},
+  author={Sun, Jingbo and Yang, Li and Zhang, Jiaxin and Liu, Frank and Halappanavar, Mahantesh and Fan, Deliang and Cao, Yu},
+  booktitle={Proceedings of the AAAI Conference on Artificial Intelligence},
+  volume={36},
   number={8},
-  pages={549--560},
-  year={1905},
-  publisher={Wiley Online Library}
+  pages={8370--8377},
+  year={2022},
+  pdf={https://ojs.aaai.org/index.php/AAAI/article/view/20812},
+  selected={true},
+  abbr={AAAI 2022},
+  arxiv={2112.09815},
+  abstract={Novelty detection aims to automatically identify out-of-distribution (OOD) data, without any prior knowledge of them. It is a critical step in data monitoring, behavior analysis and other applications, helping enable continual learning in the field. Conventional methods of OOD detection perform multi-variate analysis on an ensemble of data or features, and usually resort to the supervision with OOD data to improve the accuracy. In reality, such supervision is impractical as one cannot anticipate the anomalous data. In this paper, we propose a novel, self-supervised approach that does not rely on any pre-defined OOD data:(1) The new method evaluates the Mahalanobis distance of the gradients between the in-distribution and OOD data.(2) It is assisted by a self-supervised binary classifier to guide the label selection to generate the gradients, and maximize the Mahalanobis distance. In the evaluation with multiple datasets, such as CIFAR-10, CIFAR-100, SVHN and TinyImageNet, the proposed approach consistently outperforms state-of-the-art supervised and unsupervised methods in the area under the receiver operating characteristic (AUROC) and area under the precision-recall curve (AUPR) metrics. We further demonstrate that this detector is able to accurately learn one OOD class in continual learning.} 
 }
 
-@article{einstein1905movement,
-  abbr={Ann. Phys.},
-  title={Un the movement of small particles suspended in statiunary liquids required by the molecular-kinetic theory 0f heat},
-  author={Einstein, A.},
-  journal={Ann. Phys.},
-  volume={17},
-  pages={549--560},
-  year={1905}
+
+@article{wei2022deep,
+  title={Deep-green inversion to extract traction-separation relations at material interfaces},
+  author={Wei, Congjie and Zhang, Jiaxin and Liechti, Kenneth M and Wu, Chenglin},
+  journal={International Journal of Solids and Structures},
+  volume={250},
+  pages={111698},
+  year={2022},
+  publisher={Elsevier},
+  abbr={AI4Science},
 }
 
-@article{einstein1905electrodynamics,
-  title={On the electrodynamics of moving bodies},
-  author={Einstein, A.},
-  year={1905}
+@article{bi2022blackbox,
+  title={Blackbox optimization for approximating high-fidelity heat transfer calculations in metal additive manufacturing},
+  author={Bi, Sirui and Stump, Benjamin and Zhang, Jiaxin and Lee, Yousub and Coleman, John and Bement, Matt and Zhang, Guannan},
+  journal={Results in Materials},
+  volume={13},
+  pages={100258},
+  year={2022},
+  publisher={Elsevier},
+  abbr={AI4Science},
 }
 
-@book{przibram1967letters,
-  bibtex_show={true},
-  title={Letters on wave mechanics},
-  author={Einstein, Albert and Schrödinger, Erwin and Planck, Max and Lorentz, Hendrik Antoon and Przibram, Karl},
-  year={1967},
-  publisher={Vision},
-  preview={wave-mechanics.gif}
+
+@inproceedings{li2021byzantine,
+  title={Byzantine-robust federated learning through spatial-temporal analysis of local model updates},
+  author={Li, Zhuohang and Liu, Luyang and Zhang, Jiaxin and Liu, Jian},
+  booktitle={2021 IEEE 27th International Conference on Parallel and Distributed Systems (ICPADS)},
+  pages={372--379},
+  year={2021},
+  organization={IEEE},
+  abbr={ICPADS},
+}
+
+@article{fung2021inverse,
+  title={Inverse design of two-dimensional materials with invertible neural networks},
+  author={Fung, Victor and Zhang, Jiaxin and Hu, Guoxiang and Sumpter, Bobby G},
+  journal={npj Computational Materials},
+  volume={7},
+  number={1},
+  pages={200},
+  year={2021},
+  publisher={Nature Publishing Group UK London},
+  abbr={AI4Science},
+}
+
+
+@article{lavin2021simulation,
+  title={Simulation intelligence: Towards a new generation of scientific methods},
+  author={Lavin, Alexander and Zenil, Hector and Paige, Brooks and Krakauer, David and Gottschlich, Justin and Mattson, Tim and Anandkumar, Anima and Choudry, Sanjay and Rocki, Kamil and Baydin, At{\i}l{\i}m G{\"u}ne{\c{s}} and others},
+  journal={arXiv preprint arXiv:2112.03235},
+  year={2021},
+  abbr={AI4Science},
+}
+
+
+# NeurIPS 2021
+@article{drgona2021stochastic,
+  title={On the Stochastic Stability of Deep Markov Models},
+  author={Drgona, Jan and Mukherjee, Sayak and Zhang, Jiaxin and Liu, Frank and Halappanavar, Mahantesh},
+  journal={Advances in Neural Information Processing Systems},
+  volume={34},
+  pages={24033--24047},
+  year={2021},
+  pdf={https://proceedings.neurips.cc/paper/2021/file/c9dd73f5cb96486f5e1e0680e841a550-Paper.pdf},
+  selected={true},
+  abbr={NeurIPS 2021},
+  arxiv={2111.04601},
+  code = {https://github.com/pnnl/slim},
+  abstract={Deep Markov models (DMM) are generative models which are scalable and expressive generalization of Markov models for representation, learning, and inference problems. However, the fundamental stochastic stability guarantees of such models have not been thoroughly investigated. In this paper, we present a novel stability analysis method and provide sufficient conditions of DMM's stochastic stability. The proposed stability analysis is based on the contraction of probabilistic maps modeled by deep neural networks. We make connections between the spectral properties of neural network's weights and different types of used activation function on the stability and overall dynamic behavior of DMMs with Gaussian distributions. Based on the theory, we propose a few practical methods for designing constrained DMMs with guaranteed stability. We empirically substantiate our theoretical results via intuitive numerical experiments using the proposed stability constraints.}
+}
+
+@article{zhang2021probabilistic,
+  title={Probabilistic modeling and prediction of out-of-plane unidirectional composite lamina properties},
+  author={Zhang, Jiaxin and Shields, Michael and TerMaath, Stephanie},
+  journal={Mechanics of Advanced Materials and Structures},
+  volume={28},
+  number={22},
+  pages={2310--2326},
+  year={2021},
+  publisher={Taylor \& Francis},
+  abbr={UQ},
+}
+
+
+@inproceedings{zhang2021self,
+  title={Self-supervised anomaly detection via neural autoregressive flows with active learning},
+  author={Zhang, Jiaxin and Saleeby, Kyle and Feldhausen, Thomas and Bi, Sirui and Plotkowski, Alex and Womble, David},
+  booktitle={NeurIPS 2021 Workshop on Deep Generative Models and Downstream Applications},
+  abbr={NeurIPS Workshop},
+}
+
+
+@article{tian2021transfer,
+  title={Transfer learning based variable-fidelity surrogate model for shell buckling prediction},
+  author={Tian, Kuo and Li, Zengcong and Zhang, Jiaxin and Huang, Lei and Wang, Bo},
+  journal={Composite Structures},
+  volume={273},
+  pages={114285},
+  year={2021},
+  publisher={Elsevier},
+  abbr={AI4Science},
+}
+
+
+@inproceedings{zhangvariational,
+  title={Variational Generative Flows for Reconstruction Uncertainty Estimation},
+  author={Zhang, Jiaxin and Drgona, Jan and Mukherjee, Sayak and Halappanavar, Mahantesh and Liu, Frank},
+  booktitle={ICML 2021 Workshop on Uncertainty and Robustness in Deep Learning},
+  year={2021},
+  abbr = {ICLR Workshop},
+}
+
+
+@article{jiaxin2021accelerating,
+  title={Accelerating reinforcement learning with a Directional-Gaussian-Smoothing evolution strategy},
+  author={Jiaxin, Zhang and Hoang, Tran and Guannan, Zhang},
+  journal={Electronic Research Archive},
+  volume={29},
+  number={6},
+  pages={4119--4135},
+  year={2021},
+  publisher={Electronic Research Archive},
+  abbr = {ERA},
+}
+
+
+@article{fung2021benchmarking,
+  title={Benchmarking graph neural networks for materials chemistry},
+  author={Fung, Victor and Zhang, Jiaxin and Juarez, Eric and Sumpter, Bobby G},
+  journal={npj Computational Materials},
+  volume={7},
+  number={1},
+  pages={84},
+  year={2021},
+  publisher={Nature Publishing Group UK London},
+  abbr={AI4Science},
+}
+
+# UAI 2021
+@inproceedings{zhang2021enabling,
+  title={Enabling Long-range Exploration in Minimization of Multimodal Functions},
+  author={Zhang, Jiaxin and Tran, Hoang and Lu, Dan and Zhang, Guannan},
+  booktitle={Uncertainty in Artificial Intelligence},
+  pages={1639--1649},
+  year={2021},
+  organization={PMLR},
+  pdf={https://proceedings.mlr.press/v161/zhang21e/zhang21e.pdf},
+  selected={true},
+  abbr={UAI 2021},
+  arxiv={2002.03001},
+  code={https://github.com/HoangATran/AdaDGS},
+  abstract={We consider the problem of minimizing multi-modal loss functions with a large number of local optima. Since the local gradient points to the direction of the steepest slope in an infinitesimal neighborhood, an optimizer guided by the local gradient is often trapped in a local minimum. To address this issue, we develop a novel nonlocal gradient to skip small local minima by capturing major structures of the loss’s landscape in black-box optimization. The nonlocal gradient is defined by a directional Gaussian smoothing (DGS) approach. The key idea of DGS is to conducts 1D long-range exploration with a large smoothing radius along  orthogonal directions in , each of which defines a nonlocal directional derivative as a 1D integral. Such long-range exploration enables the nonlocal gradient to skip small local minima. The  directional derivatives are then assembled to form the nonlocal gradient. We use the Gauss-Hermite quadrature rule to approximate the  1D integrals to obtain an accurate estimator. The superior performance of our method is demonstrated in three sets of examples, including benchmark functions for global optimization, and two real-world scientific problems.} 
+}
+
+# AISTATS 2021
+@inproceedings{zhang2021scalable,
+  title={A Scalable Gradient Free Method for Bayesian Experimental Design with Implicit Models},
+  author={Zhang, Jiaxin and Bi, Sirui and Zhang, Guannan},
+  booktitle={International Conference on Artificial Intelligence and Statistics},
+  pages={3745--3753},
+  year={2021},
+  organization={PMLR},
+  pdf={http://proceedings.mlr.press/v130/zhang21l/zhang21l.pdf},
+  selected={true},
+  abbr={AISTATS 2021},
+  abstract={Bayesian experimental design (BED) is to answer the question that how to choose designs that maximize the information gathering. For implicit models, where the likelihood is intractable but sampling is possible, conventional BED methods have difficulties in efficiently estimating the posterior distribution and maximizing the mutual information (MI) between data and parameters. Recent work proposed the use of gradient ascent to maximize a lower bound on MI to deal with these issues. However, the approach requires a sampling path to compute the pathwise gradient of the MI lower bound with respect to the design variables, and such a pathwise gradient is usually inaccessible for implicit models. In this paper, we propose a novel approach that leverages recent advances in stochastic approximate gradient ascent incorporated with a smoothed variational MI estimator for efficient and robust BED. Without the necessity of pathwise gradients, our approach allows the design process to be achieved through a unified procedure with an approximate gradient for implicit models. Several experiments show that our approach outperforms baseline methods, and significantly improves the scalability of BED in high-dimensional problems} 
+}
+
+}
+
+@inproceedings{zhang2021efficient,
+  title={Efficient inverse learning for materials design and discovery},
+  author={Zhang, Jiaxin and Fung, Victor},
+  booktitle={ICLR 2021 Workshop on Science and Engineering of Deep Learning},
+  year={2021},
+  abbr = {ICLR Workshop},
+}
+
+
+@inproceedings{bi2021towards,
+  title={Towards Efficient Uncertainty estimation in deep learning for robust energy prediction in crystal materials},
+  author={Bi, Sirui and Fung, Victor and Zhang, Jiaxin and Zhang, Guannan},
+  booktitle={ICLR 2021 Workshop on Deep Learning for Simulation},
+  year={2021},
+  abbr = {ICLR Workshop},
+}
+
+
+@article{liu2021monte,
+  title={Monte Carlo simulation of order-disorder transition in refractory high entropy alloys: A data-driven approach},
+  author={Liu, Xianglin and Zhang, Jiaxin and Yin, Junqi and Bi, Sirui and Eisenbach, Markus and Wang, Yang},
+  journal={Computational Materials Science},
+  volume={187},
+  pages={110135},
+  year={2021},
+  publisher={Elsevier},
+  abbr={AI4Science},
+}
+
+
+@article{zhang2021imprecise,
+  title={Imprecise global sensitivity analysis using bayesian multimodel inference and importance sampling},
+  author={Zhang, Jiaxin and TerMaath, Stephanie and Shields, Michael D},
+  journal={Mechanical Systems and Signal Processing},
+  volume={148},
+  pages={107162},
+  year={2021},
+  publisher={Elsevier},
+  abbr={MSSP},
+}
+
+@article{zhang2021directional,
+  title={A directional Gaussian smoothing optimization method for computational inverse design in nanophotonics},
+  author={Zhang, Jiaxin and Bi, Sirui and Zhang, Guannan},
+  journal={Materials \& Design},
+  volume={197},
+  pages={109213},
+  year={2021},
+  publisher={Elsevier},
+  abbr={AI4Science},
+}
+
+
+@inproceedings{bi2020scalable,
+  title={Scalable deep-learning-accelerated topology optimization for additively manufactured materials},
+  author={Bi, Sirui and Zhang, Jiaxin and Zhang, Guannan},
+  journal={arXiv preprint arXiv:2011.14177},
+  year={2020},
+  booktitle={NeurIPS 2020 Workshop on Machine Learning for Engineering Modeling, Simulation, and Design},
+  abbr = {NeurIPS Workshop},
+  pdf = {https://arxiv.org/abs/2011.14177}
+}
+
+
+@article{zhang2021modern,
+  title={Modern Monte Carlo methods for efficient uncertainty quantification and propagation: A survey},
+  author={Zhang, Jiaxin},
+  journal={Wiley Interdisciplinary Reviews: Computational Statistics},
+  volume={13},
+  number={5},
+  pages={e1539},
+  year={2021},
+  publisher={Wiley Online Library},
+  abbr={WIREs},
+}
+
+
+@article{pasini2020fast,
+  title={Fast and stable deep-learning predictions of material properties for solid solution alloys},
+  author={Pasini, Massimiliano Lupo and Li, Ying Wai and Yin, Junqi and Zhang, Jiaxin and Barros, Kipton and Eisenbach, Markus},
+  journal={Journal of Physics: Condensed Matter},
+  volume={33},
+  number={8},
+  pages={084005},
+  year={2020},
+  publisher={IOP Publishing},
+  abbr={JPCM},
+}
+
+@article{zhang2020quantification,
+  title={On the quantification and efficient propagation of imprecise probabilities with copula dependence},
+  author={Zhang, Jiaxin and Shields, Michael},
+  journal={International Journal of Approximate Reasoning},
+  volume={122},
+  pages={24--46},
+  year={2020},
+  publisher={Elsevier},
+  abbr={IJAR},
+}
+
+
+@article{tian2020toward,
+  title={Toward the robust establishment of variable-fidelity surrogate models for hierarchical stiffened shells by two-step adaptive updating approach},
+  author={Tian, Kuo and Li, Zengcong and Ma, Xiangtao and Zhao, Haixin and Zhang, Jiaxin and Wang, Bo},
+  journal={Structural and Multidisciplinary Optimization},
+  volume={61},
+  pages={1515--1528},
+  year={2020},
+  publisher={Springer},
+  abbr={SMO},
+}
+
+@article{zhang2020robust,
+  title={Robust data-driven approach for predicting the configurational energy of high entropy alloys},
+  author={Zhang, Jiaxin and Liu, Xianglin and Bi, Sirui and Yin, Junqi and Zhang, Guannan and Eisenbach, Markus},
+  journal={Materials \& Design},
+  volume={185},
+  pages={108247},
+  year={2020},
+  publisher={Elsevier},
+  abbr={AI4Science},
+}
+
+
+@article{tian2019buckling,
+  title={Buckling surrogate-based optimization framework for hierarchical stiffened composite shells by enhanced variance reduction method},
+  author={Tian, Kuo and Zhang, Jiaxin and Ma, Xiangtao and Li, Yuwei and Sun, Yu and Hao, Peng},
+  journal={Journal of Reinforced Plastics and Composites},
+  volume={38},
+  number={21-22},
+  pages={959--973},
+  year={2019},
+  publisher={SAGE Publications Sage UK: London, England},
+  abbr={JRPC},
+}
+
+# NeurIPS 2019
+@article{zhang2019learning,
+  title={Learning Nonlinear Level Sets for Dimensionality Reduction in Function Approximation},
+  author={Zhang, Guannan and Zhang, Jiaxin and Hinkle, Jacob},
+  journal={Advances in Neural Information Processing Systems},
+  volume={32},
+  year={2019},
+  pdf={https://proceedings.neurips.cc/paper/2019/file/464074179972cbbd75a39abc6954cd12-Paper.pdf},
+  selected={true},
+  abbr={NeurIPS 2019},
+  arxiv={1902.10652},
+  code={https://mathlab.github.io/ATHENA/tutorial7nll.html},
+  abstract={We developed a Nonlinear Level-set Learning (NLL) method for dimensionality reduction in high-dimensional function approximation with small data. This work is motivated by a variety of design tasks in real-world engineering applications, where practitioners would replace their computationally intensive physical models (e.g., high-resolution fluid simulators) with fast-to-evaluate predictive machine learning models, so as to accelerate the engineering design processes. There are two major challenges in constructing such predictive models: (a) high-dimensional inputs (e.g., many independent design parameters) and (b) small training data, generated by running extremely time-consuming simulations. Thus, reducing the input dimension is critical to alleviate the over-fitting issue caused by data insufficiency. Existing methods, including sliced inverse regression and active subspace approaches, reduce the input dimension by learning a linear coordinate transformation; our main contribution is to extend the transformation approach to a nonlinear regime. Specifically, we exploit reversible networks (RevNets) to learn nonlinear level sets of a high-dimensional function and parameterize its level sets in low-dimensional spaces. A new loss function was designed to utilize samples of the target functions' gradient to encourage the transformed function to be sensitive to only a few transformed coordinates. The NLL approach is demonstrated by applying it to three 2D functions and two 20D functions for showing the improved approximation accuracy with the use of nonlinear transformation, as well as to an 8D composite material design problem for optimizing the buckling-resistance performance of composite shells of rocket inter-stages.
+} 
+}
+
+
+@article{liu2019chemical,
+  title={Chemical complexity in high entropy alloys: a pair-interaction perspective},
+  author={Liu, Xianglin and Zhang, Jiaxin and Bi, Sirui and Wang, Yang and Stocks, G Malcolm and Eisenbach, Markus},
+  journal={arXiv preprint arXiv:1907.10223},
+  year={2019},
+  abbr={AI4Science},
+}
+
+
+@article{liu2019machine,
+  title={Machine learning modeling of high entropy alloy: the role of short-range order},
+  author={Liu, Xianglin and Zhang, Jiaxin and Eisenbach, Markus and Wang, Yang},
+  journal={arXiv preprint arXiv:1906.02889},
+  year={2019},
+  abbr={AI4Science},
+}
+
+
+@article{zhang2019efficient,
+  title={Efficient Monte Carlo resampling for probability measure changes from Bayesian updating},
+  author={Zhang, Jiaxin and Shields, Michael D},
+  journal={Probabilistic Engineering Mechanics},
+  volume={55},
+  pages={54--66},
+  year={2019},
+  publisher={Elsevier},
+  abbr={PEM},
+}
+
+@article{tian2018tailoring,
+  title={Tailoring the optimal load-carrying efficiency of hierarchical stiffened shells by competitive sampling},
+  author={Tian, Kuo and Wang, Bo and Zhang, Ke and Zhang, Jiaxin and Hao, Peng and Wu, Ying},
+  journal={Thin-Walled Structures},
+  volume={133},
+  pages={216--225},
+  year={2018},
+  publisher={Elsevier},
+  abbr={TWS},
+}
+
+
+@article{zhang2018effect,
+  title={The effect of prior probabilities on quantification and propagation of imprecise probabilities resulting from small datasets},
+  author={Zhang, Jiaxin and Shields, Michael D},
+  journal={Computer Methods in Applied Mechanics and Engineering},
+  volume={334},
+  pages={483--506},
+  year={2018},
+  publisher={Elsevier},
+  abbr={CMAME},
+}
+
+@article{zhang2018quantification,
+  title={On the quantification and efficient propagation of imprecise probabilities resulting from small datasets},
+  author={Zhang, Jiaxin and Shields, Michael D},
+  journal={Mechanical Systems and Signal Processing},
+  volume={98},
+  pages={465--483},
+  year={2018},
+  publisher={Elsevier},
+  abbr={MSSP},
+}
+
+@article{shields2016generalization,
+  title={The Generalization of Latin Hypercube Sampling},
+  author={Shields, Michael D and Zhang, Jiaxin},
+  journal={Reliability Engineering \& System Safety},
+  volume={148},
+  pages={96--108},
+  year={2016},
+  publisher={Elsevier},
+  pdf={https://www.sciencedirect.com/science/article/abs/pii/S0951832015003543},
+  % selected={true},
+  abbr={RESS},
+  arxiv={1507.06716},
+  code={https://github.com/SURGroup/UQpy},
+  abstract={Latin hypercube sampling (LHS) is generalized in terms of a spectrum of stratified sampling (SS) designs referred to as partially stratified sample (PSS) designs. True SS and LHS are shown to represent the extremes of the PSS spectrum. The variance of PSS estimates is derived along with some asymptotic properties. PSS designs are shown to reduce variance associated with variable interactions, whereas LHS reduces variance associated with main effects. Challenges associated with the use of PSS designs and their limitations are discussed. To overcome these challenges, the PSS method is coupled with a new method called Latinized stratified sampling (LSS) that produces sample sets that are simultaneously SS and LHS. The LSS method is equivalent to an Orthogonal Array based LHS under certain conditions but is easier to obtain. Utilizing an LSS on the subspaces of a PSS provides a sampling strategy that reduces variance associated with both main effects and variable interactions and can be designed specially to minimize variance for a given problem. Several high-dimensional numerical examples highlight the strengths and limitations of the method. The Latinized partially stratified sampling method is then applied to identify the best sample strategy for uncertainty quantification on a plate buckling problem.} 
+}
+
+@article{zhang2015design,
+  title={Design optimization of connection section for concentrated force diffusion},
+  author={Zhang, Jiaxin and Wang, Bo and Niu, Fei and Cheng, Gengdong},
+  journal={Mechanics Based Design of Structures and Machines},
+  volume={43},
+  number={2},
+  pages={209--231},
+  year={2015},
+  publisher={Taylor \& Francis},
+  abbr={MBDSM},
+}
+
+@article{wang2014optimum,
+  title={Optimum design of hierarchical stiffened shells for low imperfection sensitivity},
+  author={Wang, Bo and Hao, Peng and Li, Gang and Zhang, Jia-Xin and Du, Kai-Fan and Tian, Kuo and Wang, Xiao-Jun and Tang, Xiao-Han},
+  journal={Acta Mechanica Sinica},
+  volume={30},
+  number={3},
+  pages={391--402},
+  year={2014},
+  publisher={The Chinese Society of Theoretical and Applied Mechanics; Institute of~…},
+  abbr={AMS},
 }

@@ -4,7 +4,11 @@ permalink: /repositories/
 title: repositories
 description: Edit the `_data/repositories.yml` and change the `github_users` and `github_repos` lists to include your own GitHub profile and repositories.
 nav: true
+<<<<<<< HEAD
 nav_order: 4
+=======
+nav_order: 3
+>>>>>>> 320fd374 (Initial commit)
 ---
 
 ## GitHub users
@@ -15,6 +19,7 @@ nav_order: 4
     {% include repository/repo_user.html username=user %}
   {% endfor %}
 </div>
+<<<<<<< HEAD
 
 ---
 
@@ -33,6 +38,12 @@ nav_order: 4
 {% endif %}
 {% endif %}
 
+=======
+{% endif %}
+
+---
+
+>>>>>>> 320fd374 (Initial commit)
 ## GitHub Repositories
 
 {% if site.data.repositories.github_repos %}

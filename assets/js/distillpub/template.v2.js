@@ -1113,7 +1113,11 @@ ${math}
     if (!byline) {
       if (data.authors) {
         byline = dom.createElement('d-byline');
+<<<<<<< HEAD
         // body.insertBefore(byline, article);
+=======
+        body.insertBefore(byline, article);
+>>>>>>> 320fd374 (Initial commit)
       } else {
         console.warn('No authors found in front matter; please add them before submission!');
       }

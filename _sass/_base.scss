@@ -4,6 +4,7 @@
 
 // Typography
 
+<<<<<<< HEAD
 p,
 h1,
 h2,
@@ -16,6 +17,9 @@ div,
 li,
 span,
 strong {
+=======
+p, h1, h2, h3, h4, h5, h6, em, div, li, span, strong {
+>>>>>>> 320fd374 (Initial commit)
   color: var(--global-text-color);
 }
 
@@ -24,6 +28,7 @@ hr {
 }
 
 table {
+<<<<<<< HEAD
   td,
   th {
     font-size: 1rem;
@@ -38,16 +43,32 @@ a,
 table.table a {
   color: var(--global-theme-color);
 
+=======
+  td, th {
+    color: var(--global-text-color);
+  }
+  td {
+    font-size: 1rem;
+  }
+}
+
+a, table.table a {
+  color: var(--global-theme-color);
+>>>>>>> 320fd374 (Initial commit)
   &:hover {
     color: var(--global-theme-color);
     text-decoration: underline;
   }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 320fd374 (Initial commit)
   &:hover:after :not(.nav-item.dropdown) {
     width: 100%;
   }
 }
 
+<<<<<<< HEAD
 .table-dark {
   background-color: transparent;
   &.table-bordered{
@@ -57,11 +78,15 @@ table.table a {
 
 figure,
 img {
+=======
+figure, img {
+>>>>>>> 320fd374 (Initial commit)
   max-width: 90vw;
 }
 
 blockquote {
   background: var(--global-bg-color);
+<<<<<<< HEAD
   border-left: 5px solid var(--global-theme-color);
   margin: 1.5em 0;
   padding: 1em;
@@ -110,6 +135,12 @@ blockquote {
       color: var(--global-danger-block-title);
     }
   }
+=======
+  border-left: 2px solid var(--global-theme-color);
+  margin: 1.5em 10px;
+  padding: 0.5em 10px;
+  font-size: 1.2rem;
+>>>>>>> 320fd374 (Initial commit)
 }
 
 // Math
@@ -154,8 +185,12 @@ blockquote {
 
 // Citation
 
+<<<<<<< HEAD
 .citation,
 .citation-number {
+=======
+.citation, .citation-number {
+>>>>>>> 320fd374 (Initial commit)
   color: var(--global-theme-color);
 }
 
@@ -164,34 +199,53 @@ blockquote {
 .profile {
   width: 100%;
 
+<<<<<<< HEAD
   .more-info {
     margin-bottom: 5px;
     margin-top: 5px;
     font-family: monospace;
 
+=======
+  .address {
+    margin-bottom: 5px;
+    margin-top: 5px;
+    font-family: monospace;
+>>>>>>> 320fd374 (Initial commit)
     p {
       display: inline-block;
       margin: 0;
     }
   }
 }
+<<<<<<< HEAD
 
 .profile.float-right {
   margin-left: 1rem;
 }
 
 .profile.float-left {
+=======
+.profile.float-right{
+  margin-left: 1rem;
+}
+.profile.float-left{
+>>>>>>> 320fd374 (Initial commit)
   margin-right: 1rem;
 }
 
 @media (min-width: 576px) {
   .profile {
     width: 30%;
+<<<<<<< HEAD
 
     .address {
       p {
         display: block;
       }
+=======
+    .address {
+      p { display: block; }
+>>>>>>> 320fd374 (Initial commit)
     }
   }
 }
@@ -199,10 +253,15 @@ blockquote {
 .post-description {
   margin-bottom: 2rem;
   font-size: 0.875rem;
+<<<<<<< HEAD
 
   a {
     color: inherit;
 
+=======
+  a {
+    color: inherit;
+>>>>>>> 320fd374 (Initial commit)
     &:hover {
       color: var(--global-theme-color);
       text-decoration: none;
@@ -219,6 +278,7 @@ blockquote {
   background-color: var(--global-bg-color);
   opacity: 0.95;
 }
+<<<<<<< HEAD
 
 .navbar .dropdown-menu {
   background-color: var(--global-bg-color);
@@ -232,10 +292,22 @@ blockquote {
     color: var(--global-hover-color);
   }
 
+=======
+.navbar .dropdown-menu {
+  background-color: var(--global-bg-color);
+  border: 1px solid var(--global-divider-color);
+  a:not(.active) {
+    color: var(--global-text-color);
+  }
+  a:hover {
+    color: var(--global-hover-color);
+  }
+>>>>>>> 320fd374 (Initial commit)
   .dropdown-divider {
     border-top: 1px solid var(--global-divider-color) !important;
   }
 }
+<<<<<<< HEAD
 
 .dropdown-item {
   color: var(--global-text-color);
@@ -246,12 +318,22 @@ blockquote {
   }
 }
 
+=======
+.dropdown-item {
+  color: var(--global-text-color);
+    &:hover {
+      color: var(--global-hover-color);
+      background-color: var(--global-bg-color);
+    }
+}
+>>>>>>> 320fd374 (Initial commit)
 .navbar.navbar-light {
   a {
     &:hover {
       text-decoration: none;
     }
   }
+<<<<<<< HEAD
 
   .navbar-brand {
     color: var(--global-text-color);
@@ -260,10 +342,18 @@ blockquote {
   .navbar-nav .nav-item .nav-link {
     color: var(--global-text-color);
 
+=======
+  .navbar-brand {
+    color: var(--global-text-color);
+  }
+  .navbar-nav .nav-item .nav-link {
+    color: var(--global-text-color);
+>>>>>>> 320fd374 (Initial commit)
     &:hover {
       color: var(--global-hover-color);
     }
   }
+<<<<<<< HEAD
 
   .navbar-nav .nav-item.active>.nav-link {
     background-color: inherit;
@@ -275,17 +365,33 @@ blockquote {
     }
   }
 
+=======
+  .navbar-nav .nav-item.active>.nav-link {
+      background-color: inherit;
+      font-weight: bolder;
+      color: var(--global-theme-color);
+      &:hover {
+        color: var(--global-hover-color);
+      }
+  }
+>>>>>>> 320fd374 (Initial commit)
   .navbar-brand.social {
     padding-bottom: 0;
     padding-top: 0;
     font-size: 1.7rem;
+<<<<<<< HEAD
 
+=======
+>>>>>>> 320fd374 (Initial commit)
     a {
       i::before {
         color: var(--global-text-color);
         transition-property: all 0.2s ease-in-out;
       }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 320fd374 (Initial commit)
       &:hover {
         i::before {
           color: var(--global-theme-color);
@@ -305,16 +411,25 @@ blockquote {
     margin-bottom: 4px;
     transition: all 0.2s;
   }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 320fd374 (Initial commit)
   .top-bar {
     transform: rotate(45deg);
     transform-origin: 10% 10%;
   }
+<<<<<<< HEAD
 
   .middle-bar {
     opacity: 0;
   }
 
+=======
+  .middle-bar {
+    opacity: 0;
+  }
+>>>>>>> 320fd374 (Initial commit)
   .bottom-bar {
     transform: rotate(-45deg);
     transform-origin: 10% 90%;
@@ -325,11 +440,17 @@ blockquote {
   .top-bar {
     transform: rotate(0);
   }
+<<<<<<< HEAD
 
   .middle-bar {
     opacity: 1;
   }
 
+=======
+  .middle-bar {
+    opacity: 1;
+  }
+>>>>>>> 320fd374 (Initial commit)
   .bottom-bar {
     transform: rotate(0);
   }
@@ -340,7 +461,10 @@ blockquote {
   border: 0;
   background-color: inherit;
   color: var(--global-text-color);
+<<<<<<< HEAD
 
+=======
+>>>>>>> 320fd374 (Initial commit)
   &:hover {
     color: var(--global-hover-color);
   }
@@ -350,16 +474,24 @@ blockquote {
 
 .social {
   text-align: center;
+<<<<<<< HEAD
 
   .contact-icons {
     font-size: 4rem;
 
+=======
+  .contact-icons {
+    font-size: 4rem;
+>>>>>>> 320fd374 (Initial commit)
     a {
       i::before {
         color: var(--global-text-color);
         transition-property: all 0.2s ease-in-out;
       }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 320fd374 (Initial commit)
       &:hover {
         i::before {
           color: var(--global-theme-color);
@@ -367,12 +499,16 @@ blockquote {
       }
     }
   }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 320fd374 (Initial commit)
   .contact-note {
     font-size: 0.8rem;
   }
 }
 
+<<<<<<< HEAD
 .wechat-modal {
   display: none;
   position: fixed;
@@ -403,21 +539,31 @@ blockquote {
   }
 }
 
+=======
+>>>>>>> 320fd374 (Initial commit)
 
 // Footer
 footer.fixed-bottom {
   background-color: var(--global-footer-bg-color);
   font-size: 0.75rem;
+<<<<<<< HEAD
 
+=======
+>>>>>>> 320fd374 (Initial commit)
   .container {
     color: var(--global-footer-text-color);
     padding-top: 9px;
     padding-bottom: 8px;
   }
+<<<<<<< HEAD
 
   a {
     color: var(--global-footer-link-color);
 
+=======
+  a {
+    color: var(--global-footer-link-color);
+>>>>>>> 320fd374 (Initial commit)
     &:hover {
       color: var(--global-theme-color);
       text-decoration: none;
@@ -436,11 +582,19 @@ footer.sticky-bottom {
 
 .cv {
   margin-bottom: 40px;
+<<<<<<< HEAD
 
   .card {
     background-color: var(--global-card-bg-color);
     border: 1px solid var(--global-divider-color);
 
+=======
+  
+  .card {
+    background-color: var(--global-card-bg-color);
+    border: 1px solid var(--global-divider-color);
+    
+>>>>>>> 320fd374 (Initial commit)
     .list-group-item {
       background-color: inherit;
       border-color: var(--global-divider-color);
@@ -453,12 +607,15 @@ footer.sticky-bottom {
   }
 }
 
+<<<<<<< HEAD
 .table-cv-map {
   background-color: transparent;
   border: none;
   color: var(--global-text-color);
 }
 
+=======
+>>>>>>> 320fd374 (Initial commit)
 // Repositories
 
 @media (min-width: 768px) {
@@ -474,14 +631,21 @@ footer.sticky-bottom {
   text-align: center;
   padding-top: 2rem;
   padding-bottom: 3rem;
+<<<<<<< HEAD
 
+=======
+>>>>>>> 320fd374 (Initial commit)
   h1 {
     color: var(--global-theme-color);
     font-size: 5rem;
   }
 }
 
+<<<<<<< HEAD
 .tag-category-list {
+=======
+.tag-list {
+>>>>>>> 320fd374 (Initial commit)
   border-bottom: 1px solid var(--global-divider-color);
   text-align: center;
   padding-top: 1rem;
@@ -490,8 +654,12 @@ footer.sticky-bottom {
     justify-content: center;
     display: flow-root;
 
+<<<<<<< HEAD
     p,
     li {
+=======
+    p, li {
+>>>>>>> 320fd374 (Initial commit)
       list-style: none;
       display: inline-block;
       padding: 1rem 0.5rem;
@@ -500,48 +668,69 @@ footer.sticky-bottom {
   }
 }
 
+<<<<<<< HEAD
 .post-title {
   mjx-container[jax="CHTML"][display="true"] {
     display: unset;
   }
 }
 
+=======
+>>>>>>> 320fd374 (Initial commit)
 .post-list {
   margin: 0;
   margin-bottom: 40px;
   padding: 0;
+<<<<<<< HEAD
 
+=======
+>>>>>>> 320fd374 (Initial commit)
   li {
     border-bottom: 1px solid var(--global-divider-color);
     list-style: none;
     padding-top: 2rem;
     padding-bottom: 2rem;
+<<<<<<< HEAD
 
+=======
+>>>>>>> 320fd374 (Initial commit)
     .post-meta {
       color: var(--global-text-color-light);
       font-size: 0.875rem;
       margin-bottom: 0;
     }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 320fd374 (Initial commit)
     .post-tags {
       color: var(--global-text-color-light);
       font-size: 0.875rem;
       padding-top: 0.25rem;
       padding-bottom: 0;
     }
+<<<<<<< HEAD
 
     a {
       color: var(--global-text-color);
       text-decoration: none;
 
+=======
+    a {
+      color: var(--global-text-color);
+      text-decoration: none;
+>>>>>>> 320fd374 (Initial commit)
       &:hover {
         color: var(--global-theme-color);
       }
     }
+<<<<<<< HEAD
 
     mjx-container[jax="CHTML"][display="true"] {
       display: unset;
     }
+=======
+>>>>>>> 320fd374 (Initial commit)
   }
 }
 
@@ -549,16 +738,25 @@ footer.sticky-bottom {
   .page-item {
     .page-link {
       color: var(--global-text-color);
+<<<<<<< HEAD
 
+=======
+>>>>>>> 320fd374 (Initial commit)
       &:hover {
         color: $black-color;
       }
     }
+<<<<<<< HEAD
 
     &.active .page-link {
       color: $white-color;
       background-color: var(--global-theme-color);
 
+=======
+    &.active .page-link {
+      color: $white-color;
+      background-color: var(--global-theme-color);
+>>>>>>> 320fd374 (Initial commit)
       &:hover {
         background-color: var(--global-theme-color);
       }
@@ -606,8 +804,12 @@ footer.sticky-bottom {
     }
   }
 
+<<<<<<< HEAD
   .grid-sizer,
   .grid-item {
+=======
+  .grid-sizer, .grid-item {
+>>>>>>> 320fd374 (Initial commit)
     width: 250px;
     margin-bottom: 10px;
   }
@@ -627,7 +829,10 @@ footer.sticky-bottom {
 
 .publications {
   margin-top: 2rem;
+<<<<<<< HEAD
 
+=======
+>>>>>>> 320fd374 (Initial commit)
   h1 {
     color: var(--global-theme-color);
     font-size: 2rem;
@@ -635,16 +840,25 @@ footer.sticky-bottom {
     margin-top: 1em;
     margin-bottom: 1em;
   }
+<<<<<<< HEAD
 
   h2 {
     margin-bottom: 1rem;
 
+=======
+  h2 {
+    margin-bottom: 1rem;
+>>>>>>> 320fd374 (Initial commit)
     span {
       font-size: 1.5rem;
     }
   }
+<<<<<<< HEAD
 
   h2.bibliography {
+=======
+  h2.year {
+>>>>>>> 320fd374 (Initial commit)
     color: var(--global-divider-color);
     border-top: 1px solid var(--global-divider-color);
     padding-top: 1rem;
@@ -652,7 +866,10 @@ footer.sticky-bottom {
     margin-bottom: -2rem;
     text-align: right;
   }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 320fd374 (Initial commit)
   ol.bibliography {
     list-style: none;
     padding: 0;
@@ -660,37 +877,55 @@ footer.sticky-bottom {
 
     li {
       margin-bottom: 1rem;
+<<<<<<< HEAD
 
+=======
+>>>>>>> 320fd374 (Initial commit)
       .preview {
         width: 100%;
         min-width: 80px;
         max-width: 200px;
       }
+<<<<<<< HEAD
 
       .abbr {
         height: 2rem;
         margin-bottom: 0.5rem;
 
+=======
+      .abbr {
+        height: 2rem;
+        margin-bottom: 0.5rem;
+>>>>>>> 320fd374 (Initial commit)
         abbr {
           display: inline-block;
           background-color: var(--global-theme-color);
           padding-left: 1rem;
           padding-right: 1rem;
+<<<<<<< HEAD
 
           a {
             color: white;
 
+=======
+          a {
+            color: white;
+>>>>>>> 320fd374 (Initial commit)
             &:hover {
               text-decoration: none;
             }
           }
         }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 320fd374 (Initial commit)
         .award {
           color: var(--global-theme-color) !important;
           border: 1px solid var(--global-theme-color);
         }
       }
+<<<<<<< HEAD
 
       .title {
         font-weight: bolder;
@@ -723,6 +958,33 @@ footer.sticky-bottom {
         }
       }
 
+=======
+      .title {
+        font-weight: bolder;
+      }
+      .author {
+        a {
+          border-bottom: 1px dashed var(--global-theme-color);
+          &:hover {
+              border-bottom-style: solid;
+              text-decoration: none;
+          }
+        }
+        > em {
+          border-bottom: 1px solid;
+          font-style: normal;
+        }
+        > span.more-authors {
+          color: var(--global-text-color-light);
+          border-bottom: 1px dashed var(--global-text-color-light);
+          cursor: pointer;
+          &:hover {
+              color: var(--global-text-color);
+              border-bottom: 1px dashed var(--global-text-color);
+          }
+        }
+      }
+>>>>>>> 320fd374 (Initial commit)
       .links {
         a.btn {
           color: var(--global-text-color);
@@ -731,30 +993,45 @@ footer.sticky-bottom {
           padding-right: 1rem;
           padding-top: 0.25rem;
           padding-bottom: 0.25rem;
+<<<<<<< HEAD
           margin-left: 0;
 
+=======
+>>>>>>> 320fd374 (Initial commit)
           &:hover {
             color: var(--global-theme-color);
             border-color: var(--global-theme-color);
           }
         }
       }
+<<<<<<< HEAD
 
       .badges {
         padding-bottom: 0.5rem;
+=======
+      .badges {
+>>>>>>> 320fd374 (Initial commit)
         span {
           display: inline-block;
           color: $black-color;
           height: 100%;
+<<<<<<< HEAD
           padding-right: 0.5rem;
           vertical-align: middle;
 
+=======
+          padding-left: 0.5rem;
+          vertical-align: middle;
+>>>>>>> 320fd374 (Initial commit)
           &:hover {
             text-decoration: underline;
           }
         }
       }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 320fd374 (Initial commit)
       .hidden {
         font-size: 0.875rem;
         max-height: 0px;
@@ -770,14 +1047,20 @@ footer.sticky-bottom {
           line-height: 1.4em;
           margin: 10px;
         }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 320fd374 (Initial commit)
         pre {
           font-size: 1em;
           line-height: 1.4em;
           padding: 10px;
         }
       }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 320fd374 (Initial commit)
       .hidden.open {
         max-height: 100em;
         transition-property: 0.15s ease;
@@ -786,11 +1069,17 @@ footer.sticky-bottom {
         -o-transition: 0.15s ease;
         transition: all 0.15s ease;
       }
+<<<<<<< HEAD
 
       div.abstract.hidden {
         border: dashed 1px var(--global-bg-color);
       }
 
+=======
+      div.abstract.hidden {
+        border: dashed 1px var(--global-bg-color);
+      }
+>>>>>>> 320fd374 (Initial commit)
       div.abstract.hidden.open {
         border-color: var(--global-text-color);
       }
@@ -808,12 +1097,18 @@ pre {
   background-color: var(--global-code-bg-color);
   border-radius: 6px;
   padding: 6px 12px;
+<<<<<<< HEAD
 
   pre,
   code {
     background-color: transparent;
     border-radius: 0;
     margin-bottom: 0;
+=======
+  pre, code {
+    background-color: transparent;
+    border-radius: 0;
+>>>>>>> 320fd374 (Initial commit)
     padding: 0;
   }
 }
@@ -836,28 +1131,44 @@ html.transition *:after {
 }
 
 // Extra Markdown style (post Customization)
+<<<<<<< HEAD
 .post {
   .post-meta {
+=======
+.post{
+  .post-meta{
+>>>>>>> 320fd374 (Initial commit)
     color: var(--global-text-color-light);
     font-size: 0.875rem;
     margin-bottom: 0;
   }
+<<<<<<< HEAD
 
   .post-tags {
+=======
+  .post-tags{
+>>>>>>> 320fd374 (Initial commit)
     color: var(--global-text-color-light);
     font-size: 0.875rem;
     padding-top: 0.25rem;
     padding-bottom: 1rem;
+<<<<<<< HEAD
 
     a {
       color: var(--global-text-color-light);
       text-decoration: none;
 
+=======
+    a {
+      color: var(--global-text-color-light);
+      text-decoration: none;
+>>>>>>> 320fd374 (Initial commit)
       &:hover {
         color: var(--global-theme-color);
       }
     }
   }
+<<<<<<< HEAD
 }
 
 progress {
@@ -1071,3 +1382,67 @@ nav[data-toggle="toc"] {
 #toc-sidebar {
   z-index: 1;
 }
+=======
+  .post-content{
+    blockquote {
+      border-left: 5px solid var(--global-theme-color);
+      padding: 8px;
+    }
+  }
+}
+
+progress {
+     /* Positioning */
+     position: fixed;
+     left: 0;
+     top: 56px;
+     z-index: 10;
+   
+     /* Dimensions */
+     width: 100%;
+     height: 1px;
+   
+     /* Reset the appearance */
+     -webkit-appearance: none;
+        -moz-appearance: none;
+             appearance: none;
+   
+     /* Get rid of the default border in Firefox/Opera. */
+     border: none;
+   
+     /* Progress bar container for Firefox/IE10  */
+     background-color: transparent;
+   
+     /* Progress bar value for IE10  */
+     color: var(--global-theme-color);
+ }
+ 
+ progress::-webkit-progress-bar {
+     background-color: transparent;
+ }
+   
+ progress::-webkit-progress-value {
+     background-color: var(--global-theme-color);
+ }
+   
+ progress::-moz-progress-bar {
+     background-color: var(--global-theme-color);
+ }
+ 
+ .progress-container {
+     width: 100%;
+     background-color: transparent;
+     position: fixed;
+     top: 56px;
+     left: 0;
+     height: 5px;
+     display: block;
+ }
+ 
+ .progress-bar {
+     background-color: var(--global-theme-color);
+     width: 0%;
+     display: block;
+     height: inherit;
+ }
+>>>>>>> 320fd374 (Initial commit)

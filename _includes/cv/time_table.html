@@ -4,6 +4,7 @@
         <div class="row">
           {% if content.year %}
             <div class="col-xs-2 cl-sm-2 col-md-2 text-center" style="width: 75px;">
+<<<<<<< HEAD
               <table class="table-cv">
                 <tbody>
                   <tr>
@@ -21,12 +22,18 @@
                 </tbody>
               </table>
 
+=======
+              <span class="badge font-weight-bold danger-color-dark text-uppercase align-middle" style="min-width: 75px;">
+                {{ content.year }}
+              </span>
+>>>>>>> 320fd374 (Initial commit)
             </div>
           {% endif %}
           <div class="col-xs-10 cl-sm-10 col-md-10 mt-2 mt-md-0">
             {% if content.title %}
             <h6 class="title font-weight-bold ml-1 ml-md-4">{{content.title}}</h6>
             {% endif %}
+<<<<<<< HEAD
             {% if content.department or content.institution %}
             <table class="table-cv ml-1 ml-md-4 institution">
             <tbody>
@@ -47,6 +54,10 @@
             {% endif %}
             {% if content.maindescription %}
               <div class="ml-1 ml-md-4 ">{{ content.maindescription }}</div>
+=======
+            {% if content.institution %}
+            <h6 class="ml-1 ml-md-4" style="font-size: 0.95rem;">{{content.institution}}</h6>
+>>>>>>> 320fd374 (Initial commit)
             {% endif %}
             {% if content.description %}
               <ul class="items">
@@ -84,6 +95,7 @@
                 {% endfor %}
               </ul>
             {% endif %}
+<<<<<<< HEAD
             {% if content.linkitems %}
               <div class="container-links ml-1 ml-md-4">
               {% for item in content.linkitems %}
@@ -99,6 +111,8 @@
               {% endfor %}
               </div>
             {% endif %}
+=======
+>>>>>>> 320fd374 (Initial commit)
           </div>
         </div>
       </li>
