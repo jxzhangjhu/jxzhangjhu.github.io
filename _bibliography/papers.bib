@@ -8,8 +8,6 @@
   pdf={https://arxiv.org/pdf/2302.10441.pdf},
   selected={true},
   abbr={ICASSP},
-  teaser={cover_discoscene.jpeg},
-  website={https://snap-research.github.io/discoscene/},
   abstract={Distributed machine learning paradigms, such as federated learning, have been recently adopted in many privacy-critical applications for speech analysis. However, such frameworks are vulnerable to privacy leakage attacks from shared gradients. Despite extensive efforts in the image domain, the exploration of speech privacy leakage from gradients is quite limited. In this paper, we explore methods for recovering private speech/speaker information from the shared gradients in distributed learning settings. We conduct experiments on a keyword spotting model with two different types of speech features to quantify the amount of leaked information by measuring the similarity between the original and recovered speech signals. We further demonstrate the feasibility of inferring various levels of side-channel information, including speech content and speaker identity, under the distributed learning framework without accessing the user's data.} 
 }
 
@@ -20,10 +18,11 @@
   journal={Proceedings of the AAAI Conference on Artificial Intelligence},
   year={2023},
   pdf={https://arxiv.org/pdf/2212.01016.pdf},
+  code={https://github.com/jxzhangjhu/MatDesINNe},
   selected={true},
   abbr={AAAI},
-  teaser={cover_discoscene.jpeg},
-  website={https://snap-research.github.io/discoscene/} 
+  abstract={In the scope of "AI for Science", solving inverse problems is a longstanding challenge in materials and drug discovery, where the goal is to determine the hidden structures given a set of desirable properties. Deep generative models are recently proposed to solve inverse problems, but these currently use expensive forward operators and struggle in precisely localizing the exact solutions and fully exploring the parameter spaces without missing solutions. In this work, we propose a novel approach (called iPage) to accelerate the inverse learning process by leveraging probabilistic inference from deep invertible models and deterministic optimization via fast gradient descent. Given a target property, the learned invertible model provides a posterior over the parameter space; we identify these posterior samples as an intelligent prior initialization which enables us to narrow down the search space. We then perform gradient descent to calibrate the inverse solutions within a local region. Meanwhile, a space-filling sampling is imposed on the latent space to better explore and capture all possible solutions. We evaluate our approach on three benchmark tasks and two created datasets with real-world applications from quantum chemistry and additive manufacturing, and find our method achieves superior performance compared to several state-of-the-art baseline methods.} 
+
 }
 
 # AAAI 2023
@@ -35,8 +34,7 @@
   pdf={https://openreview.net/pdf?id=GDUfz1phf06},
   selected={true},
   abbr={AAAI},
-  teaser={cover_discoscene.jpeg},
-  website={https://snap-research.github.io/discoscene/} 
+  abstract={Normalizing flows (NF) build upon invertible neural networks and have wide applications in probabilistic modeling. Currently, building a powerful yet computationally efficient flow model relies on empirical fine-tuning over a large design space. While introducing neural architecture search (NAS) to NF is desirable, the invertibility constraint of NF brings new challenges to existing NAS methods whose application is limited to unstructured neural networks. Developing efficient NAS methods specifically for NF remains an open problem. We present AutoNF, the first automated NF architectural optimization framework. First, we present a new mixture distribution formulation that allows efficient differentiable architecture search of flow models without violating the invertibility constraint. Second, under the new formulation, we convert the original NP-hard combinatorial NF architectural optimization problem to an unconstrained continuous relaxation admitting the discrete optimal architectural solution, circumventing the loss of optimality due to binarization in architectural optimization.   We evaluate AutoNF with various density estimation datasets and show its superior performance-cost trade-offs over a set of existing hand-crafted baselines.} 
 }
 
 
@@ -107,9 +105,8 @@
   pdf={https://openaccess.thecvf.com/content/CVPR2022/papers/Li_Auditing_Privacy_Defenses_in_Federated_Learning_via_Generative_Gradient_Leakage_CVPR_2022_paper.pdf},
   selected={true},
   abbr={CVPR},
-  teaser={cover_discoscene.jpeg},
-  website={https://snap-research.github.io/discoscene/},
-  code={https://github.com/zhuohangli/GGL} 
+  code={https://github.com/zhuohangli/GGL},
+  abstract={Federated Learning (FL) framework brings privacy benefits to distributed learning systems by allowing multiple clients to participate in a learning task under the coordination of a central server without exchanging their private data. However, recent studies have revealed that private information can still be leaked through shared gradient information. To further protect user's privacy, several defense mechanisms have been proposed to prevent privacy leakage via gradient information degradation methods, such as using additive noise or gradient compression before sharing it with the server. In this work, we validate that the private training data can still be leaked under certain defense settings with a new type of leakage, ie, Generative Gradient Leakage (GGL). Unlike existing methods that only rely on gradient information to reconstruct data, our method leverages the latent space of generative adversarial networks (GAN) learned from public image datasets as a prior to compensate for the informational loss during gradient degradation. To address the nonlinearity caused by the gradient operator and the GAN model, we explore various gradient-free optimization methods (eg, evolution strategies and Bayesian optimization) and empirically show their superiority in reconstructing high-quality images from gradients compared to gradient-based optimizers. We hope the proposed method can serve as a tool for empirically measuring the amount of privacy leakage to facilitate the design of more robust defense mechanisms.} 
 }
 
 @techreport{lu2022invertible,
@@ -131,8 +128,7 @@
   pdf={https://ojs.aaai.org/index.php/AAAI/article/view/20812},
   selected={true},
   abbr={AAAI},
-  teaser={cover_discoscene.jpeg},
-  website={https://snap-research.github.io/discoscene/} 
+  abstract={Novelty detection aims to automatically identify out-of-distribution (OOD) data, without any prior knowledge of them. It is a critical step in data monitoring, behavior analysis and other applications, helping enable continual learning in the field. Conventional methods of OOD detection perform multi-variate analysis on an ensemble of data or features, and usually resort to the supervision with OOD data to improve the accuracy. In reality, such supervision is impractical as one cannot anticipate the anomalous data. In this paper, we propose a novel, self-supervised approach that does not rely on any pre-defined OOD data:(1) The new method evaluates the Mahalanobis distance of the gradients between the in-distribution and OOD data.(2) It is assisted by a self-supervised binary classifier to guide the label selection to generate the gradients, and maximize the Mahalanobis distance. In the evaluation with multiple datasets, such as CIFAR-10, CIFAR-100, SVHN and TinyImageNet, the proposed approach consistently outperforms state-of-the-art supervised and unsupervised methods in the area under the receiver operating characteristic (AUROC) and area under the precision-recall curve (AUPR) metrics. We further demonstrate that this detector is able to accurately learn one OOD class in continual learning.} 
 }
 
 
@@ -197,8 +193,7 @@
   pdf={https://proceedings.neurips.cc/paper/2021/file/c9dd73f5cb96486f5e1e0680e841a550-Paper.pdf},
   selected={true},
   abbr={NeurIPS},
-  teaser={cover_discoscene.jpeg},
-  website={https://snap-research.github.io/discoscene/} 
+  abstract={Deep Markov models (DMM) are generative models which are scalable and expressive generalization of Markov models for representation, learning, and inference problems. However, the fundamental stochastic stability guarantees of such models have not been thoroughly investigated. In this paper, we present a novel stability analysis method and provide sufficient conditions of DMM's stochastic stability. The proposed stability analysis is based on the contraction of probabilistic maps modeled by deep neural networks. We make connections between the spectral properties of neural network's weights and different types of used activation function on the stability and overall dynamic behavior of DMMs with Gaussian distributions. Based on the theory, we propose a few practical methods for designing constrained DMMs with guaranteed stability. We empirically substantiate our theoretical results via intuitive numerical experiments using the proposed stability constraints.}
 }
 
 @article{zhang2021probabilistic,
@@ -270,8 +265,7 @@
   pdf={https://proceedings.mlr.press/v161/zhang21e/zhang21e.pdf},
   selected={true},
   abbr={UAI},
-  teaser={cover_discoscene.jpeg},
-  website={https://snap-research.github.io/discoscene/} 
+  abstract={We consider the problem of minimizing multi-modal loss functions with a large number of local optima. Since the local gradient points to the direction of the steepest slope in an infinitesimal neighborhood, an optimizer guided by the local gradient is often trapped in a local minimum. To address this issue, we develop a novel nonlocal gradient to skip small local minima by capturing major structures of the loss’s landscape in black-box optimization. The nonlocal gradient is defined by a directional Gaussian smoothing (DGS) approach. The key idea of DGS is to conducts 1D long-range exploration with a large smoothing radius along  orthogonal directions in , each of which defines a nonlocal directional derivative as a 1D integral. Such long-range exploration enables the nonlocal gradient to skip small local minima. The  directional derivatives are then assembled to form the nonlocal gradient. We use the Gauss-Hermite quadrature rule to approximate the  1D integrals to obtain an accurate estimator. The superior performance of our method is demonstrated in three sets of examples, including benchmark functions for global optimization, and two real-world scientific problems.} 
 }
 
 # AISTATS 2021
@@ -285,8 +279,7 @@
   pdf={http://proceedings.mlr.press/v130/zhang21l/zhang21l.pdf},
   selected={true},
   abbr={AISTATS},
-  teaser={cover_discoscene.jpeg},
-  website={https://snap-research.github.io/discoscene/} 
+  abstract={Bayesian experimental design (BED) is to answer the question that how to choose designs that maximize the information gathering. For implicit models, where the likelihood is intractable but sampling is possible, conventional BED methods have difficulties in efficiently estimating the posterior distribution and maximizing the mutual information (MI) between data and parameters. Recent work proposed the use of gradient ascent to maximize a lower bound on MI to deal with these issues. However, the approach requires a sampling path to compute the pathwise gradient of the MI lower bound with respect to the design variables, and such a pathwise gradient is usually inaccessible for implicit models. In this paper, we propose a novel approach that leverages recent advances in stochastic approximate gradient ascent incorporated with a smoothed variational MI estimator for efficient and robust BED. Without the necessity of pathwise gradients, our approach allows the design process to be achieved through a unified procedure with an approximate gradient for implicit models. Several experiments show that our approach outperforms baseline methods, and significantly improves the scalability of BED in high-dimensional problems} 
 }
 
 }
@@ -421,8 +414,8 @@
   pdf={https://proceedings.neurips.cc/paper/2019/file/464074179972cbbd75a39abc6954cd12-Paper.pdf},
   selected={true},
   abbr={NeurIPS},
-  teaser={cover_discoscene.jpeg},
-  website={https://snap-research.github.io/discoscene/} 
+  abstract={We developed a Nonlinear Level-set Learning (NLL) method for dimensionality reduction in high-dimensional function approximation with small data. This work is motivated by a variety of design tasks in real-world engineering applications, where practitioners would replace their computationally intensive physical models (e.g., high-resolution fluid simulators) with fast-to-evaluate predictive machine learning models, so as to accelerate the engineering design processes. There are two major challenges in constructing such predictive models: (a) high-dimensional inputs (e.g., many independent design parameters) and (b) small training data, generated by running extremely time-consuming simulations. Thus, reducing the input dimension is critical to alleviate the over-fitting issue caused by data insufficiency. Existing methods, including sliced inverse regression and active subspace approaches, reduce the input dimension by learning a linear coordinate transformation; our main contribution is to extend the transformation approach to a nonlinear regime. Specifically, we exploit reversible networks (RevNets) to learn nonlinear level sets of a high-dimensional function and parameterize its level sets in low-dimensional spaces. A new loss function was designed to utilize samples of the target functions' gradient to encourage the transformed function to be sensitive to only a few transformed coordinates. The NLL approach is demonstrated by applying it to three 2D functions and two 20D functions for showing the improved approximation accuracy with the use of nonlinear transformation, as well as to an 8D composite material design problem for optimizing the buckling-resistance performance of composite shells of rocket inter-stages.
+} 
 }
 
 
