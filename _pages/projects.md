@@ -8,8 +8,9 @@ nav_order: 2
 display_categories: [work, fun]
 horizontal: false
 ---
+Under construction
 
-<!-- pages/projects.md -->
+<!-- <!-- pages/projects.md -->
 <div class="projects">
 {%- if site.enable_project_categories and page.display_categories %}
   <!-- Display categorized projects -->
@@ -56,3 +57,4 @@ horizontal: false
   {%- endif -%}
 {%- endif -%}
 </div>
+ -->
