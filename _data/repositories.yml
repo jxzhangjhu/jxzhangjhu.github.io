@@ -1,12 +1,11 @@
 github_users:
-  - torvalds
-  - alshedivat
+  - jxzhangjhu
 
 github_repos:
-  - alshedivat/al-folio
-  - twbs/bootstrap
-  - jekyll/jekyll
-  - jquery/jquery
-  - FortAwesome/Font-Awesome
-  - jpswalsh/academicons
-  - mathjax/MathJax
+  - SURGroup/UQpy
+  - jxzhangjhu/MatDesINNe
+  - zhuohangli/GGL
+  - Fung-Lab/MatDeepLearn
+  - jxzhangjhu/Awesome-LLM-Reliability-Robustness-Safety
+  - jxzhangjhu/Awesome-LLM
+
