@@ -32,7 +32,7 @@ Link to your social media connections, too. This theme is set up to use [Font Aw
 
 **Publications:** 50+ peer-review journal/conference papers, and 35+ first-author papers, including several top-tier AI conferences, e.g., NeurIPS, CVPR, EMNLP, etc, and high-impact journals, such as Nature series.
 
-**Service:** Invited Reviewer or PC member in NeurIPS 2020-2023, ICML 2021-2023, ICLR 2021-2024, AISTATS 2021-2023, CVPR 2022, ECCV 2022, ICASSP 2023, SIAM SDM 2023, KDD 2023, WACV 2023, etc. 
+**Service:** Invited Reviewer or PC member in NeurIPS 2020-2023, ICML 2021-2023, ICLR 2021-2024, AISTATS 2021-2023, CVPR 2022, ECCV 2022, KDD 2023, ICASSP 2024, SIAM SDM 2024, WACV 2024, etc. 
 
 
 <span style="color:orange">I'm always looking for highly motivated Ph.D. students to work with me for research internship positions. Please feel free to email me with your CV if interested.
