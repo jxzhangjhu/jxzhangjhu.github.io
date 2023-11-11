@@ -28,16 +28,15 @@ Link to your social media connections, too. This theme is set up to use [Font Aw
 
 **Previously:** I was a Research Staff in Computer Science and Mathematics Dvision at [Oak Ridge National Laboratory](https://www.ornl.gov/), [US Department of Energy (DOE)](https://www.energy.gov/). I received my Ph.D. from [Johns Hopkins University](https://www.jhu.edu/) in 2018. 
 
-**Publications and Service**: 
+<!-- **Publications and Service**:  -->
 
-- I have published 50+ peer-review journal/conference papers, and 35+ first-author papers, including several top-tier AI conferences, e.g., NeurIPS, CVPR, EMNLP, AAAI, AISTATS, UAI, etc. 
+**Publications:** Published 50+ peer-review journal/conference papers, and 35+ first-author papers, including several top-tier AI conferences, e.g., NeurIPS, CVPR, EMNLP, etc, and high-impact journals, such as Nature series.
 
-- Reviewer or PC member: NeurIPS 2020-2023, ICML 2021-2023, ICLR 2021-2024, AISTATS 2021-2023, CVPR 2022, ECCV 2022, ICASSP 2023, SIAM SDM 2023, KDD 2023, WACV 2023, etc. 
+**Service:** Invited Reviewer or PC member in NeurIPS 2020-2023, ICML 2021-2023, ICLR 2021-2024, AISTATS 2021-2023, CVPR 2022, ECCV 2022, ICASSP 2023, SIAM SDM 2023, KDD 2023, WACV 2023, etc. 
 
 
-<span style="color:blue">I'm always looking for highly motivated Ph.D. students to work with me for research internship positions. Please feel free to [email](jxzhangai@gmail.com) me  with your CV if interested.
+<span style="color:orange">I'm always looking for highly motivated Ph.D. students to work with me for research internship positions. Please feel free to [email](jxzhangai@gmail.com) me  with your CV if interested.
 </span>.
-
 
 
 <!-- 
