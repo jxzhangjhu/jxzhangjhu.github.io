@@ -24,17 +24,17 @@ Put your address / P.O. box / other info right below your picture. You can also 
 Link to your social media connections, too. This theme is set up to use [Font Awesome icons](http://fortawesome.github.io/Font-Awesome/) and [Academicons](https://jpswalsh.github.io/academicons/), like the ones below. Add your Facebook, Twitter, LinkedIn, Google Scholar, or just disable all of them.
  -->
 
-**Research:** As an AI researcher, I am passionate about building AGI capability and assisting humans in real-world tasks ranging from vision and language. My interest span multiple areas, including reliabile and robust AI, generative models (LLMs and diffusion models), uncertainty quantification, and AI for Science.
+**Research:** As an AI researcher, I am passionate about building AGI capability and assisting humans in solving complex real-world tasks ranging from Computer Vision (CV) and Natural Language Processing (NLP). My interest span multiple areas, including reliabile and robust AI, generative models (LLMs and diffusion models), uncertainty quantification, and AI for Science.
 
 **Previously:** I was a Research Staff in Computer Science and Mathematics Dvision at [Oak Ridge National Laboratory](https://www.ornl.gov/), [US Department of Energy (DOE)](https://www.energy.gov/). I received my Ph.D. from [Johns Hopkins University](https://www.jhu.edu/) in 2018. 
 
 
-I have published 50+ peer-review journal/conference papers, and 35+ first-author papers, including several top-tier AI conferences, e.g., NeurIPS, CVPR, EMNLP, AAAI, AISTATS, UAI, etc. 
+- I have published 50+ peer-review journal/conference papers, and 35+ first-author papers, including several top-tier AI conferences, e.g., NeurIPS, CVPR, EMNLP, AAAI, AISTATS, UAI, etc. 
 
-I was invited to be a reviewer or PC member: NeurIPS 2020-2023, ICML 2021-2023, ICLR 2021-2024, AISTATS 2021-2023, CVPR 2022, ECCV 2022, ICASSP 2023, SIAM SDM 2023, KDD 2023, WACV 2023, etc. 
+- Reviewer or PC member: NeurIPS 2020-2023, ICML 2021-2023, ICLR 2021-2024, AISTATS 2021-2023, CVPR 2022, ECCV 2022, ICASSP 2023, SIAM SDM 2023, KDD 2023, WACV 2023, etc. 
 
 
-*I'm always looking for highly motivated Ph.D. students to work with me for research internship positions. Please feel free to email me (jxzhangai@gmail.com) with your CV if interested.*
+*$${\color{orange}I'm always looking for highly motivated Ph.D. students to work with me for research internship positions. Please feel free to [email](jxzhangai@gmail.com) me  with your CV if interested.}$$*
 
 
 <!-- 
