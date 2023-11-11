@@ -1,29 +1,28 @@
-- title: General Information
-  type: map
-  contents:
-    - name: Full Name
-      value: Albert Einstein
-    - name: Date of Birth
-      value: 14th March 1879
-    - name: Languages
-      value: English, German
-
+# - title: General Information
+#   type: map
+#   contents:
+#     - name: Full Name
+#       value: Albert Einstein
+#     - name: Date of Birth
+#       value: 14th March 1879
+#     - name: Languages
+#       value: English, German
 - title: Education
   type: time_table
   contents:
-    - title: PhD
-      institution: University of Zurich, Zurich, Switzerland
-      year: 1905
+    - title: Ph.D. in Computational Science
+      institution: Johns Hopkins University, Baltimore, United States
+      year: 2014-2018
       description:
         - Description 1.
         - Description 2.
-        - title: Description 3.
-          contents:
-            - Sub-description 1.
-            - Sub-description 2.
-    - title: Federal teaching diploma
-      institution: Eidgenössische Technische Hochschule, Zurich, Switzerland
-      year: 1900
+        # - title: Description 3.
+        #   contents:
+        #     - Sub-description 1.
+        #     - Sub-description 2.
+    - title: M.S. in Applied Mathematics and Statistics
+      institution: Johns Hopkins University, Baltimore, United States
+      year: 2017-2018
       description:
         - Description 1.
         - Description 2.
@@ -61,12 +60,12 @@
       institution: University of Zurich, Zurich, Switzerland
       year: 1909 - 1911
 
-- title: Open Source Projects
-  type: time_table
-  contents:
-    - title: <a href="https://github.com/alshedivat/al-folio">al-folio</a>
-      year: 2015-now
-      description: A beautiful, simple, clean, and responsive Jekyll theme for academics.
+# - title: Open Source Projects
+#   type: time_table
+#   contents:
+#     - title: <a href="https://github.com/alshedivat/al-folio">al-folio</a>
+#       year: 2015-now
+#       description: A beautiful, simple, clean, and responsive Jekyll theme for academics.
 
 - title: Honors and Awards
   type: time_table
@@ -79,19 +78,20 @@
       items: 
         - Max Planck Medal
 
-- title: Academic Interests
-  type: nested_list
-  contents:
-    - title: Topic 1.
-      items: 
-        - Description 1.
-        - Description 2.
-    - title: Topic 2.
-      items:
-        - Description 1.
-        - Description 2.
+# - title: Academic Interests
+#   type: nested_list
+#   contents:
+#     - title: Topic 1.
+#       items: 
+#         - Description 1.
+#         - Description 2.
+#     - title: Topic 2.
+#       items:
+#         - Description 1.
+#         - Description 2.
 
-- title: Other Interests
+- title: Professional Services
   type: list
   contents:
-    - <u>Hobbies:</u> Hobby 1, Hobby 2, etc.
+    - Journal Reviewer: JRSS-B, JMLR, TMLR, IEEE TPAMI, ACM TKDD, Medical Image Analysis, IEEE TIFS, IEEE TNNLS, IEEE TDSC, IET CV.
+    - Conference Reviewer/ Program Committee: NeurIPS (2019-2022, 2016), ICML (2019-2023), ICLR (2019-2023), AISTATS (2020-2022), UAI (2020-2023), AAAI (2020).
