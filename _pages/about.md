@@ -24,9 +24,18 @@ Put your address / P.O. box / other info right below your picture. You can also 
 Link to your social media connections, too. This theme is set up to use [Font Awesome icons](http://fortawesome.github.io/Font-Awesome/) and [Academicons](https://jpswalsh.github.io/academicons/), like the ones below. Add your Facebook, Twitter, LinkedIn, Google Scholar, or just disable all of them.
  -->
 
-**Research:** As an AI researcher, I am focused on developing reliable and robust methods for modeling, analyzing and generting complex data ranging from vision and language. My interest span multiple areas, including reliabile and robust AI, generative AI, uncertainty quantification, and AI for Science. 
+**Research:** As an AI researcher, I am passionate about building AGI capability and assisting humans in real-world tasks ranging from vision and language. My interest span multiple areas, including reliabile and robust AI, generative models (LLMs and diffusion models), uncertainty quantification, and AI for Science.
 
-**Previously:** I was a Research Staff in Computer Science and Mathematics Dvision at [Oak Ridge National Laboratory](https://www.ornl.gov/), [US Department of Energy (DOE)](https://www.energy.gov/). I received my Ph.D. from [Johns Hopkins University](https://www.jhu.edu/). 
+**Previously:** I was a Research Staff in Computer Science and Mathematics Dvision at [Oak Ridge National Laboratory](https://www.ornl.gov/), [US Department of Energy (DOE)](https://www.energy.gov/). I received my Ph.D. from [Johns Hopkins University](https://www.jhu.edu/) in 2018. 
+
+
+I have published 50+ peer-review journal/conference papers, and 35+ first-author papers, including several top-tier AI conferences, e.g., NeurIPS, CVPR, EMNLP, AAAI, AISTATS, UAI, etc. 
+
+I was invited to be a reviewer or PC member: NeurIPS 2020-2023, ICML 2021-2023, ICLR 2021-2024, AISTATS 2021-2023, CVPR 2022, ECCV 2022, ICASSP 2023, SIAM SDM 2023, KDD 2023, WACV 2023, etc. 
+
+
+*I'm always looking for highly motivated Ph.D. students to work with me for research internship positions. Please feel free to email me (jxzhangai@gmail.com) with your CV if interested.*
+
 
 <!-- 
  I study interpretable human-AI interaction for computer vision and machine autonomy. I am also interested in understanding various human-centric properties of current AI models beyond their accuracy, such as <a href="http://cnnlocalization.csail.mit.edu/">explainability</a>, <a href="http://netdissect.csail.mit.edu/">interpretability</a>, <a href="https://genforce.github.io/higan/">steerability</a>, <a href="https://metadriverse.github.io/metadrive/">generalization</a>, and <a href="https://decisionforce.github.io/HACO/">safety</a>. Some of the earlier works I co-authored are <a href="http://cnnlocalization.csail.mit.edu/">Class Activation Mapping (CAM)</a>, <a href="http://places2.csail.mit.edu/">Places</a>, <a href="https://groups.csail.mit.edu/vision/datasets/ADE20K/">ADE20K</a>, <a href="http://netdissect.csail.mit.edu/">Network Dissection</a>. 
