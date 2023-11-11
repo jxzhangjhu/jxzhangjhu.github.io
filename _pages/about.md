@@ -1,6 +1,6 @@
 ---
 layout: aboutnew
-title: About
+title: about
 permalink: /
 subtitle: >
   <p>Staff Research Scientst<br>Intuit AI Research<br>Office: 2535 Garcia Ave Mountain View, CA, 94043</p>
