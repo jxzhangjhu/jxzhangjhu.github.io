@@ -20,6 +20,21 @@ Buttons:
 
 
 
+# NeurIPS 2023
+@inproceedings{zhang2023interactive,
+  title={Interactive Multi-fidelity Learning for Cost-effective Adaptation of Language Model with Sparse Human Supervision},
+  author={Zhang, Jiaxin and Li, Zhuohang and Das, Kamalika and Kumar, Sricharan},
+  booktitle={Advances in Neural Information Processing Systems},
+  year={2023},
+  abbr = {NeurIPS 2023},
+  arxiv = {2310.20153},
+  pdf = {https://arxiv.org/abs/2310.20153},
+  poster = {publications/NeurIPS2023_poster.pdf},
+  slides = {publications/Neurips2023_slides.pdf},
+  video = {https://recorder-v3.slideslive.com/?share=89213&s=fefbf7e9-d66b-4cfd-ad46-0b5779467504},
+  selected = {true},
+  abstract={Large language models (LLMs) have demonstrated remarkable capabilities in various tasks. However, their suitability for domain-specific tasks, is limited due to their immense scale at deployment, susceptibility to misinformation, and more importantly, high data annotation costs. We propose a novel Interactive Multi-Fidelity Learning (IMFL) framework for the cost-effective development of small domain-specific LMs under limited annotation budgets. Our approach formulates the domain-specific fine-tuning process as a multi-fidelity learning problem, focusing on identifying the optimal acquisition strategy that balances between low-fidelity automatic LLM annotations and high-fidelity human annotations to maximize model performance. We further propose an exploration-exploitation query strategy that enhances annotation diversity and informativeness, incorporating two innovative designs: 1) prompt retrieval that selects in-context examples from human-annotated samples to improve LLM annotation, and 2) variable batch size that controls the order for choosing each fidelity to facilitate knowledge distillation, ultimately enhancing annotation quality. Extensive experiments on financial and medical tasks demonstrate that IMFL achieves superior performance compared with single fidelity annotations. Given a limited budget of human annotation, IMFL significantly outperforms the human annotation baselines in all four tasks and achieves very close performance as human annotations on two of the tasks. These promising results suggest that the high human annotation costs in domain-specific tasks can be significantly reduced by employing IMFL, which utilizes fewer human annotations, supplemented with cheaper and faster LLM (e.g., GPT-3.5) annotations to achieve comparable performance.} 
+}
 
 
 
