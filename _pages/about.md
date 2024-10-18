@@ -28,14 +28,16 @@ Hi, there! I'm **Jiaxin**👋!.
 
 <!-- I am an AI Researcher at [Intuit AI Research](https://www.intuit.com/technology/), leading a research team working in Reliable and Robust AI.  -->
 
-🔭 I am a Senior Staff Research Scientist at [Intuit AI Research](https://www.intuit.com/technology/), leading a research team working in **Generative AI** (large language models, diffusion models, vision-language models), and **AI Reliability** (uncertainty, confidence, and robustness). Prior to this, I was a Research Staff in the Computer Science and Mathematics Division at [Oak Ridge National Laboratory](https://www.ornl.gov/), US Department of Energy ([DOE](https://www.energy.gov/)), where my research aims at accelerating *AI for Science* on supercomputers, such as [Summit](https://www.olcf.ornl.gov/summit/) and [Frontier](https://www.olcf.ornl.gov/frontier/). I received my Ph.D. from the [Johns Hopkins University](https://www.jhu.edu/) with an emphasis on [uncertainty quantification](https://jscholarship.library.jhu.edu/items/e16083fd-45c4-4ec1-936a-dff3e08e1382). 
+🔭 I am a Senior Staff Research Scientist at [Intuit AI Research](https://www.intuit.com/technology/), leading a research team specializing in **Generative AI** (including large language models, diffusion models, vision-language models), and **AI Reliability** (focusing on uncertainty, confidence, and robustness). Prior to this, I was a Research Staff in the Computer Science and Mathematics Division at [Oak Ridge National Laboratory](https://www.ornl.gov/) (ORNL) under the US Department of Energy ([DOE](https://www.energy.gov/)). My research at ORNL was dedicated to advancing *AI for Science* on state-of-the-art supercomputers, like [Summit](https://www.olcf.ornl.gov/summit/) and [Frontier](https://www.olcf.ornl.gov/frontier/). I received my Ph.D. from the [Johns Hopkins University](https://www.jhu.edu/) with an emphasis on [uncertainty quantification](https://jscholarship.library.jhu.edu/items/e16083fd-45c4-4ec1-936a-dff3e08e1382). 
 
 
 <!-- **Recent Research Interest:**   -->
 
-🤔 I am passionate about building reliable AI capability to assist humans in solving complex real-world problems at the intersection of language, vision, and science. My research interests mainly focus on AI **Reliability** and **Robustness**, **Uncertainty Quantification**, **LLM Alignement** and **Safety**, **Optimization**, and **AI4Science**. I have published over 50 (35+ first authors) top-tier AI conference and jounral papers, e.g., *NeurIPS, CVPR, EMNLP, AISTATS*, etc, and served as PC member of *ICML, ICLR*, and Area Chair of *ACL, EMNLP and NAACL*. 
+🤔 I am passionate about building reliable AI capability to assist humans in solving complex real-world challenges found at the convergence of language, vision, and science. My research concentrates on AI **Reliability** and **Robustness**, **Uncertainty Quantification**, **LLM Alignement** and **Safety**, **Optimization**, and **AI4Science**. I have authored over 50 papers, including 35+ as the first author, in leading AI conferences and journals such as *NeurIPS, CVPR, EMNLP, AISTATS*, and others. Additionally, I actively maintain several [GitHub](https://github.com/jxzhangjhu) repositories that have collectively garnered over 2,000 stars. 
 
-⚡ Some research highlights include: 
+<!-- served as PC member of *ICML, ICLR*, and Area Chair of *ACL, EMNLP and NAACL*.  -->
+
+⚡ **Research Highlights** 
 - [Hallucination Detection](https://arxiv.org/abs/2311.01740) and [Mitigation](https://arxiv.org/abs/2401.02132)
 - [Uncertainty Quantification](https://arxiv.org/abs/2403.02509) in LLMs
 - [Prompt Optimization](https://arxiv.org/abs/2402.11347) w/wo [Security and Safety Constraints](https://arxiv.org/abs/2410.09652)
@@ -46,7 +48,40 @@ Hi, there! I'm **Jiaxin**👋!.
 - LLM Alignment with Feedback (ongoing)
 
 
+👯 **Academic Service**
+- Area Chair: *ACL, EMNLP, NAACL*
+- Program Committee: *NeurIPS, ICML, ICLR, AAAI, AISTATS, ACL, EMNLP, NAACL, CVPR, ECCV, WACV, KDD, SDM*
+- Jounral Reviewer: *Transactions on Machine Learning Research (TMLR)*  
 
+
+🏆 **Awards**
+- CTO Award, Intuit, 2024
+- A2D Innovation Award, Intuit, 2024 
+- Promising Early‑Career Researcher Award, ORNL, 2020
+- NeurIPS Travel Award, 2019
+<!-- - Chinese Outstanding Students Abroad Award, CSC, 2019 -->
+- Acheson J. Duncan Graduate Research Award, Johns Hopkins, 2018
+- Dean's Fellowship, Johns Hopkins, 2014
+- National Scholarship of P.R. China, 2009, 2012
+
+✈️ **Conference Talks/Travels**
+
+- **Dec 2024**, NeurIPS @ Vancouver 🇨🇦
+- **Nov 2024**, EMNLP @ Miami 🇺🇸
+- **Jul 2024**, ICML @ Vienna 🇦🇹
+- **May 2024**, AISTATS @ Valencia 🇪🇸
+- **Jan 2024**, WACV @ Hawaii 🇺🇸
+- **Dec 2023**, NeurIPS @ New Orleans 🇺🇸
+- **Dec 2023**, EMNLP @ Singapore 🇸🇬
+- **Feb 2023**, AAAI @ WWashington DC 🇺🇸
+- **Jul 2022**, ICML @ Baltimore 🇺🇸
+- **Jun 2022**, CVPR @ New Orleans 🇺🇸
+- **🦠COVID🦠**, 😷... @ ...😷 
+- **Dec 2019**, NeurIPS @ Vancouver 🇨🇦
+
+
+
+<!-- https://github.com/ikatyang/emoji-cheat-sheet/blob/master/README.md#award-medal  emoij--> 
 
 
  <!-- My interest span multiple areas, including reliabile and robust AI, generative models (LLMs and diffusion models), uncertainty quantification, and AI for Science. -->
