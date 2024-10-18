@@ -20,24 +20,172 @@ Buttons:
 
 
 
-# NeurIPS 2023
-@inproceedings{zhang2023interactive,
-  title={Interactive Multi-fidelity Learning for Cost-effective Adaptation of Language Model with Sparse Human Supervision},
-  author={Zhang, Jiaxin and Li, Zhuohang and Das, Kamalika and Kumar, Sricharan},
-  booktitle={Advances in Neural Information Processing Systems},
-  year={2023},
-  abbr = {NeurIPS 2023},
-  arxiv = {2310.20153},
-  pdf = {https://arxiv.org/abs/2310.20153},
-  poster = {publications/NeurIPS2023_poster.pdf},
-  slides = {publications/Neurips2023_slides.pdf},
-  video = {https://recorder-v3.slideslive.com/?share=89213&s=fefbf7e9-d66b-4cfd-ad46-0b5779467504},
+# EMNLP 2024 - ski
+@inproceedings{zhang2024ski,
+  title={Synthetic Knowledge Ingestion: Towards Knowledge Refinement and Injection for Enhancing Large Language Models},
+  author={Zhang, Jiaxin and Cui, Wendi and Huang, Yiran and Das, Kamalika and Kumar, Sricharan},
+  booktitle={Proceedings of the 2024 Conference on Empirical Methods in Natural Language Processing},
+  year={2024},
+  abbr = {EMNLP 2024},
+  arxiv = {2410.09629},
+  pdf = {https://arxiv.org/pdf/2410.09629},
   selected = {true},
-  abstract={Large language models (LLMs) have demonstrated remarkable capabilities in various tasks. However, their suitability for domain-specific tasks, is limited due to their immense scale at deployment, susceptibility to misinformation, and more importantly, high data annotation costs. We propose a novel Interactive Multi-Fidelity Learning (IMFL) framework for the cost-effective development of small domain-specific LMs under limited annotation budgets. Our approach formulates the domain-specific fine-tuning process as a multi-fidelity learning problem, focusing on identifying the optimal acquisition strategy that balances between low-fidelity automatic LLM annotations and high-fidelity human annotations to maximize model performance. We further propose an exploration-exploitation query strategy that enhances annotation diversity and informativeness, incorporating two innovative designs: 1) prompt retrieval that selects in-context examples from human-annotated samples to improve LLM annotation, and 2) variable batch size that controls the order for choosing each fidelity to facilitate knowledge distillation, ultimately enhancing annotation quality. Extensive experiments on financial and medical tasks demonstrate that IMFL achieves superior performance compared with single fidelity annotations. Given a limited budget of human annotation, IMFL significantly outperforms the human annotation baselines in all four tasks and achieves very close performance as human annotations on two of the tasks. These promising results suggest that the high human annotation costs in domain-specific tasks can be significantly reduced by employing IMFL, which utilizes fewer human annotations, supplemented with cheaper and faster LLM (e.g., GPT-3.5) annotations to achieve comparable performance.} 
+  abstract={Large language models (LLMs) are proficient in capturing factual knowledge across various domains. However, refining their capabilities on previously seen knowledge or integrating new knowledge from external sources remains a significant challenge. In this work, we propose a novel synthetic knowledge ingestion method called Ski, which leverages fine-grained synthesis, interleaved generation, and assemble augmentation strategies to construct high-quality data representations from raw knowledge sources. We then integrate Ski and its variations with three knowledge injection techniques: Retrieval Augmented Generation (RAG), Supervised Fine-tuning (SFT), and Continual Pre-training (CPT) to inject and refine knowledge in language models. Extensive empirical experiments are conducted on various question-answering tasks spanning finance, biomedicine, and open-generation domains to demonstrate that Ski significantly outperforms baseline methods by facilitating effective knowledge injection. We believe that our work is an important step towards enhancing the factual accuracy of LLM outputs by refining knowledge representation and injection capabilities.} 
+}
+
+# EMNLP 2024 - ook
+@inproceedings{li2024ook,
+  title={Do You Know What You Are Talking About? Characterizing Query-Knowledge Relevance For Reliable Retrieval Augmented Generation},
+  author={Li, Zhuohang and Zhang, Jiaxin and Yan, Chao and Das, Kamalika and Kumar, Sricharan and Kantarcioglu, Murat and Malin, Bradley A},
+  booktitle={Proceedings of the 2024 Conference on Empirical Methods in Natural Language Processing},
+  year={2024},
+  abbr = {EMNLP 2024},
+  arxiv = {2410.08320},
+  pdf = {https://arxiv.org/pdf/2410.08320},
+  selected = {true},
+  abstract={Language models (LMs) are known to suffer from hallucinations and misinformation. Retrieval augmented generation (RAG) that retrieves verifiable information from an external knowledge corpus to complement the parametric knowledge in LMs provides a tangible solution to these problems. However, the generation quality of RAG is highly dependent on the relevance between a user's query and the retrieved documents. Inaccurate responses may be generated when the query is outside of the scope of knowledge represented in the external knowledge corpus or if the information in the corpus is out-of-date. In this work, we establish a statistical framework that assesses how well a query can be answered by an RAG system by capturing the relevance of knowledge. We introduce an online testing procedure that employs goodness-of-fit (GoF) tests to inspect the relevance of each user query to detect out-of-knowledge queries with low knowledge relevance. Additionally, we develop an offline testing framework that examines a collection of user queries, aiming to detect significant shifts in the query distribution which indicates the knowledge corpus is no longer sufficiently capable of supporting the interests of the users. We demonstrate the capabilities of these strategies through a systematic evaluation on eight question-answering (QA) datasets, the results of which indicate that the new testing framework is an efficient solution to enhance the reliability of existing RAG systems.} 
+}
+
+
+# EMNLP 2024 - hyqe
+@inproceedings{zhou2024hyqe,
+  title={HyQE: Ranking Contexts with Hypothetical Query Embeddings},
+  author={Zhou, Weichao and Zhang, Jiaxin and Hasson, Hilaf and Singh, Anu and Li, Wenchao},
+  booktitle={Proceedings of the 2024 Conference on Empirical Methods in Natural Language Processing},
+  year={2024},
+  abbr = {EMNLP 2024},
+  selected = {true},
+  abstract={In retrieval-augmented systems, context ranking techniques are commonly employed to reorder the retrieved contexts based on their relevance to a user query. A standard approach is to measure this relevance through the similarity between contexts and queries in the embedding space. However, such similarity often fails to capture the relevance. Alternatively, large language models (LLMs) have been used for ranking contexts. However, they can encounter scalability issues when the number of candidate contexts grows and the context window sizes of the LLMs remain constrained. Additionally, these approaches require fine-tuning LLMs with domain-specific data. In this work, we introduce a scalable ranking framework that combines embedding similarity and LLM capabilities without requiring LLM fine-tuning. Our framework uses a pre-trained LLM to hypothesize the user query based on the retrieved contexts and ranks the context based on the similarity between the hypothesized queries and the user query. Our framework is efficient at inference time and is compatible with many other retrieval and ranking techniques. Experimental results show that our method improves the ranking performance across multiple benchmarks.} 
+}
+
+
+# EMNLP 2024 - holistic evaluation
+@inproceedings{liu2024holis,
+  title={Holistic evaluation for interleaved text-and-image generation},
+  author={Liu, Minqian and Xu, Zhiyang and Lin, Zihao and Ashby, Trevor and Rimchala, Joy and Zhang, Jiaxin and Huang, Lifu},
+  booktitle={Proceedings of the 2024 Conference on Empirical Methods in Natural Language Processing},
+  year={2024},
+  abbr = {EMNLP 2024},
+  arxiv = {2406.14643},
+  pdf = {https://arxiv.org/pdf/2406.14643},
+  selected = {true},
+  code = {https://github.com/VT-NLP/InterleavedBench},
+  website = {https://vt-nlp.github.io/InterleavedEval/},
+  supp = {https://huggingface.co/mqliu/InterleavedBench},
+  abstract={Interleaved text-and-image generation has been an intriguing research direction, where the models are required to generate both images and text pieces in an arbitrary order. Despite the emerging advancements in interleaved generation, the progress in its evaluation still significantly lags behind. Existing evaluation benchmarks do not support arbitrarily interleaved images and text for both inputs and outputs, and they only cover a limited number of domains and use cases. Also, current works predominantly use similarity-based metrics which fall short in assessing the quality in open-ended scenarios. To this end, we introduce InterleavedBench, the first benchmark carefully curated for the evaluation of interleaved text-and-image generation. InterleavedBench features a rich array of tasks to cover diverse real-world use cases. In addition, we present InterleavedEval, a strong reference-free metric powered by GPT-4o to deliver accurate and explainable evaluation. We carefully define five essential evaluation aspects for InterleavedEval, including text quality, perceptual quality, image coherence, text-image coherence, and helpfulness, to ensure a comprehensive and fine-grained assessment. Through extensive experiments and rigorous human evaluation, we show that our benchmark and metric can effectively evaluate the existing models with a strong correlation with human judgments surpassing previous reference-based metrics. We also provide substantial findings and insights to foster future research in interleaved generation and its evaluation.} 
 }
 
 
 
+# EMNLP 2024 industry - sos
+@inproceedings{sinha2024sos,
+  title={Survival of the Safest: Towards Secure Prompt Optimization through Interleaved Multi-Objective Evolution},
+  author={Sinha, Ankita and Cui, Wendi and Das, Kamalika and Zhang, Jiaxin},
+  booktitle={Proceedings of the 2024 Conference on Empirical Methods in Natural Language Processing - Industry Track},
+  year={2024},
+  abbr = {EMNLP 2024},
+  arxiv = {2410.09652},
+  pdf = {https://arxiv.org/pdf/2410.09652},
+  selected = {true},
+  abstract={Large language models (LLMs) have demonstrated remarkable capabilities; however, the optimization of their prompts has historically prioritized performance metrics at the expense of crucial safety and security considerations. To overcome this shortcoming, we introduce "Survival of the Safest" (SoS), an innovative multi-objective prompt optimization framework that enhances both performance and security in LLMs simultaneously. SoS utilizes an interleaved multi-objective evolution strategy, integrating semantic, feedback, and crossover mutations to effectively traverse the prompt landscape. Differing from the computationally demanding Pareto front methods, SoS provides a scalable solution that expedites optimization in complex, high-dimensional discrete search spaces while keeping computational demands low. Our approach accommodates flexible weighting of objectives and generates a pool of optimized candidates, empowering users to select prompts that optimally meet their specific performance and security needs. Experimental evaluations across diverse benchmark datasets affirm SoS's efficacy in delivering high performance and notably enhancing safety and security compared to single-objective methods. This advancement marks a significant stride towards the deployment of LLM systems that are both high-performing and secure across varied industrial applications} 
+}
+
+# EMNLP 2024 industry - dcr
+@inproceedings{cui2024dcr,
+  title={DCR-Consistency: Divide-Conquer-Reasoning for Consistency Evaluation and Improvement of Large Language Models},
+  author={Cui, Wendi and Li, Zhuohang and Damien, Lopez and Das, Kamalika and Malin, Bradley and Kumar, Sricharan and Zhang, Jiaxin},
+  booktitle={Proceedings of the 2024 Conference on Empirical Methods in Natural Language Processing - Industry Track},
+  year={2024},
+  abbr = {EMNLP 2024},
+  arxiv = {2401.02132},
+  pdf = {https://arxiv.org/pdf/2401.02132},
+  code = {https://github.com/intuit-ai-research/DCR-consistency},
+  selected = {true},
+  abstract={Evaluating the quality and variability of text generated by Large Language Models (LLMs) poses a significant, yet unresolved research challenge. Traditional evaluation methods, such as ROUGE and BERTScore, which measure token similarity, often fail to capture the holistic semantic equivalence. This results in a low correlation with human judgments and intuition, which is especially problematic in high-stakes applications like healthcare and finance where reliability, safety, and robust decision-making are highly critical. This work proposes DCR, an automated framework for evaluating and improving the consistency of LLM-generated texts using a divide-conquer-reasoning approach. Unlike existing LLM-based evaluators that operate at the paragraph level, our method employs a divide-and-conquer evaluator (DCE) that breaks down the paragraph-to-paragraph comparison between two generated responses into individual sentence-to-paragraph comparisons, each evaluated based on predefined criteria. To facilitate this approach, we introduce an automatic metric converter (AMC) that translates the output from DCE into an interpretable numeric score. Beyond the consistency evaluation, we further present a reason-assisted improver (RAI) that leverages the analytical reasons with explanations identified by DCE to generate new responses aimed at reducing these inconsistencies. Through comprehensive and systematic empirical analysis, we show that our approach outperforms state-of-the-art methods by a large margin (e.g., +19.3% and +24.3% on the SummEval dataset) in evaluating the consistency of LLM generation across multiple benchmarks in semantic, factual, and summarization consistency tasks. Our approach also substantially reduces nearly 90% of output inconsistencies, showing promise for effective hallucination mitigation.} 
+}
+
+
+# EACL 2024 - SPUQ
+@inproceedings{gao2024spuq,
+  title={SPUQ: Perturbation-Based Uncertainty Quantification for Large Language Models},
+  author={Gao, Xiang and Zhang, Jiaxin and Mouatadid, Lalla and Das, Kamalika},
+  booktitle={Proceedings of the 18th Conference of the European Chapter of the Association for Computational Linguistics},
+  year={2024},
+  abbr = {EACL 2024},
+  arxiv = {2403.02509},
+  pdf = {https://arxiv.org/pdf/2403.02509},
+  code = {https://github.com/intuit-ai-research/SPUQ},
+  blog = {https://medium.com/intuit-engineering/intuit-presents-innovative-approach-to-quantifying-llm-uncertainty-at-eacl-2024-f839a8f1b89b},
+  selected = {true},
+  abstract={In recent years, large language models (LLMs) have become increasingly prevalent, offering remarkable text generation capabilities. However, a pressing challenge is their tendency to make confidently wrong predictions, highlighting the critical need for uncertainty quantification (UQ) in LLMs. While previous works have mainly focused on addressing aleatoric uncertainty, the full spectrum of uncertainties, including epistemic, remains inadequately explored. Motivated by this gap, we introduce a novel UQ method, sampling with perturbation for UQ (SPUQ), designed to tackle both aleatoric and epistemic uncertainties. The method entails generating a set of perturbations for LLM inputs, sampling outputs for each perturbation, and incorporating an aggregation module that generalizes the sampling uncertainty approach for text generation tasks. Through extensive experiments on various datasets, we investigated different perturbation and aggregation techniques. Our findings show a substantial improvement in model uncertainty calibration, with a reduction in Expected Calibration Error (ECE) by 50\% on average. Our findings suggest that our proposed UQ method offers promising steps toward enhancing the reliability and trustworthiness of LLMs.} 
+}
+
+# TMLR 2024 - phaseevo
+@article{cui2024phaseevo,
+  title={PhaseEvo: Towards Unified In-Context Prompt Optimization for Large Language Models},
+  author={Cui, Wendi and Zhang, Jiaxin and Li, Zhuohang and Sun, Hao and Lopez, Damien and Das, Kamalika and Malin, Bradley and Kumar, Sricharan},
+  year={2024},
+  abbr = {arXiv},
+  arxiv = {2402.11347},
+  pdf = {https://arxiv.org/pdf/2402.11347},
+  selected = {true},
+  abstract={Crafting an ideal prompt for Large Language Models (LLMs) is a challenging task that demands significant resources and expert human input. Existing work treats the optimization of prompt instruction and in-context learning examples as distinct problems, leading to sub-optimal prompt performance. This research addresses this limitation by establishing a unified in-context prompt optimization framework, which aims to achieve joint optimization of the prompt instruction and examples. However, formulating such optimization in the discrete and high-dimensional natural language space introduces challenges in terms of convergence and computational efficiency. To overcome these issues, we present PhaseEvo, an efficient automatic prompt optimization framework that combines the generative capability of LLMs with the global search proficiency of evolution algorithms. Our framework features a multi-phase design incorporating innovative LLM-based mutation operators to enhance search efficiency and accelerate convergence. We conduct an extensive evaluation of our approach across 35 benchmark tasks. The results demonstrate that PhaseEvo significantly outperforms the state-of-the-art baseline methods by a large margin whilst maintaining good efficiency.} 
+}
+
+# AISTATS 2024 - DDAR
+@inproceedings{zhang2024discriminant,
+  title={Discriminant Distance-Aware Representation on Deterministic Uncertainty Quantification Methods},
+  author={Zhang, Jiaxin and Das, Kamalika and Kumar, Sricharan},
+  booktitle={International Conference on Artificial Intelligence and Statistics},
+  abbr = {AISTATS 2024},
+  arxiv = {2402.12664},
+  pdf = {https://arxiv.org/pdf/2402.12664},
+  selected = {true},
+  abstract={Uncertainty estimation is a crucial aspect of deploying dependable deep learning models in safety-critical systems. In this study, we introduce a novel and efficient method for deterministic uncertainty estimation called Discriminant Distance-Awareness Representation (DDAR). Our approach involves constructing a DNN model that incorporates a set of prototypes in its latent representations, enabling us to analyze valuable feature information from the input data. By leveraging a distinction maximization layer over optimal trainable prototypes, DDAR can learn a discriminant distance-awareness representation. We demonstrate that DDAR overcomes feature collapse by relaxing the Lipschitz constraint that hinders the practicality of deterministic uncertainty methods (DUMs) architectures. Our experiments show that DDAR is a flexible and architecture-agnostic method that can be easily integrated as a pluggable layer with distance-sensitive metrics, outperforming state-of-the-art uncertainty estimation methods on multiple benchmark problems.} 
+}
+
+# WACV 2024
+@inproceedings{zhang2023robustness,
+  title={DECDM: Document Enhancement using Cycle-Consistent Diffusion Models},
+  author={Zhang, Jiaxin and Rimchala, Joy and Mouatadid, Lalla and Das, Kamalika and Kumar, Sricharan},
+  booktitle={IEEE/CVF Winter Conference on Applications of Computer Vision (WACV)},
+  year={2024},
+  abbr = {WACV 2024},
+  arxiv = {2311.09625},
+  pdf = {https://arxiv.org/pdf/2311.09625},
+  selected = {true},
+  blog = {https://medium.com/intuit-engineering/wacv-2024-intuit-ai-research-develops-end-to-end-method-for-document-enhancement-using-diffusion-a4e4a77b8e40},
+  abstract = {The performance of optical character recognition (OCR) heavily relies on document image quality, which is crucial for automatic document processing and document intelligence. However, most existing document enhancement methods require supervised data pairs, which raises concerns about data separation and privacy protection, and makes it challenging to adapt these methods to new domain pairs. To address these issues, we propose DECDM, an end-to-end document-level image translation method inspired by recent advances in diffusion models. Our method overcomes the limitations of paired training by independently training the source (noisy input) and target (clean output) models, making it possible to apply domain-specific diffusion models to other pairs. DECDM trains on one dataset at a time, eliminating the need to scan both datasets concurrently, and effectively preserving data privacy from the source or target domain. We also introduce simple data augmentation strategies to improve character-glyph conservation during translation. We compare DECDM with state-of-the-art methods on multiple synthetic data and benchmark datasets, such as document denoising and shadow removal, and demonstrate the superiority of performance quantitatively and qualitatively.}
+}
+
+
+# WACV 2024
+@inproceedings{zhang2023robustness,
+  title={On the Quantification of Image Reconstruction Uncertainty without Training Data},
+  author={Zhang, Jiaxin and Bi, Sirui and Fung, Victor},
+  booktitle={IEEE/CVF Winter Conference on Applications of Computer Vision (WACV)},
+  year={2024},
+  abbr = {WACV 2024},
+  arxiv = {2311.09639},
+  pdf = {https://arxiv.org/pdf/2311.09639},
+  selected = {true},
+  abstract = {Computational imaging plays a pivotal role in determining hidden information from sparse measurements. A robust inverse solver is crucial to fully characterize the uncertainty induced by these measurements, as it allows for the estimation of the complete posterior of unrecoverable targets. This, in turn, facilitates a probabilistic interpretation of observational data for decision-making. In this study, we propose a deep variational framework that leverages a deep generative model to learn an approximate posterior distribution to effectively quantify image reconstruction uncertainty without the need for training data. We parameterize the target posterior using a flow-based model and minimize their Kullback-Leibler (KL) divergence to achieve accurate uncertainty estimation. To bolster stability, we introduce a robust flow-based model with bi-directional regularization and enhance expressivity through gradient boosting. Additionally, we incorporate a space-filling design to achieve substantial variance reduction on both latent prior space and target posterior space. We validate our method on several benchmark tasks and two real-world applications, namely fastMRI and black hole image reconstruction. Our results indicate that our method provides reliable and high-quality image reconstruction with robust uncertainty estimation.}
+}
+
+# GLOCALFAIR 2024 - GLOCALFAIR
+@article{meerza2024glocalfair,
+  title={GLOCALFAIR: Jointly Improving Global and Local Group Fairness in Federated Learning},
+  author={Meerza, Syed Irfan Ali and Liu, Luyang and Zhang, Jiaxin and Liu, Jian},
+  year={2024},
+  abbr = {arXiv},
+  arxiv = {2401.03562},
+  pdf = {https://arxiv.org/pdf/2401.03562},
+  abstract={Federated learning (FL) has emerged as a prospective solution for collaboratively learning a shared model across clients without sacrificing their data privacy. However, the federated learned model tends to be biased against certain demographic groups (e.g., racial and gender groups) due to the inherent FL properties, such as data heterogeneity and party selection. Unlike centralized learning, mitigating bias in FL is particularly challenging as private training datasets and their sensitive attributes are typically not directly accessible. Most prior research in this field only focuses on global fairness while overlooking the local fairness of individual clients. Moreover, existing methods often require sensitive information about the client's local datasets to be shared, which is not desirable. To address these issues, we propose GLOCALFAIR, a client-server co-design fairness framework that can jointly improve global and local group fairness in FL without the need for sensitive statistics about the client's private datasets. Specifically, we utilize constrained optimization to enforce local fairness on the client side and adopt a fairness-aware clustering-based aggregation on the server to further ensure the global model fairness across different sensitive groups while maintaining high utility. Experiments on two image datasets and one tabular dataset with various state-of-the-art fairness baselines show that GLOCALFAIR can achieve enhanced fairness under both global and local data distributions while maintaining a good level of utility and client fairness.} 
+}
+
+
+# 2023 
+
 # NeurIPS 2023
 @inproceedings{zhang2023interactive,
   title={Interactive Multi-fidelity Learning for Cost-effective Adaptation of Language Model with Sparse Human Supervision},
@@ -46,10 +194,11 @@ Buttons:
   year={2023},
   abbr = {NeurIPS 2023},
   arxiv = {2310.20153},
-  pdf = {https://arxiv.org/abs/2310.20153},
+  pdf = {https://arxiv.org/pdf/2310.20153},
   poster = {publications/NeurIPS2023_poster.pdf},
   slides = {publications/Neurips2023_slides.pdf},
   video = {https://recorder-v3.slideslive.com/?share=89213&s=fefbf7e9-d66b-4cfd-ad46-0b5779467504},
+  blog = {https://medium.com/intuit-engineering/neurips-2023-intuit-ai-research-presents-interactive-framework-for-cost-effective-fine-tuning-of-8c1f6af5b87a},
   selected = {true},
   abstract={Large language models (LLMs) have demonstrated remarkable capabilities in various tasks. However, their suitability for domain-specific tasks, is limited due to their immense scale at deployment, susceptibility to misinformation, and more importantly, high data annotation costs. We propose a novel Interactive Multi-Fidelity Learning (IMFL) framework for the cost-effective development of small domain-specific LMs under limited annotation budgets. Our approach formulates the domain-specific fine-tuning process as a multi-fidelity learning problem, focusing on identifying the optimal acquisition strategy that balances between low-fidelity automatic LLM annotations and high-fidelity human annotations to maximize model performance. We further propose an exploration-exploitation query strategy that enhances annotation diversity and informativeness, incorporating two innovative designs: 1) prompt retrieval that selects in-context examples from human-annotated samples to improve LLM annotation, and 2) variable batch size that controls the order for choosing each fidelity to facilitate knowledge distillation, ultimately enhancing annotation quality. Extensive experiments on financial and medical tasks demonstrate that IMFL achieves superior performance compared with single fidelity annotations. Given a limited budget of human annotation, IMFL significantly outperforms the human annotation baselines in all four tasks and achieves very close performance as human annotations on two of the tasks. These promising results suggest that the high human annotation costs in domain-specific tasks can be significantly reduced by employing IMFL, which utilizes fewer human annotations, supplemented with cheaper and faster LLM (e.g., GPT-3.5) annotations to achieve comparable performance.} 
 }
@@ -62,35 +211,13 @@ Buttons:
   year={2023},
   abbr = {EMNLP 2023},
   arxiv = {2311.01740},
-  pdf = {https://arxiv.org/abs/2311.01740},
+  pdf = {https://arxiv.org/pdf/2311.01740},
   code = {https://github.com/intuit/sac3},
+  blog = {https://medium.com/intuit-engineering/intuit-ai-research-debuts-novel-approach-to-reliable-hallucination-detection-in-black-box-language-746d7f720c50},
   selected = {true},
-  abstract={Hallucination detection is a critical step toward understanding the trustworthiness of modern language models (LMs). To achieve this goal, we re-examine existing detection approaches based on the self-consistency of LMs and uncover two types of hallucinations resulting from 1) question-level and 2) model-level, which cannot be effectively identified through self-consistency check alone. Building upon this discovery, we propose a novel sampling-based method, i.e., semantic-aware cross-check consistency (SAC3) that expands on the principle of self-consistency checking. Our SAC3 approach incorporates additional mechanisms to detect both question-level and model-level hallucinations by leveraging advances including semantically equivalent question perturbation and cross-model response consistency checking. Through extensive and systematic empirical analysis, we demonstrate that SAC3 outperforms the state of the art in detecting both non-factual and factual statements across multiple question-answering and open-domain generation benchmarks.},
+  abstract={Hallucination detection is a critical step toward understanding the trustworthiness of modern language models (LMs). To achieve this goal, we re-examine existing detection approaches based on the self-consistency of LMs and uncover two types of hallucinations resulting from 1) question-level and 2) model-level, which cannot be effectively identified through self-consistency check alone. Building upon this discovery, we propose a novel sampling-based method, i.e., semantic-aware cross-check consistency (SAC3) that expands on the principle of self-consistency checking. Our SAC3 approach incorporates additional mechanisms to detect both question-level and model-level hallucinations by leveraging advances including semantically equivalent question perturbation and cross-model response consistency checking. Through extensive and systematic empirical analysis, we demonstrate that SAC3 outperforms the state of the art in detecting both non-factual and factual statements across multiple question-answering and open-domain generation benchmarks.}
 }
 
-
-# WACV 2024
-@inproceedings{zhang2023robustness,
-  title={DECDM: Document Enhancement using Cycle-Consistent Diffusion Models},
-  author={Zhang, Jiaxin and Rimchala, Joy and Mouatadid, Lalla and Das, Kamalika and Kumar, Sricharan},
-  booktitle={IEEE/CVF Winter Conference on Applications of Computer Vision (WACV)},
-  year={2024},
-  abbr = {WACV 2024},
-  selected = {true},
-  abstract = {The performance of optical character recognition (OCR) heavily relies on document image quality, which is crucial for automatic document processing and document intelligence. However, most existing document enhancement methods require supervised data pairs, which raises concerns about data separation and privacy protection, and makes it challenging to adapt these methods to new domain pairs. To address these issues, we propose DECDM, an end-to-end document-level image translation method inspired by recent advances in diffusion models. Our method overcomes the limitations of paired training by independently training the source (noisy input) and target (clean output) models, making it possible to apply domain-specific diffusion models to other pairs. DECDM trains on one dataset at a time, eliminating the need to scan both datasets concurrently, and effectively preserving data privacy from the source or target domain. We also introduce simple data augmentation strategies to improve character-glyph conservation during translation. We compare DECDM with state-of-the-art methods on multiple synthetic data and benchmark datasets, such as document denoising and shadow removal, and demonstrate the superiority of performance quantitatively and qualitatively.}
-}
-
-
-# WACV 2024
-@inproceedings{zhang2023robustness,
-  title={On the Quantification of Image Reconstruction Uncertainty without Training Data},
-  author={Zhang, Jiaxin and Bi, Sirui and Fung, Victor},
-  booktitle={IEEE/CVF Winter Conference on Applications of Computer Vision (WACV)},
-  year={2024},
-  abbr = {WACV 2024},
-  selected = {true},
-  abstract = {Computational imaging plays a pivotal role in determining hidden information from sparse measurements. A robust inverse solver is crucial to fully characterize the uncertainty induced by these measurements, as it allows for the estimation of the complete posterior of unrecoverable targets. This, in turn, facilitates a probabilistic interpretation of observational data for decision-making. In this study, we propose a deep variational framework that leverages a deep generative model to learn an approximate posterior distribution to effectively quantify image reconstruction uncertainty without the need for training data. We parameterize the target posterior using a flow-based model and minimize their Kullback-Leibler (KL) divergence to achieve accurate uncertainty estimation. To bolster stability, we introduce a robust flow-based model with bi-directional regularization and enhance expressivity through gradient boosting. Additionally, we incorporate a space-filling design to achieve substantial variance reduction on both latent prior space and target posterior space. We validate our method on several benchmark tasks and two real-world applications, namely fastMRI and black hole image reconstruction. Our results indicate that our method provides reliable and high-quality image reconstruction with robust uncertainty estimation.}
-}
 
 # ICLR 2023 workshop
 @inproceedings{zhang2023robustness,
@@ -99,7 +226,6 @@ Buttons:
   booktitle={ICLR 2023 Workshop on Trustworthy and Reliable Large-Scale Machine Learning Models},
   year={2023},
   abbr = {ICLR 2023},
-  selected = {true},
   pdf = {https://openreview.net/forum?id=fr8kurMWJIP},
   abstract = {Text-guided image editing is a rapidly growing field due to the development of large diffusion models. In this work, we present an effective approach to address the key step of real image editing, known as ``inversion", which involves finding the initial noise vector that reconstructs the input image when conditioned on a text prompt. Existing works on conditional inversion is often unstable and inaccurate, leading to distorted image manipulation. To address these challenges, our method starts by analyzing the inconsistent assumptions and accumulative errors that contribute to the ill-posedness of mathematical inverse problems. We then introduce learnable latent variables as bias correction to approximate invertible and bijective inversion. We perform latent trajectory optimization with a prior to fully invert the image by optimizing the bias correction on the unconditional text prompt and initial noise vector. Our method is based on the publicly Stable Diffusion model and is extensively evaluated on a variety of images and prompt editing, demonstrating high accuracy, robustness, and quality compared to state-of-the-art baseline approaches.}
 }
@@ -112,7 +238,6 @@ Buttons:
   year={2023},
   abbr = {NeurIPS 2023},
   pdf = {https://openreview.net/pdf?id=WcGXAxhC81},
-  selected = {true},
   poster = {publications/NeurIPS2023_poster_workshop.pdf},
   abstract ={Evaluating the quality and variability of text generated by Large Language Models (LLMs) poses a significant, yet unresolved research challenge. Traditional evaluation methods, such as ROUGE and BERTScore, which measure token similarity, often fail to capture the holistic semantic equivalence. This results in a low correlation with human judgments and intuition, which is especially problematic in high-stakes applications like healthcare and finance where reliability, safety, and robust decision-making are highly critical. This work proposes an automated framework for evaluating the consistency of LLM-generated texts using a divide-and-conquer strategy. Unlike existing LLM-based evaluators that operate at the paragraph level, our method employs a divide-and-conquer evaluator (DCE) that breaks down the comparison between two generated responses into individual sentences, each evaluated based on predefined criteria. To facilitate this approach, we introduce an automatic metric converter (AMC) that translates the output from DCE into an interpretable numeric score. Beyond the consistency evaluation, we further present a reason-assisted improver (RAI) that leverages the analytical reasons with explanations identified by DCE to generate new responses aimed at reducing these inconsistencies. Through comprehensive and systematic empirical analysis, we show that our approach outperforms state-of-the-art methods by a large margin (e.g., +19.3% and +24.3% on the SummEval dataset) in evaluating the consistency of LLM generation across multiple benchmarks in semantic, factual, and summarization consistency tasks. Our approach also substantially reduces nearly 90% output inconsistencies, showing promise for effective hallucination mitigation and reduction.}
 }
@@ -152,12 +277,28 @@ Buttons:
   author={Wang, Yu and Drgona, Jan and Zhang, Jiaxin and NS, Karthik Somayaji and Liu, Frank Y and Schram, Malachi and Li, Peng},
   journal={Proceedings of the AAAI Conference on Artificial Intelligence},
   year={2023},
-  pdf={https://openreview.net/pdf?id=GDUfz1phf06},
+  pdf={https://arxiv.org/pdf/2304.05135.pdf},
   selected={true},
   abbr={AAAI 2023},
+  arxiv = {2212.01016},
   abstract={Normalizing flows (NF) build upon invertible neural networks and have wide applications in probabilistic modeling. Currently, building a powerful yet computationally efficient flow model relies on empirical fine-tuning over a large design space. While introducing neural architecture search (NAS) to NF is desirable, the invertibility constraint of NF brings new challenges to existing NAS methods whose application is limited to unstructured neural networks. Developing efficient NAS methods specifically for NF remains an open problem. We present AutoNF, the first automated NF architectural optimization framework. First, we present a new mixture distribution formulation that allows efficient differentiable architecture search of flow models without violating the invertibility constraint. Second, under the new formulation, we convert the original NP-hard combinatorial NF architectural optimization problem to an unconstrained continuous relaxation admitting the discrete optimal architectural solution, circumventing the loss of optimality due to binarization in architectural optimization.   We evaluate AutoNF with various density estimation datasets and show its superior performance-cost trade-offs over a set of existing hand-crafted baselines.} 
 }
 
+
+# ACM Asia CCS 2023
+@inproceedings{cui2023recup,
+  title={RecUP-FL: Reconciling Utility and Privacy in Federated learning via User-configurable Privacy Defense},
+  author={Cui, Yue and Meerza, Syed Irfan Ali and Li, Zhuohang and Liu, Luyang and Zhang, Jiaxin and Liu, Jian},
+  booktitle={Proceedings of the 2023 ACM Asia Conference on Computer and Communications Security},
+  year={2023},
+  pdf={https://arxiv.org/pdf/2304.05135.pdf},
+  arxiv = {2304.05135},
+  abbr={ACM Asia CCS 2023},
+  abstract={Federated learning (FL) provides a variety of privacy advantages by allowing clients to collaboratively train a model without sharing their private data. However, recent studies have shown that private information can still be leaked through shared gradients. To further minimize the risk of privacy leakage, existing defenses usually require clients to locally modify their gradients (e.g., differential privacy) prior to sharing with the server. While these approaches are effective in certain cases, they regard the entire data as a single entity to protect, which usually comes at a large cost in model utility. In this paper, we seek to reconcile utility and privacy in FL by proposing a user-configurable privacy defense, RecUP-FL, that can better focus on the user-specified sensitive attributes while obtaining significant improvements in utility over traditional defenses. Moreover, we observe that existing inference attacks often rely on a machine learning model to extract the private information (e.g., attributes). We thus formulate such a privacy defense as an adversarial learning problem, where RecUP-FL generates slight perturbations that can be added to the gradients before sharing to fool adversary models. To improve the transferability to un-queryable black-box adversary models, inspired by the idea of meta-learning, RecUP-FL forms a model zoo containing a set of substitute models and iteratively alternates between simulations of the white-box and the black-box adversarial attack scenarios to generate perturbations. Extensive experiments on four datasets under various adversarial settings (both attribute inference attack and data reconstruction attack) show that RecUP-FL can meet user-specified privacy constraints over the sensitive attributes while significantly improving the model utility compared with state-of-the-art privacy defenses.} 
+}
+
+
+# 2022 
 
 @article{fung2022atomic,
   title={Atomic structure generation from reconstructing structural fingerprints},
@@ -197,7 +338,7 @@ Buttons:
   author={Liu, Xianglin and Zhang, Jiaxin and Pei, Zongrui},
   journal={Progress in Materials Science},
   pages={101018},
-  year={2022},
+  year={2023},
   publisher={Elsevier},
   abbr={AI4Science},
 }
@@ -492,7 +633,7 @@ Buttons:
   year={2020},
   booktitle={NeurIPS 2020 Workshop on Machine Learning for Engineering Modeling, Simulation, and Design},
   abbr = {NeurIPS Workshop},
-  pdf = {https://arxiv.org/abs/2011.14177}
+  pdf = {https://arxiv.org/pdf/2011.14177}
 }
 
 
