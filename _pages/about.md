@@ -73,10 +73,10 @@ Hi, there! I'm **Jiaxin**👋!.
 - **Jan 2024**, WACV @ Hawaii 🇺🇸
 - **Dec 2023**, NeurIPS @ New Orleans 🇺🇸
 - **Dec 2023**, EMNLP @ Singapore 🇸🇬
-- **Feb 2023**, AAAI @ WWashington DC 🇺🇸
+- **Feb 2023**, AAAI @ Washington DC 🇺🇸
 - **Jul 2022**, ICML @ Baltimore 🇺🇸
 - **Jun 2022**, CVPR @ New Orleans 🇺🇸
-- **🦠COVID🦠**, 😷... @ ...😷 
+- **🦠COVID🦠**, ... 😷 ... @ ... 😷 ... 
 - **Dec 2019**, NeurIPS @ Vancouver 🇨🇦
 
 
