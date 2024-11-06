@@ -28,7 +28,7 @@ Hi, there! I'm **Jiaxin**👋!.
 
 <!-- I am an AI Researcher at [Intuit AI Research](https://www.intuit.com/technology/), leading a research team working in Reliable and Robust AI.  -->
 
-🔭 I am a Senior Staff Research Scientist at [Intuit AI Research](https://www.intuit.com/technology/), leading a research team specializing in **Generative AI** (including large language models, diffusion models, vision-language models), and **AI Reliability** (focusing on uncertainty, confidence, and robustness). Prior to this, I was a Research Staff in the Computer Science and Mathematics Division at [Oak Ridge National Laboratory](https://www.ornl.gov/) (ORNL) under the US Department of Energy ([DOE](https://www.energy.gov/)). My research at ORNL was dedicated to advancing *AI for Science* on state-of-the-art supercomputers, like [Summit](https://www.olcf.ornl.gov/summit/) and [Frontier](https://www.olcf.ornl.gov/frontier/). I received my Ph.D. from the [Johns Hopkins University](https://www.jhu.edu/) with an emphasis on [uncertainty quantification](https://jscholarship.library.jhu.edu/items/e16083fd-45c4-4ec1-936a-dff3e08e1382). 
+🔭 I am an AI Senior Staff Research Scientist at [Intuit AI Research](https://www.intuit.com/technology/), leading a research team specializing in **Generative AI** (including large language models, diffusion models, vision-language models), and **AI Reliability** (focusing on uncertainty, confidence, and robustness). Prior to this, I was a Research Staff in the Computer Science and Mathematics Division at [Oak Ridge National Laboratory](https://www.ornl.gov/) (ORNL) under the US Department of Energy ([DOE](https://www.energy.gov/)). My research at ORNL was dedicated to advancing *AI for Science* on state-of-the-art supercomputers, like [Summit](https://www.olcf.ornl.gov/summit/) and [Frontier](https://www.olcf.ornl.gov/frontier/). I received my Ph.D. from the [Johns Hopkins University](https://www.jhu.edu/) with an emphasis on [uncertainty quantification](https://jscholarship.library.jhu.edu/items/e16083fd-45c4-4ec1-936a-dff3e08e1382). 
 
 
 <!-- **Recent Research Interest:**   -->
@@ -44,8 +44,9 @@ Hi, there! I'm **Jiaxin**👋!.
 - [Knowledge Injection](https://arxiv.org/abs/2410.09629) and [Reliable RAG](https://arxiv.org/abs/2410.08320)
 - [LLM Adaption and Fine-tuning](https://proceedings.neurips.cc/paper_files/paper/2023/hash/f6c1843f11d34312b11ec5ff9a10c5a6-Abstract-Conference.html) 
 - [Interleaved Text-and-Image Generation](https://arxiv.org/abs/2407.03604) and [Holistic Evaluation](https://arxiv.org/abs/2406.14643)  
-- Constrained Generation and Inferece-time Decoding (ongoing)
-- LLM Alignment with Feedback (ongoing)
+- [Constrained Generation and Inferece-time Decoding](https://jxzhangjhu.github.io/assets/pdf/publications/GAME.pdf)
+- LLM Alignment with Feedback
+- Thinking LLM and Reasoning
 
 
 👯 **Academic Service**
