@@ -15,15 +15,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: Setup Ruby
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: '3.2'
         bundler-cache: true
-    - name: Install deps
+        bundler: '2.4'
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y imagemagick
+    - name: Install npm dependencies
       run: |
         npm install -g mermaid.cli
+    - name: Install Jekyll dependencies
+      run: |
+        bundle install
     - name: Setup deploy options
       id: setup
       run: |
