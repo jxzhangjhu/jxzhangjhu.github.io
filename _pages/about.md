@@ -3,7 +3,7 @@ layout: aboutnew
 title: about
 permalink: /
 subtitle: >
-  <p>AI - Senior Staff Research Scientist<br>Intuit AI Research<br>Office: 2535 Garcia Ave Mountain View, CA, 94043</p>
+  <p>AI - Senior Staff Research Scientist<br>Salesforce<br>Office: 2535 Garcia Ave Mountain View, CA, 94043</p>
 
 profile:
   align: right
@@ -28,7 +28,7 @@ Hi, there! I'm **Jiaxin**👋!.
 
 <!-- I am an AI Researcher at [Intuit AI Research](https://www.intuit.com/technology/), leading a research team working in Reliable and Robust AI.  -->
 
-🔭 I am an AI Senior Staff Research Scientist at [Intuit AI Research](https://www.intuit.com/technology/), leading a research team specializing in **Generative AI** (including large language models, diffusion models, vision-language models), and **AI Reliability** (focusing on uncertainty, confidence, and robustness). Prior to this, I was a Research Staff in the Computer Science and Mathematics Division at [Oak Ridge National Laboratory](https://www.ornl.gov/) (ORNL) under the US Department of Energy ([DOE](https://www.energy.gov/)). My research at ORNL was dedicated to advancing *AI for Science* on state-of-the-art supercomputers, like [Summit](https://www.olcf.ornl.gov/summit/) and [Frontier](https://www.olcf.ornl.gov/frontier/). I received my Ph.D. from the [Johns Hopkins University](https://www.jhu.edu/) with an emphasis on [uncertainty quantification](https://jscholarship.library.jhu.edu/items/e16083fd-45c4-4ec1-936a-dff3e08e1382). 
+🔭 I am an AI Senior Staff Research Scientist at [Salesforce](https://www.salesforce.com/research/), leading a research team specializing in **Generative AI** (including large language models, diffusion models, vision-language models), and **AI Reliability** (focusing on uncertainty, confidence, and robustness). Prior to this, I was a Research Staff in the Computer Science and Mathematics Division at [Oak Ridge National Laboratory](https://www.ornl.gov/) (ORNL) under the US Department of Energy ([DOE](https://www.energy.gov/)). My research at ORNL was dedicated to advancing *AI for Science* on state-of-the-art supercomputers, like [Summit](https://www.olcf.ornl.gov/summit/) and [Frontier](https://www.olcf.ornl.gov/frontier/). I received my Ph.D. from the [Johns Hopkins University](https://www.jhu.edu/) with an emphasis on [uncertainty quantification](https://jscholarship.library.jhu.edu/items/e16083fd-45c4-4ec1-936a-dff3e08e1382). 
 
 
 <!-- **Recent Research Interest:**   -->
@@ -56,8 +56,8 @@ Hi, there! I'm **Jiaxin**👋!.
 
 
 🏆 **Awards**
-- CTO Award, Intuit, 2024
-- A2D Innovation Award, Intuit, 2024 
+- CTO Award, Salesforce, 2024
+- A2D Innovation Award, Salesforce, 2024 
 - Promising Early‑Career Researcher Award, ORNL, 2020
 - NeurIPS Travel Award, 2019
 <!-- - Chinese Outstanding Students Abroad Award, CSC, 2019 -->
