@@ -2,18 +2,20 @@
           <div class="news">
             {% if site.news != blank -%} 
             {%- assign news_size = site.news | size -%}
+            {%- assign news = site.news | reverse -%}
+            {% if site.news_limit %}
+            {% assign news_limit = site.news_limit %}
+            {% else %}
+            {% assign news_limit = news_size %}
+            {% endif %}
             <div class="table-responsive" {% if site.news_scrollable and news_size > 3 %}style="max-height: 10vw"{% endif %}>
-              <table class="table table-sm table-borderless">
-              {%- assign news = site.news | reverse -%}
-              {% if site.news_limit %}
-              {% assign news_limit = site.news_limit %}
-              {% else %}
-              {% assign news_limit = news_size %}
-              {% endif %}
-              {% for item in news limit: news_limit %} 
-                <tr>
-                  <th scope="row">{{ item.date | date: "%b %-d, %Y" }}</th>
-                  <td>
+              <table class="table table-sm table-borderless" id="news-table" style="margin-bottom: 0;">
+              {% assign count = 0 %}
+              {% for item in news %} 
+                {% if count < news_limit %}
+                <tr class="news-item-visible" style="line-height: 1.4;">
+                  <th scope="row" style="white-space: nowrap; padding-right: 15px; vertical-align: top; width: 80px;">{{ item.date | date: "%m/%Y" }}</th>
+                  <td style="padding-top: 0.3rem; padding-bottom: 0.3rem;">
                     {% if item.inline -%} 
                       {{ item.content | remove: '<p>' | remove: '</p>' | emojify }}
                     {%- else -%} 
@@ -21,9 +23,58 @@
                     {%- endif %} 
                   </td>
                 </tr>
+                {% assign count = count | plus: 1 %}
+                {% else %}
+                <tr class="news-item-hidden" style="display: none; line-height: 1.4;">
+                  <th scope="row" style="white-space: nowrap; padding-right: 15px; vertical-align: top; width: 80px;">{{ item.date | date: "%m/%Y" }}</th>
+                  <td style="padding-top: 0.3rem; padding-bottom: 0.3rem;">
+                    {% if item.inline -%} 
+                      {{ item.content | remove: '<p>' | remove: '</p>' | emojify }}
+                    {%- else -%} 
+                      <a class="news-title" href="{{ item.url | relative_url }}">{{ item.title }}</a>
+                    {%- endif %} 
+                  </td>
+                </tr>
+                {% endif %}
               {%- endfor %} 
+              {% if news_size > news_limit %}
+              {% assign remaining_count = news_size | minus: news_limit %}
+              <tr>
+                <td colspan="2" style="text-align: center; padding-top: 15px;">
+                  <button id="show-more-news" class="btn btn-sm btn-outline-primary" onclick="toggleNews()">Show all ({{ remaining_count }} more)</button>
+                  <button id="show-less-news" class="btn btn-sm btn-outline-primary" onclick="toggleNews()" style="display: none;">Show less</button>
+                </td>
+              </tr>
+              {% endif %}
               </table>
             </div>
+            <script>
+            function toggleNews() {
+              var hiddenItems = document.querySelectorAll('.news-item-hidden');
+              var showMoreBtn = document.getElementById('show-more-news');
+              var showLessBtn = document.getElementById('show-less-news');
+              
+              if (hiddenItems.length === 0) return;
+              
+              var isHidden = hiddenItems[0].style.display === 'none' || hiddenItems[0].style.display === '';
+              
+              if (isHidden) {
+                // Show all hidden items
+                hiddenItems.forEach(function(item) {
+                  item.style.display = '';
+                });
+                if (showMoreBtn) showMoreBtn.style.display = 'none';
+                if (showLessBtn) showLessBtn.style.display = '';
+              } else {
+                // Hide items
+                hiddenItems.forEach(function(item) {
+                  item.style.display = 'none';
+                });
+                if (showMoreBtn) showMoreBtn.style.display = '';
+                if (showLessBtn) showLessBtn.style.display = 'none';
+              }
+            }
+            </script>
           {%- else -%} 
             <p>No news so far...</p>
           {%- endif %} 

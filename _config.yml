@@ -174,7 +174,7 @@ collections:
     permalink: /projects/:path/
 
 # news_scrollable: true # adds a vertical scroll bar if there are more than 3 news items
-news_limit: 20 # leave blank to include all the news in the `_news` folder
+news_limit: 10 # leave blank to include all the news in the `_news` folder
 
 # -----------------------------------------------------------------------------
 # Jekyll settings
@@ -200,6 +200,7 @@ exclude:
   - Gemfile
   - Gemfile.lock
   - vendor
+  - backup
 keep_files:
   - CNAME
   - .nojekyll
@@ -233,8 +234,7 @@ defaults:
 
 jekyll-minifier:
   exclude: ['robots.txt']
-  uglifier_args:
-    harmony: true
+  # harmony option is deprecated in newer versions of uglifier
 
 # -----------------------------------------------------------------------------
 # Jekyll Archives

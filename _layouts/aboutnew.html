@@ -32,13 +32,14 @@ layout: default
 
     <!-- News -->
     {% if page.news -%}
-      <h2><a href="{{ '/news/' | relative_url }}" style="color: inherit;">news</a></h2>
+      <h2 style="font-size: 1.3rem; margin-top: 2.5rem; margin-bottom: 1rem; font-weight: bold;"><a href="{{ '/news/' | relative_url }}" style="color: inherit;">News & Updates</a></h2>
       {%- include news.html %}
     {%- endif %}
 
     <!-- Selected papers -->
     {% if page.selected_papers -%}
-      <h2><a href="{{ '/publications/' | relative_url }}" style="color: inherit;">selected publications</a></h2>
+      <h2 style="font-size: 1.3rem; margin-top: 2.5rem; margin-bottom: 0.5rem; font-weight: bold;"><a href="{{ '/publications/' | relative_url }}" style="color: inherit;">Selected Publications</a></h2>
+      <p style="margin-top: 0; margin-bottom: 1rem; font-size: 0.9rem;">(Full publication list can be found on <a href="https://scholar.google.com/citations?user=LiDm8jEAAAAJ&hl=en" target="_blank">Google Scholar</a>)</p>
       {%- include selected_papers.html %}
     {%- endif %}
 

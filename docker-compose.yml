@@ -6,7 +6,7 @@ services:
     platform: linux/amd64
     container_name: jxzhangjhu
     command: bash -c "
-      rm -f Gemfile.lock
+      bundle install
       && bundler exec jekyll serve --watch --port=8080 --host=0.0.0.0 --livereload --verbose --trace"
     ports:
       - 8080:8080
