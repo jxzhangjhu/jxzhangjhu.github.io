@@ -467,6 +467,11 @@ footer.sticky-bottom {
 
 .publications {
   margin-top: 2rem;
+  width: 100%;
+  max-width: 100%;
+  .container {
+    max-width: 100%;
+  }
   h1 {
     color: var(--global-theme-color);
     font-size: 2rem;
@@ -494,7 +499,7 @@ footer.sticky-bottom {
     margin-top: 0;
 
     li {
-      margin-bottom: 1rem;
+      margin-bottom: 0.5rem;
       .preview {
         width: 100%;
         min-width: 80px;
@@ -522,8 +527,18 @@ footer.sticky-bottom {
       }
       .title {
         font-weight: bolder;
+        margin-bottom: 0.2rem;
+        a, span {
+          color: #2698BA !important;
+          text-decoration: none;
+        }
+        a:hover {
+          color: #1e7a96 !important;
+          text-decoration: underline;
+        }
       }
       .author {
+        margin-bottom: 0.2rem;
         a {
           border-bottom: 1px dashed var(--global-theme-color);
           &:hover {
@@ -545,7 +560,13 @@ footer.sticky-bottom {
           }
         }
       }
+      .periodical {
+        margin-bottom: 0.2rem;
+        font-size: 0.9rem;
+      }
       .links {
+        margin-top: 0.3rem;
+        margin-bottom: 0;
         a.btn {
           color: var(--global-text-color);
           border: 1px solid var(--global-text-color);
@@ -553,6 +574,7 @@ footer.sticky-bottom {
           padding-right: 1rem;
           padding-top: 0.25rem;
           padding-bottom: 0.25rem;
+          margin-right: 0.3rem;
           &:hover {
             color: var(--global-theme-color);
             border-color: var(--global-theme-color);

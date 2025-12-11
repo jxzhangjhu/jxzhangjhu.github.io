@@ -20,6 +20,165 @@ Buttons:
 
 
 
+# 2025 Papers
+
+# arXiv - Nudging the Boundaries of LLM Reasoning
+@article{chen2025nudging,
+  title={Nudging the Boundaries of LLM Reasoning},
+  author={Chen, Justin Chih-Yao and Peng, Becky Xiangyu and Choubey, Prafulla Kumar and Huang, Kung-Hsiang and Zhang, Jiaxin and Bansal, Mohit and Wu, Chien-Sheng},
+  abbr = {arXiv},
+  arxiv = {2509.25666},
+  pdf = {https://arxiv.org/pdf/2509.25666.pdf},
+  code = {https://github.com/SalesforceAIResearch/NuRL},
+  category = {Reasoning},
+  selected = {true},
+  abstract={Large language models (LLMs) have shown remarkable capabilities in reasoning tasks, yet they often struggle with complex multi-step problems. In this work, we propose NuRL (Nudging the Boundaries of LLM Reasoning), a novel approach that enhances LLM reasoning through strategic hint injection and self-improvement. Our method introduces a two-stage training framework: first, we use Group Relative Policy Optimization (GRPO) to improve base reasoning capabilities, then we apply self-generated or GPT-generated hints to guide reasoning trajectories. NuRL dynamically injects hints for samples where all rollouts fail, enabling the model to learn from its mistakes and improve reasoning quality. We evaluate our approach on multiple benchmarks including MATH-500, MATH-Hard, AIME24, MMLU-Pro, GPQA, and Date, demonstrating significant improvements in reasoning accuracy across different model sizes and architectures.} 
+}
+
+# arXiv - MMPersuade
+@article{qiu2025mmpersuade,
+  title={MMPersuade: A Dataset and Evaluation Framework for Multimodal Persuasion},
+  author={Qiu, Haoyi and Zhou, Yilun and Venkit, Pranav Narayanan and Huang, Kung-Hsiang and Zhang, Jiaxin and Peng, Nanyun and Wu, Chien-Sheng},
+  abbr = {arXiv},
+  arxiv = {2510.22768},
+  pdf = {https://arxiv.org/pdf/2510.22768.pdf},
+  category = {Multimodality & Vision},
+  selected = {true},
+  abstract={As large vision-language models (LVLMs) are increasingly deployed in domains like shopping, health, and news, they encounter substantial persuasive content. A critical question is how and why these models, as persuadees, are influenced by multimodal inputs. Understanding their susceptibility to persuasion and the effectiveness of different persuasive strategies is crucial, as overly persuadable models may adopt misleading beliefs, ignore user preferences, or generate unethical or unsafe outputs when exposed to manipulative information. We introduce MMPersuade, a unified framework for systematically studying multimodal persuasion dynamics in LVLMs. MMPersuade provides (i) a comprehensive multimodal dataset pairing images and videos with established persuasion principles, covering commercial, subjective, behavioral, and adversarial scenarios; and (ii) an evaluation framework that quantifies persuasion effectiveness and model susceptibility through third-party consistency scores and self-estimated token probabilities from conversation history. Our study of six leading LVLMs as persuadees yields three key insights: (i) multimodal inputs significantly increase persuasion effectiveness and model susceptibility compared to text-only, especially in misinformation scenarios; (ii) stated prior preferences reduce susceptibility, but multimodal information maintains its persuasive advantage; and (iii) different strategies vary in effectiveness across scenarios, with reciprocity most effective in commercial and subjective scenarios, while credibility and logic dominate in adversarial scenarios. By jointly analyzing persuasion effectiveness and susceptibility, MMPersuade provides a principled foundation for developing models that are robust, consistent, and ethically aligned when handling persuasive multimodal content.} 
+}
+
+# arXiv - LaTtE-Flow
+@article{shen2025latteflow,
+  title={LaTtE-Flow: Layerwise Timestep-Expert Flow-based Transformer},
+  author={Shen, Ying and Xu, Zhiyang and Chen, Jiuhai and Diao, Shizhe and Zhang, Jiaxin and Yao, Yuguang and Rimchala, Joy and Lourentzou, Ismini and Huang, Lifu},
+  abbr = {arXiv},
+  arxiv = {2506.06952},
+  pdf = {https://arxiv.org/pdf/2506.06952.pdf},
+  category = {Multimodality & Vision},
+  selected = {true},
+  abstract={Recent advances in multimodal foundation models have unified image understanding and generation, opening exciting pathways for handling a wide range of vision-language tasks within a single framework. Despite progress, existing unified models typically require extensive pretraining and struggle to match the performance of models specialized for each task. Additionally, many of these models exhibit slow image generation speeds, limiting their practical applications in real-time or resource-constrained environments. In this work, we propose LaTtE-Flow, a novel and efficient architecture that unifies image understanding and generation in a single multimodal model. LaTtE-Flow builds upon strong pretrained vision-language models (VLMs), inheriting powerful multimodal understanding capabilities, and extends these capabilities through a novel layerwise timestep-expert flow-based architecture for efficient image generation. LaTtE-Flow distributes the flow matching process across specialized transformer layer groups, with each group responsible for different timestep subsets. This design significantly improves sampling efficiency by activating only a small number of layers at each sampling timestep. To further enhance performance, we propose a timestep-conditioned residual attention mechanism for efficient information reuse across layers. Experiments demonstrate that LaTtE-Flow excels in multimodal understanding tasks while maintaining competitive image generation quality, with inference speed approximately 6x faster than recent unified multimodal models.} 
+}
+
+# EMNLP 2025 - R2I-Bench
+@inproceedings{chen2025r2ibench,
+  title={R2I-Bench: Benchmarking Reasoning-Driven Text-to-Image Generation},
+  author={Chen, Kaijie and Lin, Zihao and Xu, Zhiyang and Shen, Ying and Yao, Yuguang and Rimchala, Joy and Zhang, Jiaxin and Huang, Lifu},
+  booktitle={Proceedings of the 2025 Conference on Empirical Methods in Natural Language Processing},
+  year={2025},
+  abbr = {EMNLP 2025},
+  oral = {true},
+  arxiv = {2505.23493},
+  pdf = {https://arxiv.org/pdf/2505.23493.pdf},
+  code = {https://github.com/PLUM-Lab/R2I-Bench},
+  website = {https://r2i-bench.github.io/},
+  category = {Reasoning, Multimodality & Vision},
+  highlight = {Outstanding Paper Nomination},
+  selected = {true},
+  abstract={Reasoning is a fundamental capability often required in real-world text-to-image (T2I) generation, e.g., generating a bitten apple that has been left in the air for more than a week necessitates understanding temporal decay and commonsense concepts. While recent T2I models have made impressive progress in producing photorealistic images, their reasoning capability remains underdeveloped and insufficiently evaluated. To bridge this gap, we introduce LogoR2I-Bench, a comprehensive benchmark specifically designed to rigorously assess reasoning-driven T2I generation. LogoR2I-Bench comprises 3,068 meticulously curated data instances, spanning 7 core reasoning categories, including commonsense, mathematical, logical, compositional, numerical, causal, and concept mixing. To facilitate fine-grained evaluation, we design LogoR2I-Score, a QA-style metric based on instance-specific, reasoning-oriented evaluation questions that assess three critical dimensions: text-image alignment, reasoning accuracy, and image quality. Extensive experiments with 16 representative T2I models, including a strong pipeline-based framework that decouples reasoning and generation using the state-of-the-art language and image generation models, demonstrate consistently limited reasoning performance, highlighting the need for more robust, reasoning-aware architectures in the next generation of T2I systems.} 
+}
+
+# EMNLP 2025 - Towards statistical factuality guarantee
+@inproceedings{li2025statistical,
+  title={Towards Statistical Factuality Guarantee For Large Vision-Language Models},
+  author={Li, Zhuohang and Yan, Chao and Jackson, Nicholas J and Cui, Wendi and Li, Bo and Zhang, Jiaxin and Malin, Bradley A},
+  booktitle={Proceedings of the 2025 Conference on Empirical Methods in Natural Language Processing},
+  year={2025},
+  abbr = {EMNLP 2025},
+  arxiv = {2502.20560},
+  pdf = {https://arxiv.org/pdf/2502.20560.pdf},
+  category = {Reliability & Safety, Multimodality & Vision},
+  selected = {true},
+  abstract={Advancements in Large Vision-Language Models (LVLMs) have demonstrated promising performance in a variety of vision-language tasks involving image-conditioned free-form text generation. However, growing concerns about hallucinations in LVLMs, where the generated text is inconsistent with the visual context, are becoming a major impediment to deploying these models in applications that demand guaranteed reliability. In this paper, we introduce a framework to address this challenge, ConfLVLM, which is grounded on conformal prediction to achieve finite-sample distribution-free statistical guarantees on the factuality of LVLM output. This framework treats an LVLM as a hypothesis generator, where each generated text detail (or claim) is considered an individual hypothesis. It then applies a statistical hypothesis testing procedure to verify each claim using efficient heuristic uncertainty measures to filter out unreliable claims before returning any responses to users. We conduct extensive experiments covering three representative application domains, including general scene understanding, medical radiology report generation, and document understanding. Remarkably, ConfLVLM reduces the error rate of claims generated by LLaVa-1.5 for scene descriptions from 87.8\% to 10.0\% by filtering out erroneous claims with a 95.3\% true positive rate. Our results further demonstrate that ConfLVLM is highly flexible, and can be applied to any black-box LVLMs paired with any uncertainty measure for any image-conditioned free-form text generation task while providing a rigorous guarantee on controlling the risk of hallucination.} 
+}
+
+# EMNLP 2025 - Confidence-Aware Reasoning
+@inproceedings{zhang2025confidence,
+  title={Confidence-Aware Reasoning: Optimizing Self-Guided Thinking Trajectories in Large Reasoning Models},
+  author={Zhang, Jiaxin},
+  booktitle={Proceedings of the 2025 Conference on Empirical Methods in Natural Language Processing: Industry Track},
+  year={2025},
+  abbr = {EMNLP 2025},
+  pdf = {https://aclanthology.org/2025.emnlp-industry.146.pdf},
+  category = {Reasoning, Reliability & Safety},
+  selected = {true},
+  abstract={Chain-of-thought enables large reasoning models (LRMs) to reason through multi-step problems but often leads to unnecessarily long or redundant reasoning traces, a phenomenon known as overthinking. This results in inflated inference costs and potential degradation in answer quality. To address these challenges, we propose Confidence-Aware Reasoning (), an inference-time framework that optimizes reasoning trajectories by selectively pruning low-utility reasoning blocks and halting early when sufficient confidence has been achieved. is theoretically grounded in Bayesian optimal experimental design, treating each reasoning block as a sequential decision whose utility is approximated by its marginal contribution to reducing final answer uncertainty. We introduce a lightweight implementation that leverages token-level confidence to dynamically modulate reasoning depth without additional supervision. Evaluations on multiple benchmarks, including AMC, AIME, GPQA-Diamond, and MATH-500 show that improves answer accuracy by up to +13.3%, while reducing average reasoning length by 40%–50%. Our findings demonstrate that information-theoretic insights can effectively control self-guided reasoning and enable LRMs to "think just enough" at test time.} 
+}
+
+# ACL 2025 - SEE
+@inproceedings{cui2025see,
+  title={SEE: Strategic Exploration and Exploitation for Cohesive In-Context Prompt Optimization},
+  author={Cui, Wendi and Li, Zhuohang and Sun, Hao and Lopez, Damien and Das, Kamalika and Malin, Bradley A and Kumar, Sricharan and Zhang, Jiaxin},
+  booktitle={Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics},
+  year={2025},
+  abbr = {ACL 2025},
+  arxiv = {2402.11347},
+  pdf = {https://arxiv.org/pdf/2402.11347.pdf},
+  blog = {https://www.linkedin.com/posts/shahules_ensuring-that-an-llm-judge-aligns-with-human-activity-7292247994014277632-RW5U/},
+  category = {Optimization},
+  selected = {true},
+  abstract={Designing optimal prompts for Large Language Models (LLMs) is a complicated and resource-intensive task, often requiring substantial human expertise and effort. Existing approaches typically separate the optimization of prompt instructions and in-context learning examples, leading to incohesive prompts that are defined and represented by suboptimal task performance. To overcome these challenges, we propose a novel Cohesive In-Context Prompt Optimization framework that refines both prompt instructions and examples. However, formulating such an optimization in the discrete and high-dimensional space of natural language poses significant challenges in both convergence and computational efficiency. To address these issues, we introduce SEE, a scalable and efficient prompt optimization framework that adopts metaheuristic optimization principles and strategically balances exploration and exploitation to enhance optimization performance and achieve efficient convergence. SEE features a quad-phased design that alternates between global traversal (exploration) and local optimization (exploitation) and adaptively chooses LLM operators during the optimization process. We have conducted a comprehensive evaluation across 35 benchmark tasks, and SEE significantly outperforms state-of-the-art baseline methods by a large margin, achieving an average performance gain of 13.94 while reducing computational costs by 58.67\%.} 
+}
+
+# ACL 2025 - Automatic Prompt Optimization via Heuristic Search
+@inproceedings{cui2025automatic,
+  title={Automatic Prompt Optimization via Heuristic Search: A Survey},
+  author={Cui, Wendi and Li, Zhuohang and Sun, Hao and Lopez, Damien and Das, Kamalika and Malin, Bradley A and Kumar, Sricharan and Zhang, Jiaxin},
+  booktitle={Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics},
+  year={2025},
+  abbr = {ACL 2025},
+  arxiv = {2502.18746},
+  pdf = {https://arxiv.org/pdf/2502.18746.pdf},
+  category = {Optimization},
+  selected = {true},
+  abstract={Recent advances in Large Language Models have led to remarkable achievements across a variety of Natural Language Processing tasks, making prompt engineering increasingly central to guiding model outputs. While manual methods can be effective, they typically rely on intuition and do not automatically refine prompts over time. In contrast, automatic prompt optimization employing heuristic-based search algorithms can systematically explore and improve prompts with minimal human oversight. This survey proposes a comprehensive taxonomy of these methods, categorizing them by where optimization occurs, what is optimized, what criteria drive the optimization, which operators generate new prompts, and which iterative search algorithms are applied. We further highlight specialized datasets and tools that support and accelerate automated prompt refinement. We conclude by discussing key open challenges pointing toward future opportunities for more robust and versatile LLM applications.} 
+}
+
+# ICLR 2025 - Modality-Specialized Synergizers
+@inproceedings{xu2025modality,
+  title={Modality-Specialized Synergizers for Interleaved Vision-Language Generalists},
+  author={Xu, Zhiyang and Liu, Minqian and Shen, Ying and Rimchala, Joy and Zhang, Jiaxin and Wang, Qifan and Cheng, Yu and Huang, Lifu},
+  booktitle={International Conference on Learning Representations},
+  year={2025},
+  abbr = {ICLR 2025},
+  arxiv = {2407.03604},
+  pdf = {https://arxiv.org/pdf/2407.03604.pdf},
+  category = {Multimodality & Vision},
+  selected = {true},
+  abstract={Recent advancements in Vision-Language Models (VLMs) have led to the emergence of Vision-Language Generalists (VLGs) capable of understanding and generating both text and images. However, seamlessly generating an arbitrary sequence of text and images remains a challenging task for the current VLGs. One primary limitation lies in applying a unified architecture and the same set of parameters to simultaneously model discrete text tokens and continuous image features. Recent works attempt to tackle this fundamental problem by introducing modality-aware expert models. However, they employ identical architectures to process both text and images, disregarding the intrinsic inductive biases in these two modalities. In this work, we introduce MODALITY-SPECIALIZED SYNERGIZERS (MOSS), a novel design that efficiently optimizes existing unified architectures of VLGs with modality-specialized adaptation layers, i.e., a Convolutional LoRA for modeling the local priors of image patches and a Linear LoRA for processing sequential text. This design enables more effective modeling of modality-specific features while maintaining the strong cross-modal integration gained from pretraining. In addition, to improve the instruction-following capability on interleaved text-and-image generation, we introduce LEAFINSTRUCT, the first open-sourced interleaved instruction tuning dataset comprising 184,982 high-quality instances on more than 10 diverse domains. Extensive experiments show that VLGs integrated with M OSS achieve state-of-the-art performance, significantly surpassing baseline VLGs in complex interleaved generation tasks. Furthermore, our method exhibits strong generalizability on different VLGs.} 
+}
+
+# NAACL 2025 - Gradient-guided Attention Map Editing
+@inproceedings{wang2025gradient,
+  title={Gradient-guided Attention Map Editing: Towards Efficient Contextual Hallucination Mitigation},
+  author={Wang, Yu and Das, Kamalika and Gao, Xiang and Cui, Wendi and Li, Peng and Zhang, Jiaxin},
+  booktitle={Proceedings of the 2025 Conference of the North American Chapter of the Association for Computational Linguistics},
+  year={2025},
+  abbr = {NAACL 2025},
+  arxiv = {2503.08963},
+  pdf = {https://arxiv.org/pdf/2503.08963.pdf},
+  category = {Reliability & Safety, Hallucination},
+  selected = {true},
+  abstract={In tasks like summarization and open-book question answering (QA), Large Language Models (LLMs) often encounter "contextual hallucination", where they produce irrelevant or incorrect responses despite having access to accurate source information. This typically occurs because these models tend to prioritize self-generated content over the input context, causing them to disregard pertinent details. To address this challenge, we introduce a novel method called "Guided Attention Map Editing" (GAME), which dynamically adjusts attention maps to improve contextual relevance. During inference, GAME employs a trained classifier to identify attention maps prone to inducing hallucinations and executes targeted interventions. These interventions, guided by gradient-informed "edit directions", strategically redistribute attention weights across various heads to effectively reduce hallucination. Comprehensive evaluations on challenging summarization and open-book QA tasks show that GAME consistently reduces hallucinations across a variety of open-source models. Specifically, GAME reduces hallucinations by 10\% in the XSum summarization task while achieving a 7X speed-up in computational efficiency compared to the state-of-the-art baselines.} 
+}
+
+# EMNLP 2024 - Divide-Conquer-Reasoning (updated from industry track)
+@inproceedings{cui2024dcrfull,
+  title={Divide-Conquer-Reasoning for Consistency Evaluation and Automatic Improvement of Large Language Models},
+  author={Cui, Wendi and Li, Zhuohang and Lopez, Damien and Das, Kamalika and Malin, Bradley and Kumar, Sricharan and Zhang, Jiaxin},
+  booktitle={Proceedings of the 2024 Conference on Empirical Methods in Natural Language Processing: Industry Track},
+  year={2024},
+  abbr = {EMNLP 2024},
+  oral = {true},
+  arxiv = {2401.02132},
+  pdf = {https://arxiv.org/pdf/2401.02132.pdf},
+  code = {https://github.com/intuit-ai-research/DCR-consistency},
+  category = {Reliability & Safety, Hallucination},
+  selected = {true},
+  abstract={Evaluating the quality and variability of text generated by Large Language Models (LLMs) poses a significant, yet unresolved research challenge. Traditional evaluation methods, such as ROUGE and BERTScore, which measure token similarity, often fail to capture the holistic semantic equivalence. This results in a low correlation with human judgments and intuition, which is especially problematic in high-stakes applications like healthcare and finance where reliability, safety, and robust decision-making are highly critical. This work proposes DCR, an automated framework for evaluating and improving the consistency of LLM-generated texts using a divide-conquer-reasoning approach. Unlike existing LLM-based evaluators that operate at the paragraph level, our method employs a divide-and-conquer evaluator (DCE) that breaks down the paragraph-to-paragraph comparison between two generated responses into individual sentence-to-paragraph comparisons, each evaluated based on predefined criteria. To facilitate this approach, we introduce an automatic metric converter (AMC) that translates the output from DCE into an interpretable numeric score. Beyond the consistency evaluation, we further present a reason-assisted improver (RAI) that leverages the analytical reasons with explanations identified by DCE to generate new responses aimed at reducing these inconsistencies. Through comprehensive and systematic empirical analysis, we show that our approach outperforms state-of-the-art methods by a large margin (e.g., +19.3\% and +24.3\% on the SummEval dataset) in evaluating the consistency of LLM generation across multiple benchmarks in semantic, factual, and summarization consistency tasks. Our approach also substantially reduces nearly 90\% of output inconsistencies, showing promise for effective hallucination mitigation.} 
+}
+
+# 2024 Papers
+
 # EMNLP 2024 - ski
 @inproceedings{zhang2024ski,
   title={Synthetic Knowledge Ingestion: Towards Knowledge Refinement and Injection for Enhancing Large Language Models},
@@ -28,7 +187,10 @@ Buttons:
   year={2024},
   abbr = {EMNLP 2024},
   arxiv = {2410.09629},
-  pdf = {https://arxiv.org/pdf/2410.09629},
+  pdf = {https://arxiv.org/pdf/2410.09629.pdf},
+  code = {https://github.com/intuit-ai-research/knowledge-infused-ai/tree/main/synthetic-knowledge-ingestion},
+  blog = {https://medium.com/intuit-engineering/enhancing-llms-with-synthetic-knowledge-ingestion-a-novel-approach-from-intuit-ai-research-at-01e8f02b9c46},
+  category = {Reliability & Safety, RAG},
   selected = {true},
   abstract={Large language models (LLMs) are proficient in capturing factual knowledge across various domains. However, refining their capabilities on previously seen knowledge or integrating new knowledge from external sources remains a significant challenge. In this work, we propose a novel synthetic knowledge ingestion method called Ski, which leverages fine-grained synthesis, interleaved generation, and assemble augmentation strategies to construct high-quality data representations from raw knowledge sources. We then integrate Ski and its variations with three knowledge injection techniques: Retrieval Augmented Generation (RAG), Supervised Fine-tuning (SFT), and Continual Pre-training (CPT) to inject and refine knowledge in language models. Extensive empirical experiments are conducted on various question-answering tasks spanning finance, biomedicine, and open-generation domains to demonstrate that Ski significantly outperforms baseline methods by facilitating effective knowledge injection. We believe that our work is an important step towards enhancing the factual accuracy of LLM outputs by refining knowledge representation and injection capabilities.} 
 }
@@ -40,8 +202,10 @@ Buttons:
   booktitle={Proceedings of the 2024 Conference on Empirical Methods in Natural Language Processing},
   year={2024},
   abbr = {EMNLP 2024},
+  oral = {true},
   arxiv = {2410.08320},
   pdf = {https://arxiv.org/pdf/2410.08320},
+  category = {Reliability & Safety, RAG},
   selected = {true},
   abstract={Language models (LMs) are known to suffer from hallucinations and misinformation. Retrieval augmented generation (RAG) that retrieves verifiable information from an external knowledge corpus to complement the parametric knowledge in LMs provides a tangible solution to these problems. However, the generation quality of RAG is highly dependent on the relevance between a user's query and the retrieved documents. Inaccurate responses may be generated when the query is outside of the scope of knowledge represented in the external knowledge corpus or if the information in the corpus is out-of-date. In this work, we establish a statistical framework that assesses how well a query can be answered by an RAG system by capturing the relevance of knowledge. We introduce an online testing procedure that employs goodness-of-fit (GoF) tests to inspect the relevance of each user query to detect out-of-knowledge queries with low knowledge relevance. Additionally, we develop an offline testing framework that examines a collection of user queries, aiming to detect significant shifts in the query distribution which indicates the knowledge corpus is no longer sufficiently capable of supporting the interests of the users. We demonstrate the capabilities of these strategies through a systematic evaluation on eight question-answering (QA) datasets, the results of which indicate that the new testing framework is an efficient solution to enhance the reliability of existing RAG systems.} 
 }
@@ -58,6 +222,7 @@ Buttons:
   arxiv = {2410.15262},
   code = {https://github.com/zwc662/hyqe},
   pdf = {https://arxiv.org/pdf/2410.15262},
+  category = {RAG},
   abstract={In retrieval-augmented systems, context ranking techniques are commonly employed to reorder the retrieved contexts based on their relevance to a user query. A standard approach is to measure this relevance through the similarity between contexts and queries in the embedding space. However, such similarity often fails to capture the relevance. Alternatively, large language models (LLMs) have been used for ranking contexts. However, they can encounter scalability issues when the number of candidate contexts grows and the context window sizes of the LLMs remain constrained. Additionally, these approaches require fine-tuning LLMs with domain-specific data. In this work, we introduce a scalable ranking framework that combines embedding similarity and LLM capabilities without requiring LLM fine-tuning. Our framework uses a pre-trained LLM to hypothesize the user query based on the retrieved contexts and ranks the context based on the similarity between the hypothesized queries and the user query. Our framework is efficient at inference time and is compatible with many other retrieval and ranking techniques. Experimental results show that our method improves the ranking performance across multiple benchmarks.} 
 }
 
@@ -75,6 +240,7 @@ Buttons:
   code = {https://github.com/VT-NLP/InterleavedBench},
   website = {https://vt-nlp.github.io/InterleavedEval/},
   supp = {https://huggingface.co/mqliu/InterleavedBench},
+  category = {Multimodality & Vision},
   abstract={Interleaved text-and-image generation has been an intriguing research direction, where the models are required to generate both images and text pieces in an arbitrary order. Despite the emerging advancements in interleaved generation, the progress in its evaluation still significantly lags behind. Existing evaluation benchmarks do not support arbitrarily interleaved images and text for both inputs and outputs, and they only cover a limited number of domains and use cases. Also, current works predominantly use similarity-based metrics which fall short in assessing the quality in open-ended scenarios. To this end, we introduce InterleavedBench, the first benchmark carefully curated for the evaluation of interleaved text-and-image generation. InterleavedBench features a rich array of tasks to cover diverse real-world use cases. In addition, we present InterleavedEval, a strong reference-free metric powered by GPT-4o to deliver accurate and explainable evaluation. We carefully define five essential evaluation aspects for InterleavedEval, including text quality, perceptual quality, image coherence, text-image coherence, and helpfulness, to ensure a comprehensive and fine-grained assessment. Through extensive experiments and rigorous human evaluation, we show that our benchmark and metric can effectively evaluate the existing models with a strong correlation with human judgments surpassing previous reference-based metrics. We also provide substantial findings and insights to foster future research in interleaved generation and its evaluation.} 
 }
 
@@ -89,23 +255,11 @@ Buttons:
   abbr = {EMNLP 2024},
   arxiv = {2410.09652},
   pdf = {https://arxiv.org/pdf/2410.09652},
+  category = {Reliability & Safety, Optimization},
   selected = {true},
   abstract={Large language models (LLMs) have demonstrated remarkable capabilities; however, the optimization of their prompts has historically prioritized performance metrics at the expense of crucial safety and security considerations. To overcome this shortcoming, we introduce "Survival of the Safest" (SoS), an innovative multi-objective prompt optimization framework that enhances both performance and security in LLMs simultaneously. SoS utilizes an interleaved multi-objective evolution strategy, integrating semantic, feedback, and crossover mutations to effectively traverse the prompt landscape. Differing from the computationally demanding Pareto front methods, SoS provides a scalable solution that expedites optimization in complex, high-dimensional discrete search spaces while keeping computational demands low. Our approach accommodates flexible weighting of objectives and generates a pool of optimized candidates, empowering users to select prompts that optimally meet their specific performance and security needs. Experimental evaluations across diverse benchmark datasets affirm SoS's efficacy in delivering high performance and notably enhancing safety and security compared to single-objective methods. This advancement marks a significant stride towards the deployment of LLM systems that are both high-performing and secure across varied industrial applications} 
 }
 
-# EMNLP 2024 industry - dcr
-@inproceedings{cui2024dcr,
-  title={DCR-Consistency: Divide-Conquer-Reasoning for Consistency Evaluation and Improvement of Large Language Models},
-  author={Cui, Wendi and Li, Zhuohang and Damien, Lopez and Das, Kamalika and Malin, Bradley and Kumar, Sricharan and Zhang, Jiaxin},
-  booktitle={Proceedings of the 2024 Conference on Empirical Methods in Natural Language Processing - Industry Track},
-  year={2024},
-  abbr = {EMNLP 2024},
-  arxiv = {2401.02132},
-  pdf = {https://arxiv.org/pdf/2401.02132},
-  code = {https://github.com/intuit-ai-research/DCR-consistency},
-  selected = {true},
-  abstract={Evaluating the quality and variability of text generated by Large Language Models (LLMs) poses a significant, yet unresolved research challenge. Traditional evaluation methods, such as ROUGE and BERTScore, which measure token similarity, often fail to capture the holistic semantic equivalence. This results in a low correlation with human judgments and intuition, which is especially problematic in high-stakes applications like healthcare and finance where reliability, safety, and robust decision-making are highly critical. This work proposes DCR, an automated framework for evaluating and improving the consistency of LLM-generated texts using a divide-conquer-reasoning approach. Unlike existing LLM-based evaluators that operate at the paragraph level, our method employs a divide-and-conquer evaluator (DCE) that breaks down the paragraph-to-paragraph comparison between two generated responses into individual sentence-to-paragraph comparisons, each evaluated based on predefined criteria. To facilitate this approach, we introduce an automatic metric converter (AMC) that translates the output from DCE into an interpretable numeric score. Beyond the consistency evaluation, we further present a reason-assisted improver (RAI) that leverages the analytical reasons with explanations identified by DCE to generate new responses aimed at reducing these inconsistencies. Through comprehensive and systematic empirical analysis, we show that our approach outperforms state-of-the-art methods by a large margin (e.g., +19.3% and +24.3% on the SummEval dataset) in evaluating the consistency of LLM generation across multiple benchmarks in semantic, factual, and summarization consistency tasks. Our approach also substantially reduces nearly 90% of output inconsistencies, showing promise for effective hallucination mitigation.} 
-}
 
 
 # EACL 2024 - SPUQ
@@ -119,21 +273,11 @@ Buttons:
   pdf = {https://arxiv.org/pdf/2403.02509},
   code = {https://github.com/intuit-ai-research/SPUQ},
   blog = {https://medium.com/intuit-engineering/intuit-presents-innovative-approach-to-quantifying-llm-uncertainty-at-eacl-2024-f839a8f1b89b},
+  category = {Reliability & Safety},
   selected = {true},
   abstract={In recent years, large language models (LLMs) have become increasingly prevalent, offering remarkable text generation capabilities. However, a pressing challenge is their tendency to make confidently wrong predictions, highlighting the critical need for uncertainty quantification (UQ) in LLMs. While previous works have mainly focused on addressing aleatoric uncertainty, the full spectrum of uncertainties, including epistemic, remains inadequately explored. Motivated by this gap, we introduce a novel UQ method, sampling with perturbation for UQ (SPUQ), designed to tackle both aleatoric and epistemic uncertainties. The method entails generating a set of perturbations for LLM inputs, sampling outputs for each perturbation, and incorporating an aggregation module that generalizes the sampling uncertainty approach for text generation tasks. Through extensive experiments on various datasets, we investigated different perturbation and aggregation techniques. Our findings show a substantial improvement in model uncertainty calibration, with a reduction in Expected Calibration Error (ECE) by 50\% on average. Our findings suggest that our proposed UQ method offers promising steps toward enhancing the reliability and trustworthiness of LLMs.} 
 }
 
-# TMLR 2024 - phaseevo
-@article{cui2024phaseevo,
-  title={PhaseEvo: Towards Unified In-Context Prompt Optimization for Large Language Models},
-  author={Cui, Wendi and Zhang, Jiaxin and Li, Zhuohang and Sun, Hao and Lopez, Damien and Das, Kamalika and Malin, Bradley and Kumar, Sricharan},
-  year={2024},
-  abbr = {arXiv},
-  arxiv = {2402.11347},
-  pdf = {https://arxiv.org/pdf/2402.11347},
-  selected = {true},
-  abstract={Crafting an ideal prompt for Large Language Models (LLMs) is a challenging task that demands significant resources and expert human input. Existing work treats the optimization of prompt instruction and in-context learning examples as distinct problems, leading to sub-optimal prompt performance. This research addresses this limitation by establishing a unified in-context prompt optimization framework, which aims to achieve joint optimization of the prompt instruction and examples. However, formulating such optimization in the discrete and high-dimensional natural language space introduces challenges in terms of convergence and computational efficiency. To overcome these issues, we present PhaseEvo, an efficient automatic prompt optimization framework that combines the generative capability of LLMs with the global search proficiency of evolution algorithms. Our framework features a multi-phase design incorporating innovative LLM-based mutation operators to enhance search efficiency and accelerate convergence. We conduct an extensive evaluation of our approach across 35 benchmark tasks. The results demonstrate that PhaseEvo significantly outperforms the state-of-the-art baseline methods by a large margin whilst maintaining good efficiency.} 
-}
 
 # AISTATS 2024 - DDAR
 @inproceedings{zhang2024discriminant,
@@ -143,6 +287,7 @@ Buttons:
   abbr = {AISTATS 2024},
   arxiv = {2402.12664},
   pdf = {https://arxiv.org/pdf/2402.12664},
+  category = {UQ},
   selected = {true},
   abstract={Uncertainty estimation is a crucial aspect of deploying dependable deep learning models in safety-critical systems. In this study, we introduce a novel and efficient method for deterministic uncertainty estimation called Discriminant Distance-Awareness Representation (DDAR). Our approach involves constructing a DNN model that incorporates a set of prototypes in its latent representations, enabling us to analyze valuable feature information from the input data. By leveraging a distinction maximization layer over optimal trainable prototypes, DDAR can learn a discriminant distance-awareness representation. We demonstrate that DDAR overcomes feature collapse by relaxing the Lipschitz constraint that hinders the practicality of deterministic uncertainty methods (DUMs) architectures. Our experiments show that DDAR is a flexible and architecture-agnostic method that can be easily integrated as a pluggable layer with distance-sensitive metrics, outperforming state-of-the-art uncertainty estimation methods on multiple benchmark problems.} 
 }
@@ -156,6 +301,7 @@ Buttons:
   abbr = {WACV 2024},
   arxiv = {2311.09625},
   pdf = {https://arxiv.org/pdf/2311.09625},
+  category = {Multimodality & Vision},
   selected = {true},
   blog = {https://medium.com/intuit-engineering/wacv-2024-intuit-ai-research-develops-end-to-end-method-for-document-enhancement-using-diffusion-a4e4a77b8e40},
   abstract = {The performance of optical character recognition (OCR) heavily relies on document image quality, which is crucial for automatic document processing and document intelligence. However, most existing document enhancement methods require supervised data pairs, which raises concerns about data separation and privacy protection, and makes it challenging to adapt these methods to new domain pairs. To address these issues, we propose DECDM, an end-to-end document-level image translation method inspired by recent advances in diffusion models. Our method overcomes the limitations of paired training by independently training the source (noisy input) and target (clean output) models, making it possible to apply domain-specific diffusion models to other pairs. DECDM trains on one dataset at a time, eliminating the need to scan both datasets concurrently, and effectively preserving data privacy from the source or target domain. We also introduce simple data augmentation strategies to improve character-glyph conservation during translation. We compare DECDM with state-of-the-art methods on multiple synthetic data and benchmark datasets, such as document denoising and shadow removal, and demonstrate the superiority of performance quantitatively and qualitatively.}
@@ -171,6 +317,7 @@ Buttons:
   abbr = {WACV 2024},
   arxiv = {2311.09639},
   pdf = {https://arxiv.org/pdf/2311.09639},
+  category = {UQ, Multimodality & Vision},
   selected = {true},
   abstract = {Computational imaging plays a pivotal role in determining hidden information from sparse measurements. A robust inverse solver is crucial to fully characterize the uncertainty induced by these measurements, as it allows for the estimation of the complete posterior of unrecoverable targets. This, in turn, facilitates a probabilistic interpretation of observational data for decision-making. In this study, we propose a deep variational framework that leverages a deep generative model to learn an approximate posterior distribution to effectively quantify image reconstruction uncertainty without the need for training data. We parameterize the target posterior using a flow-based model and minimize their Kullback-Leibler (KL) divergence to achieve accurate uncertainty estimation. To bolster stability, we introduce a robust flow-based model with bi-directional regularization and enhance expressivity through gradient boosting. Additionally, we incorporate a space-filling design to achieve substantial variance reduction on both latent prior space and target posterior space. We validate our method on several benchmark tasks and two real-world applications, namely fastMRI and black hole image reconstruction. Our results indicate that our method provides reliable and high-quality image reconstruction with robust uncertainty estimation.}
 }
@@ -202,6 +349,7 @@ Buttons:
   slides = {publications/Neurips2023_slides.pdf},
   video = {https://recorder-v3.slideslive.com/?share=89213&s=fefbf7e9-d66b-4cfd-ad46-0b5779467504},
   blog = {https://medium.com/intuit-engineering/neurips-2023-intuit-ai-research-presents-interactive-framework-for-cost-effective-fine-tuning-of-8c1f6af5b87a},
+  category = {Reliability & Safety},
   selected = {true},
   abstract={Large language models (LLMs) have demonstrated remarkable capabilities in various tasks. However, their suitability for domain-specific tasks, is limited due to their immense scale at deployment, susceptibility to misinformation, and more importantly, high data annotation costs. We propose a novel Interactive Multi-Fidelity Learning (IMFL) framework for the cost-effective development of small domain-specific LMs under limited annotation budgets. Our approach formulates the domain-specific fine-tuning process as a multi-fidelity learning problem, focusing on identifying the optimal acquisition strategy that balances between low-fidelity automatic LLM annotations and high-fidelity human annotations to maximize model performance. We further propose an exploration-exploitation query strategy that enhances annotation diversity and informativeness, incorporating two innovative designs: 1) prompt retrieval that selects in-context examples from human-annotated samples to improve LLM annotation, and 2) variable batch size that controls the order for choosing each fidelity to facilitate knowledge distillation, ultimately enhancing annotation quality. Extensive experiments on financial and medical tasks demonstrate that IMFL achieves superior performance compared with single fidelity annotations. Given a limited budget of human annotation, IMFL significantly outperforms the human annotation baselines in all four tasks and achieves very close performance as human annotations on two of the tasks. These promising results suggest that the high human annotation costs in domain-specific tasks can be significantly reduced by employing IMFL, which utilizes fewer human annotations, supplemented with cheaper and faster LLM (e.g., GPT-3.5) annotations to achieve comparable performance.} 
 }
@@ -217,6 +365,7 @@ Buttons:
   pdf = {https://arxiv.org/pdf/2311.01740},
   code = {https://github.com/intuit/sac3},
   blog = {https://medium.com/intuit-engineering/intuit-ai-research-debuts-novel-approach-to-reliable-hallucination-detection-in-black-box-language-746d7f720c50},
+  category = {Reliability & Safety, Hallucination},
   selected = {true},
   abstract={Hallucination detection is a critical step toward understanding the trustworthiness of modern language models (LMs). To achieve this goal, we re-examine existing detection approaches based on the self-consistency of LMs and uncover two types of hallucinations resulting from 1) question-level and 2) model-level, which cannot be effectively identified through self-consistency check alone. Building upon this discovery, we propose a novel sampling-based method, i.e., semantic-aware cross-check consistency (SAC3) that expands on the principle of self-consistency checking. Our SAC3 approach incorporates additional mechanisms to detect both question-level and model-level hallucinations by leveraging advances including semantically equivalent question perturbation and cross-model response consistency checking. Through extensive and systematic empirical analysis, we demonstrate that SAC3 outperforms the state of the art in detecting both non-factual and factual statements across multiple question-answering and open-domain generation benchmarks.}
 }
@@ -267,6 +416,7 @@ Buttons:
   year={2023},
   pdf={https://arxiv.org/pdf/2212.01016.pdf},
   code={https://github.com/jxzhangjhu/MatDesINNe},
+  category = {Optimization, AI4Science},
   selected={true},
   abbr={AAAI 2023},
   arxiv = {2212.01016},
@@ -280,7 +430,10 @@ Buttons:
   author={Wang, Yu and Drgona, Jan and Zhang, Jiaxin and NS, Karthik Somayaji and Liu, Frank Y and Schram, Malachi and Li, Peng},
   journal={Proceedings of the AAAI Conference on Artificial Intelligence},
   year={2023},
+  abbr={AAAI 2023},
+  oral = {true},
   pdf={https://arxiv.org/pdf/2304.05135.pdf},
+  category = {Optimization},
   selected={true},
   abbr={AAAI 2023},
   arxiv = {2212.01016},
@@ -378,6 +531,7 @@ Buttons:
   abbr={CVPR 2022},
   arxiv = {2203.15696}, 
   code={https://github.com/zhuohangli/GGL},
+  category = {Optimization, Reliability & Safety, Multimodality & Vision},
   abstract={Federated Learning (FL) framework brings privacy benefits to distributed learning systems by allowing multiple clients to participate in a learning task under the coordination of a central server without exchanging their private data. However, recent studies have revealed that private information can still be leaked through shared gradient information. To further protect user's privacy, several defense mechanisms have been proposed to prevent privacy leakage via gradient information degradation methods, such as using additive noise or gradient compression before sharing it with the server. In this work, we validate that the private training data can still be leaked under certain defense settings with a new type of leakage, ie, Generative Gradient Leakage (GGL). Unlike existing methods that only rely on gradient information to reconstruct data, our method leverages the latent space of generative adversarial networks (GAN) learned from public image datasets as a prior to compensate for the informational loss during gradient degradation. To address the nonlinearity caused by the gradient operator and the GAN model, we explore various gradient-free optimization methods (eg, evolution strategies and Bayesian optimization) and empirically show their superiority in reconstructing high-quality images from gradients compared to gradient-based optimizers. We hope the proposed method can serve as a tool for empirically measuring the amount of privacy leakage to facilitate the design of more robust defense mechanisms.} 
 }
 
@@ -402,6 +556,7 @@ Buttons:
   selected={true},
   abbr={AAAI 2022},
   arxiv={2112.09815},
+  category = {Robustness, Multimodality & Vision},
   abstract={Novelty detection aims to automatically identify out-of-distribution (OOD) data, without any prior knowledge of them. It is a critical step in data monitoring, behavior analysis and other applications, helping enable continual learning in the field. Conventional methods of OOD detection perform multi-variate analysis on an ensemble of data or features, and usually resort to the supervision with OOD data to improve the accuracy. In reality, such supervision is impractical as one cannot anticipate the anomalous data. In this paper, we propose a novel, self-supervised approach that does not rely on any pre-defined OOD data:(1) The new method evaluates the Mahalanobis distance of the gradients between the in-distribution and OOD data.(2) It is assisted by a self-supervised binary classifier to guide the label selection to generate the gradients, and maximize the Mahalanobis distance. In the evaluation with multiple datasets, such as CIFAR-10, CIFAR-100, SVHN and TinyImageNet, the proposed approach consistently outperforms state-of-the-art supervised and unsupervised methods in the area under the receiver operating characteristic (AUROC) and area under the precision-recall curve (AUPR) metrics. We further demonstrate that this detector is able to accurately learn one OOD class in continual learning.} 
 }
 
@@ -474,6 +629,7 @@ Buttons:
   abbr={NeurIPS 2021},
   arxiv={2111.04601},
   code = {https://github.com/pnnl/slim},
+  category = {Reliability & Safety},
   abstract={Deep Markov models (DMM) are generative models which are scalable and expressive generalization of Markov models for representation, learning, and inference problems. However, the fundamental stochastic stability guarantees of such models have not been thoroughly investigated. In this paper, we present a novel stability analysis method and provide sufficient conditions of DMM's stochastic stability. The proposed stability analysis is based on the contraction of probabilistic maps modeled by deep neural networks. We make connections between the spectral properties of neural network's weights and different types of used activation function on the stability and overall dynamic behavior of DMMs with Gaussian distributions. Based on the theory, we propose a few practical methods for designing constrained DMMs with guaranteed stability. We empirically substantiate our theoretical results via intuitive numerical experiments using the proposed stability constraints.}
 }
 
@@ -557,7 +713,8 @@ Buttons:
   abbr={UAI 2021},
   arxiv={2002.03001},
   code={https://github.com/HoangATran/AdaDGS},
-  abstract={We consider the problem of minimizing multi-modal loss functions with a large number of local optima. Since the local gradient points to the direction of the steepest slope in an infinitesimal neighborhood, an optimizer guided by the local gradient is often trapped in a local minimum. To address this issue, we develop a novel nonlocal gradient to skip small local minima by capturing major structures of the loss’s landscape in black-box optimization. The nonlocal gradient is defined by a directional Gaussian smoothing (DGS) approach. The key idea of DGS is to conducts 1D long-range exploration with a large smoothing radius along  orthogonal directions in , each of which defines a nonlocal directional derivative as a 1D integral. Such long-range exploration enables the nonlocal gradient to skip small local minima. The  directional derivatives are then assembled to form the nonlocal gradient. We use the Gauss-Hermite quadrature rule to approximate the  1D integrals to obtain an accurate estimator. The superior performance of our method is demonstrated in three sets of examples, including benchmark functions for global optimization, and two real-world scientific problems.} 
+  category = {Optimization},
+  abstract={We consider the problem of minimizing multi-modal loss functions with a large number of local optima. Since the local gradient points to the direction of the steepest slope in an infinitesimal neighborhood, an optimizer guided by the local gradient is often trapped in a local minimum. To address this issue, we develop a novel nonlocal gradient to skip small local minima by capturing major structures of the loss's landscape in black-box optimization. The nonlocal gradient is defined by a directional Gaussian smoothing (DGS) approach. The key idea of DGS is to conducts 1D long-range exploration with a large smoothing radius along  orthogonal directions in , each of which defines a nonlocal directional derivative as a 1D integral. Such long-range exploration enables the nonlocal gradient to skip small local minima. The  directional derivatives are then assembled to form the nonlocal gradient. We use the Gauss-Hermite quadrature rule to approximate the  1D integrals to obtain an accurate estimator. The superior performance of our method is demonstrated in three sets of examples, including benchmark functions for global optimization, and two real-world scientific problems.} 
 }
 
 # AISTATS 2021
@@ -568,7 +725,9 @@ Buttons:
   pages={3745--3753},
   year={2021},
   organization={PMLR},
+  arxiv = {2103.08026},
   pdf={http://proceedings.mlr.press/v130/zhang21l/zhang21l.pdf},
+  category = {Optimization, AI4Science},
   selected={true},
   abbr={AISTATS 2021},
   abstract={Bayesian experimental design (BED) is to answer the question that how to choose designs that maximize the information gathering. For implicit models, where the likelihood is intractable but sampling is possible, conventional BED methods have difficulties in efficiently estimating the posterior distribution and maximizing the mutual information (MI) between data and parameters. Recent work proposed the use of gradient ascent to maximize a lower bound on MI to deal with these issues. However, the approach requires a sampling path to compute the pathwise gradient of the MI lower bound with respect to the design variables, and such a pathwise gradient is usually inaccessible for implicit models. In this paper, we propose a novel approach that leverages recent advances in stochastic approximate gradient ascent incorporated with a smoothed variational MI estimator for efficient and robust BED. Without the necessity of pathwise gradients, our approach allows the design process to be achieved through a unified procedure with an approximate gradient for implicit models. Several experiments show that our approach outperforms baseline methods, and significantly improves the scalability of BED in high-dimensional problems} 
@@ -724,6 +883,7 @@ Buttons:
   abbr={NeurIPS 2019},
   arxiv={1902.10652},
   code={https://mathlab.github.io/ATHENA/tutorial7nll.html},
+  category = {Optimization, AI4Science},
   abstract={We developed a Nonlinear Level-set Learning (NLL) method for dimensionality reduction in high-dimensional function approximation with small data. This work is motivated by a variety of design tasks in real-world engineering applications, where practitioners would replace their computationally intensive physical models (e.g., high-resolution fluid simulators) with fast-to-evaluate predictive machine learning models, so as to accelerate the engineering design processes. There are two major challenges in constructing such predictive models: (a) high-dimensional inputs (e.g., many independent design parameters) and (b) small training data, generated by running extremely time-consuming simulations. Thus, reducing the input dimension is critical to alleviate the over-fitting issue caused by data insufficiency. Existing methods, including sliced inverse regression and active subspace approaches, reduce the input dimension by learning a linear coordinate transformation; our main contribution is to extend the transformation approach to a nonlinear regime. Specifically, we exploit reversible networks (RevNets) to learn nonlinear level sets of a high-dimensional function and parameterize its level sets in low-dimensional spaces. A new loss function was designed to utilize samples of the target functions' gradient to encourage the transformed function to be sensitive to only a few transformed coordinates. The NLL approach is demonstrated by applying it to three 2D functions and two 20D functions for showing the improved approximation accuracy with the use of nonlinear transformation, as well as to an 8D composite material design problem for optimizing the buckling-resistance performance of composite shells of rocket inter-stages.
 } 
 }
