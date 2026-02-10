@@ -12,6 +12,8 @@ profile:
   address: 
 
 news: true  # includes a list of news items
+recent_talks: true  # includes recent talks section
+awards: true  # includes awards & honors section
 selected_papers: true # includes a list of papers marked as "selected={true}"
 social: false  # includes social icons at the bottom of the page
 importance: 1

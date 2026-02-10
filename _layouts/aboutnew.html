@@ -36,6 +36,34 @@ layout: default
       {%- include news.html %}
     {%- endif %}
 
+    <!-- Recent Talks -->
+    {% if page.recent_talks -%}
+      <h2 style="font-size: 1.3rem; margin-top: 2.5rem; margin-bottom: 1rem; font-weight: bold;">Recent Talks</h2>
+      <ul style="list-style-type: none; padding-left: 0;">
+        <li style="margin-bottom: 0.5rem;">• <strong>Dec 2024</strong>, NeurIPS @ Vancouver 🇨🇦</li>
+        <li style="margin-bottom: 0.5rem;">• <strong>Nov 2024</strong>, EMNLP @ Miami 🇺🇸</li>
+        <li style="margin-bottom: 0.5rem;">• <strong>Jul 2024</strong>, ICML @ Vienna 🇦🇹</li>
+        <li style="margin-bottom: 0.5rem;">• <strong>May 2024</strong>, AISTATS @ Valencia 🇪🇸</li>
+        <li style="margin-bottom: 0.5rem;">• <strong>Jan 2024</strong>, WACV @ Hawaii 🇺🇸</li>
+        <li style="margin-bottom: 0.5rem;">• <strong>Dec 2023</strong>, NeurIPS @ New Orleans 🇺🇸</li>
+        <li style="margin-bottom: 0.5rem;">• <strong>Dec 2023</strong>, EMNLP @ Singapore 🇸🇬</li>
+      </ul>
+    {%- endif %}
+
+    <!-- Awards & Honors -->
+    {% if page.awards -%}
+      <h2 style="font-size: 1.3rem; margin-top: 2.5rem; margin-bottom: 1rem; font-weight: bold;">Awards & Honors</h2>
+      <ul style="list-style-type: none; padding-left: 0;">
+        <li style="margin-bottom: 0.5rem;">• <strong>CTO Award</strong>, Salesforce, 2024</li>
+        <li style="margin-bottom: 0.5rem;">• <strong>A2D Innovation Award</strong>, Salesforce, 2024</li>
+        <li style="margin-bottom: 0.5rem;">• <strong>Promising Early‑Career Researcher Award</strong>, Oak Ridge National Laboratory, 2020</li>
+        <li style="margin-bottom: 0.5rem;">• <strong>NeurIPS Travel Award</strong>, 2019</li>
+        <li style="margin-bottom: 0.5rem;">• <strong>Acheson J. Duncan Graduate Research Award</strong>, Johns Hopkins University, 2018</li>
+        <li style="margin-bottom: 0.5rem;">• <strong>Dean's Fellowship</strong>, Johns Hopkins University, 2014</li>
+        <li style="margin-bottom: 0.5rem;">• <strong>National Scholarship of P.R. China</strong>, 2009, 2012</li>
+      </ul>
+    {%- endif %}
+
     <!-- Selected papers -->
     {% if page.selected_papers -%}
       <h2 style="font-size: 1.3rem; margin-top: 2.5rem; margin-bottom: 0.5rem; font-weight: bold;"><a href="{{ '/publications/' | relative_url }}" style="color: inherit;">Selected Publications</a></h2>
