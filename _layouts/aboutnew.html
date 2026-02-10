@@ -32,13 +32,15 @@ layout: default
 
     <!-- News -->
     {% if page.news -%}
-      <h2 style="font-size: 1.3rem; margin-top: 2.5rem; margin-bottom: 1rem; font-weight: bold;"><a href="{{ '/news/' | relative_url }}" style="color: inherit;">News & Updates</a></h2>
+      <h2 style="font-size: 1.5rem; margin-top: 2.5rem; margin-bottom: 0.5rem; font-weight: bold;"><a href="{{ '/news/' | relative_url }}" style="color: inherit;">News & Updates</a></h2>
+      <hr style="border: none; border-top: 2px solid #ddd; margin-top: 0; margin-bottom: 1rem;">
       {%- include news.html %}
     {%- endif %}
 
     <!-- Recent Talks -->
     {% if page.recent_talks -%}
-      <h2 style="font-size: 1.3rem; margin-top: 2.5rem; margin-bottom: 1rem; font-weight: bold;">Recent Talks</h2>
+      <h2 style="font-size: 1.5rem; margin-top: 2.5rem; margin-bottom: 0.5rem; font-weight: bold;">Recent Talks</h2>
+      <hr style="border: none; border-top: 2px solid #ddd; margin-top: 0; margin-bottom: 1rem;">
       <ul style="list-style-type: none; padding-left: 0;">
         <li style="margin-bottom: 0.5rem;">• <strong>Dec 2024</strong>, NeurIPS @ Vancouver 🇨🇦</li>
         <li style="margin-bottom: 0.5rem;">• <strong>Nov 2024</strong>, EMNLP @ Miami 🇺🇸</li>
@@ -52,7 +54,8 @@ layout: default
 
     <!-- Awards & Honors -->
     {% if page.awards -%}
-      <h2 style="font-size: 1.3rem; margin-top: 2.5rem; margin-bottom: 1rem; font-weight: bold;">Awards & Honors</h2>
+      <h2 style="font-size: 1.5rem; margin-top: 2.5rem; margin-bottom: 0.5rem; font-weight: bold;">Awards & Honors</h2>
+      <hr style="border: none; border-top: 2px solid #ddd; margin-top: 0; margin-bottom: 1rem;">
       <ul style="list-style-type: none; padding-left: 0;">
         <li style="margin-bottom: 0.5rem;">• <strong>CTO Award</strong>, Salesforce, 2024</li>
         <li style="margin-bottom: 0.5rem;">• <strong>A2D Innovation Award</strong>, Salesforce, 2024</li>
@@ -66,7 +69,8 @@ layout: default
 
     <!-- Selected papers -->
     {% if page.selected_papers -%}
-      <h2 style="font-size: 1.3rem; margin-top: 2.5rem; margin-bottom: 0.5rem; font-weight: bold;"><a href="{{ '/publications/' | relative_url }}" style="color: inherit;">Selected Publications</a></h2>
+      <h2 style="font-size: 1.5rem; margin-top: 2.5rem; margin-bottom: 0.5rem; font-weight: bold;"><a href="{{ '/publications/' | relative_url }}" style="color: inherit;">Selected Publications</a></h2>
+      <hr style="border: none; border-top: 2px solid #ddd; margin-top: 0; margin-bottom: 1rem;">
       <p style="margin-top: 0; margin-bottom: 1rem; font-size: 0.9rem;">(Full publication list can be found on <a href="https://scholar.google.com/citations?user=LiDm8jEAAAAJ&hl=en" target="_blank">Google Scholar</a>)</p>
       {%- include selected_papers.html %}
     {%- endif %}
