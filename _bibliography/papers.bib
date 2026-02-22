@@ -20,13 +20,56 @@ Buttons:
 
 
 
+# 2026 Papers
+
+# arXiv - Agentic Confidence Calibration
+@article{zhang2026agentic_conf,
+  title={Agentic Confidence Calibration},
+  author={Zhang, Jiaxin and Xiong, Caiming and Wu, Chien-Sheng},
+  year = {2026},
+  abbr = {arXiv 2026},
+  arxiv = {2601.15778},
+  pdf = {https://arxiv.org/pdf/2601.15778.pdf},
+  category = {Reliability & Safety, Agents, UQ},
+  selected = {true},
+  abstract={AI agents are rapidly advancing from passive language models to autonomous systems executing complex, multi-step tasks. Yet their overconfidence in failure remains a fundamental barrier to deployment in high-stakes settings. Existing calibration methods, built for static single-turn outputs, cannot address the unique challenges of agentic systems, such as compounding errors along trajectories, uncertainty from external tools, and opaque failure modes. To address these challenges, we introduce, for the first time, the problem of Agentic Confidence Calibration and propose Holistic Trajectory Calibration (HTC), a novel diagnostic framework that extracts rich process-level features ranging from macro dynamics to micro stability across an agent's entire trajectory. Powered by a simple, interpretable model, HTC consistently surpasses strong baselines in both calibration and discrimination, across eight benchmarks, multiple LLMs, and diverse agent frameworks. Beyond performance, HTC delivers three essential advances: it provides interpretability by revealing the signals behind failure, enables transferability by applying across domains without retraining, and achieves generalization through a General Agent Calibrator (GAC) that achieves the best calibration (lowest ECE) on the out-of-domain GAIA benchmark. Together, these contributions establish a new process-centric paradigm for confidence calibration, providing a framework for diagnosing and enhancing the reliability of AI agents.} 
+}
+
+# arXiv - Agentic Uncertainty Quantification
+@article{zhang2026agentic_uq,
+  title={Agentic Uncertainty Quantification},
+  author={Zhang, Jiaxin and Choubey, Prafulla Kumar and Huang, Kung-Hsiang and Xiong, Caiming and Wu, Chien-Sheng},
+  year = {2026},
+  abbr = {arXiv 2026},
+  arxiv = {2601.15703},
+  pdf = {https://arxiv.org/pdf/2601.15703.pdf},
+  category = {Reliability & Safety, Agents, UQ},
+  selected = {true},
+  abstract={Although AI agents have demonstrated impressive capabilities in long-horizon reasoning, their reliability is severely hampered by the "Spiral of Hallucination," where early epistemic errors propagate irreversibly. Existing methods face a dilemma: uncertainty quantification (UQ) methods typically act as passive sensors, only diagnosing risks without addressing them, while self-reflection mechanisms suffer from continuous or aimless corrections. To bridge this gap, we propose a unified Dual-Process Agentic UQ (AUQ) framework that transforms verbalized uncertainty into active, bi-directional control signals. Our architecture comprises two complementary mechanisms: System 1 (Uncertainty-Aware Memory, UAM), which implicitly propagates verbalized confidence and semantic explanations to prevent blind decision-making; and System 2 (Uncertainty-Aware Reflection, UAR), which utilizes these explanations as rational cues to trigger targeted inference-time resolution only when necessary. This enables the agent to balance efficient execution and deep deliberation dynamically. Extensive experiments on closed-loop benchmarks and open-ended deep research tasks demonstrate that our training-free approach achieves superior performance and trajectory-level calibration. We believe this principled framework AUQ represents a significant step towards reliable agents.} 
+}
+
+# arXiv - From Passive Metric to Active Signal
+@article{zhang2026passive,
+  title={From Passive Metric to Active Signal: The Evolving Role of Uncertainty Quantification in Large Language Models},
+  author={Zhang, Jiaxin and Cui, Wendi and Li, Zhuohang and Huang, Lifu and Malin, Bradley and Xiong, Caiming and Wu, Chien-Sheng},
+  year = {2026},
+  abbr = {arXiv 2026},
+  arxiv = {2601.15690},
+  pdf = {https://arxiv.org/pdf/2601.15690.pdf},
+  category = {Reliability & Safety, Agents, RL, Reasoning, UQ},
+  selected = {true},
+  abstract={While Large Language Models (LLMs) show remarkable capabilities, their unreliability remains a critical barrier to deployment in high-stakes domains. This survey charts a functional evolution in addressing this challenge: the evolution of uncertainty from a passive diagnostic metric to an active control signal guiding real-time model behavior. We demonstrate how uncertainty is leveraged as an active control signal across three frontiers: in advanced reasoning to optimize computation and trigger self-correction; in autonomous agents to govern metacognitive decisions about tool use and information seeking; and in reinforcement learning to mitigate reward hacking and enable self-improvement via intrinsic rewards. By grounding these advancements in emerging theoretical frameworks like Bayesian methods and Conformal Prediction, we provide a unified perspective on this transformative trend. This survey provides a comprehensive overview, critical analysis, and practical design patterns, arguing that mastering the new trend of uncertainty is essential for building the next generation of scalable, reliable, and trustworthy AI.} 
+}
+
 # 2025 Papers
 
-# arXiv - Nudging the Boundaries of LLM Reasoning
-@article{chen2025nudging,
+# ICLR 2026 - Nudging the Boundaries of LLM Reasoning
+@inproceedings{chen2026nudging,
   title={Nudging the Boundaries of LLM Reasoning},
   author={Chen, Justin Chih-Yao and Peng, Becky Xiangyu and Choubey, Prafulla Kumar and Huang, Kung-Hsiang and Zhang, Jiaxin and Bansal, Mohit and Wu, Chien-Sheng},
-  abbr = {arXiv},
+  booktitle={International Conference on Learning Representations},
+  year={2026},
+  abbr = {ICLR 2026},
   arxiv = {2509.25666},
   pdf = {https://arxiv.org/pdf/2509.25666.pdf},
   code = {https://github.com/SalesforceAIResearch/NuRL},
@@ -39,7 +82,8 @@ Buttons:
 @article{qiu2025mmpersuade,
   title={MMPersuade: A Dataset and Evaluation Framework for Multimodal Persuasion},
   author={Qiu, Haoyi and Zhou, Yilun and Venkit, Pranav Narayanan and Huang, Kung-Hsiang and Zhang, Jiaxin and Peng, Nanyun and Wu, Chien-Sheng},
-  abbr = {arXiv},
+  year = {2025},
+  abbr = {arXiv 2025},
   arxiv = {2510.22768},
   pdf = {https://arxiv.org/pdf/2510.22768.pdf},
   category = {Multimodality & Vision},
@@ -51,7 +95,8 @@ Buttons:
 @article{shen2025latteflow,
   title={LaTtE-Flow: Layerwise Timestep-Expert Flow-based Transformer},
   author={Shen, Ying and Xu, Zhiyang and Chen, Jiuhai and Diao, Shizhe and Zhang, Jiaxin and Yao, Yuguang and Rimchala, Joy and Lourentzou, Ismini and Huang, Lifu},
-  abbr = {arXiv},
+  year = {2025},
+  abbr = {arXiv 2025},
   arxiv = {2506.06952},
   pdf = {https://arxiv.org/pdf/2506.06952.pdf},
   category = {Multimodality & Vision},
@@ -284,6 +329,7 @@ Buttons:
   title={Discriminant Distance-Aware Representation on Deterministic Uncertainty Quantification Methods},
   author={Zhang, Jiaxin and Das, Kamalika and Kumar, Sricharan},
   booktitle={International Conference on Artificial Intelligence and Statistics},
+  year = {2024},
   abbr = {AISTATS 2024},
   arxiv = {2402.12664},
   pdf = {https://arxiv.org/pdf/2402.12664},
@@ -293,7 +339,7 @@ Buttons:
 }
 
 # WACV 2024
-@inproceedings{zhang2023robustness,
+@inproceedings{zhang2024decdm,
   title={DECDM: Document Enhancement using Cycle-Consistent Diffusion Models},
   author={Zhang, Jiaxin and Rimchala, Joy and Mouatadid, Lalla and Das, Kamalika and Kumar, Sricharan},
   booktitle={IEEE/CVF Winter Conference on Applications of Computer Vision (WACV)},
@@ -309,7 +355,7 @@ Buttons:
 
 
 # WACV 2024
-@inproceedings{zhang2023robustness,
+@inproceedings{zhang2024imageuq,
   title={On the Quantification of Image Reconstruction Uncertainty without Training Data},
   author={Zhang, Jiaxin and Bi, Sirui and Fung, Victor},
   booktitle={IEEE/CVF Winter Conference on Applications of Computer Vision (WACV)},

@@ -11,11 +11,12 @@ group :jekyll_plugins do
     gem 'jekyll-paginate-v2'
     gem 'jekyll-scholar'
     gem 'jekyll-sitemap'
-    gem 'jekyll-twitter-plugin'
+    # gem 'jekyll-twitter-plugin'  # Disabled - causes issues with Ruby 4.0
     gem 'jemoji'
     # gem 'mini_racer'  # Temporarily commented for local preview
     gem 'unicode_utils'
     gem 'webrick'
+    gem 'ostruct'  # Required for Ruby 4.0
 end
 group :other_plugins do
     gem 'feedjira'

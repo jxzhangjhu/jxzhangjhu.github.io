@@ -37,9 +37,24 @@ layout: default
       {%- include news.html %}
     {%- endif %}
 
-    <!-- Recent Talks -->
+    <!-- Selected Publications (moved up, right after News) -->
+    {% if page.selected_papers -%}
+      <h2 style="font-size: 1.5rem; margin-top: 2.5rem; margin-bottom: 0.5rem; font-weight: bold;"><a href="{{ '/publications/' | relative_url }}" style="color: inherit;">Selected Publications</a></h2>
+      <hr style="border: none; border-top: 2px solid #ddd; margin-top: 0; margin-bottom: 1rem;">
+      <p style="margin-top: 0; margin-bottom: 1rem; font-size: 0.9rem;">(Full publication list can be found on <a href="https://scholar.google.com/citations?user=LiDm8jEAAAAJ&hl=en" target="_blank">Google Scholar</a> and on the <a href="{{ '/publications/' | relative_url }}">Publications</a> page.)</p>
+      {%- include selected_papers.html %}
+    {%- endif %}
+
+    <!-- Recent Talks (new format: latest 5 talks) -->
     {% if page.recent_talks -%}
       <h2 style="font-size: 1.5rem; margin-top: 2.5rem; margin-bottom: 0.5rem; font-weight: bold;">Recent Talks</h2>
+      <hr style="border: none; border-top: 2px solid #ddd; margin-top: 0; margin-bottom: 1rem;">
+      {%- include recent_talks.html %}
+    {%- endif %}
+
+    <!-- Conference Travel -->
+    {% if page.conference_travel -%}
+      <h2 style="font-size: 1.5rem; margin-top: 2.5rem; margin-bottom: 0.5rem; font-weight: bold;">Conference Travel</h2>
       <hr style="border: none; border-top: 2px solid #ddd; margin-top: 0; margin-bottom: 1rem;">
       <ul style="list-style-type: none; padding-left: 0;">
         <li style="margin-bottom: 0.5rem;">• <strong>Dec 2024</strong>, NeurIPS @ Vancouver 🇨🇦</li>
@@ -52,27 +67,27 @@ layout: default
       </ul>
     {%- endif %}
 
-    <!-- Awards & Honors -->
+    <!-- Awards & Honors (from CV) -->
     {% if page.awards -%}
       <h2 style="font-size: 1.5rem; margin-top: 2.5rem; margin-bottom: 0.5rem; font-weight: bold;">Awards & Honors</h2>
       <hr style="border: none; border-top: 2px solid #ddd; margin-top: 0; margin-bottom: 1rem;">
       <ul style="list-style-type: none; padding-left: 0;">
-        <li style="margin-bottom: 0.5rem;">• <strong>CTO Award</strong>, Salesforce, 2024</li>
-        <li style="margin-bottom: 0.5rem;">• <strong>A2D Innovation Award</strong>, Salesforce, 2024</li>
-        <li style="margin-bottom: 0.5rem;">• <strong>Promising Early‑Career Researcher Award</strong>, Oak Ridge National Laboratory, 2020</li>
-        <li style="margin-bottom: 0.5rem;">• <strong>NeurIPS Travel Award</strong>, 2019</li>
-        <li style="margin-bottom: 0.5rem;">• <strong>Acheson J. Duncan Graduate Research Award</strong>, Johns Hopkins University, 2018</li>
-        <li style="margin-bottom: 0.5rem;">• <strong>Dean's Fellowship</strong>, Johns Hopkins University, 2014</li>
-        <li style="margin-bottom: 0.5rem;">• <strong>National Scholarship of P.R. China</strong>, 2009, 2012</li>
+        <li style="margin-bottom: 0.5rem;">• <strong>Intuit CTO Award</strong> (Top 1% Performance), Intuit 2024</li>
+        <li style="margin-bottom: 0.5rem;">• <strong>Intuit A2D Innovation Award</strong> (Top 1%, Team Lead), Intuit 2024, 2025</li>
+        <li style="margin-bottom: 0.5rem;">• <strong>Promising Early-Career Researcher Award</strong>, Oak Ridge National Laboratory, US Department of Energy 2020</li>
+        <li style="margin-bottom: 0.5rem;">• <strong>Chinese Outstanding Students Abroad Award</strong>, Ministry of Education of the P.R. China 2019</li>
+        <li style="margin-bottom: 0.5rem;">• <strong>China National Scholarship</strong>, Ministry of Education of the P.R. China 2009, 2012</li>
       </ul>
     {%- endif %}
 
-    <!-- Selected papers -->
-    {% if page.selected_papers -%}
-      <h2 style="font-size: 1.5rem; margin-top: 2.5rem; margin-bottom: 0.5rem; font-weight: bold;"><a href="{{ '/publications/' | relative_url }}" style="color: inherit;">Selected Publications</a></h2>
+    <!-- Professional Services (from CV) -->
+    {% if page.professional_services -%}
+      <h2 style="font-size: 1.5rem; margin-top: 2.5rem; margin-bottom: 0.5rem; font-weight: bold;">Professional Services</h2>
       <hr style="border: none; border-top: 2px solid #ddd; margin-top: 0; margin-bottom: 1rem;">
-      <p style="margin-top: 0; margin-bottom: 1rem; font-size: 0.9rem;">(Full publication list can be found on <a href="https://scholar.google.com/citations?user=LiDm8jEAAAAJ&hl=en" target="_blank">Google Scholar</a>)</p>
-      {%- include selected_papers.html %}
+      <ul style="list-style-type: none; padding-left: 0;">
+        <li style="margin-bottom: 0.5rem;"><strong>Area Chair:</strong> NeurIPS, ACL, EMNLP, NAACL 2024–now</li>
+        <li style="margin-bottom: 0.5rem;"><strong>Reviewer:</strong> NeurIPS, ICML, ICLR, ACL, EMNLP, NAACL, TMLR, JMLR, CVPR, ICCV, ECCV, AAAI, AISTATS, KDD 2020–now</li>
+      </ul>
     {%- endif %}
 
     <!-- Social -->

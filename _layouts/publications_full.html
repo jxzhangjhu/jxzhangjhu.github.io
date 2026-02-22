@@ -1,0 +1,41 @@
+---
+layout: default
+---
+<!-- Full publications page: all papers grouped by year -->
+<div class="post">
+  <header class="post-header">
+    <h1 class="post-title">{{ page.title }}</h1>
+  </header>
+  <article>
+    <p style="margin-bottom: 1.5rem;">Full publication list is also available on <a href="https://scholar.google.com/citations?user=LiDm8jEAAAAJ&hl=en" target="_blank" rel="noopener">Google Scholar</a>.</p>
+
+    <div class="publications">
+      <h2 style="font-size: 1.35rem; margin-top: 1rem; margin-bottom: 0.75rem; font-weight: bold;">2026</h2>
+      {% bibliography -f papers -q @*[year=2026]* %}
+      <h2 style="font-size: 1.35rem; margin-top: 2rem; margin-bottom: 0.75rem; font-weight: bold;">2025</h2>
+      {% bibliography -f papers -q @*[year=2025]* %}
+      <h2 style="font-size: 1.35rem; margin-top: 2rem; margin-bottom: 0.75rem; font-weight: bold;">2024</h2>
+      {% bibliography -f papers -q @*[year=2024]* %}
+      <h2 style="font-size: 1.35rem; margin-top: 2rem; margin-bottom: 0.75rem; font-weight: bold;">2023</h2>
+      {% bibliography -f papers -q @*[year=2023]* %}
+      <h2 style="font-size: 1.35rem; margin-top: 2rem; margin-bottom: 0.75rem; font-weight: bold;">2022</h2>
+      {% bibliography -f papers -q @*[year=2022]* %}
+      <h2 style="font-size: 1.35rem; margin-top: 2rem; margin-bottom: 0.75rem; font-weight: bold;">2021</h2>
+      {% bibliography -f papers -q @*[year=2021]* %}
+      <h2 style="font-size: 1.35rem; margin-top: 2rem; margin-bottom: 0.75rem; font-weight: bold;">2020</h2>
+      {% bibliography -f papers -q @*[year=2020]* %}
+      <h2 style="font-size: 1.35rem; margin-top: 2rem; margin-bottom: 0.75rem; font-weight: bold;">2019</h2>
+      {% bibliography -f papers -q @*[year=2019]* %}
+      <h2 style="font-size: 1.35rem; margin-top: 2rem; margin-bottom: 0.75rem; font-weight: bold;">2018</h2>
+      {% bibliography -f papers -q @*[year=2018]* %}
+      <h2 style="font-size: 1.35rem; margin-top: 2rem; margin-bottom: 0.75rem; font-weight: bold;">2017</h2>
+      {% bibliography -f papers -q @*[year=2017]* %}
+      <h2 style="font-size: 1.35rem; margin-top: 2rem; margin-bottom: 0.75rem; font-weight: bold;">2016</h2>
+      {% bibliography -f papers -q @*[year=2016]* %}
+      <h2 style="font-size: 1.35rem; margin-top: 2rem; margin-bottom: 0.75rem; font-weight: bold;">2015</h2>
+      {% bibliography -f papers -q @*[year=2015]* %}
+      <h2 style="font-size: 1.35rem; margin-top: 2rem; margin-bottom: 0.75rem; font-weight: bold;">2014</h2>
+      {% bibliography -f papers -q @*[year=2014]* %}
+    </div>
+  </article>
+</div>
