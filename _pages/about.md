@@ -3,7 +3,7 @@ layout: aboutnew
 title: About
 permalink: /
 subtitle: >
-  <p>AI Researcher<br>Salesforce AI Research</p>
+  <p>Research Lead<br>Salesforce AI Research</p>
 
 profile:
   align: right
@@ -38,7 +38,7 @@ My technical roots lie deeply in extreme-scale computing. During my tenure as a 
 Beyond research, I am an active contributor to the open-source community, maintaining several heavily starred projects (3,000+ stars) focused on LLM RAG, Prompt Optimization, and Reliability.
  -->
 
-I am currently a **Lead Research Scientist** at [Salesforce AI Research](https://blog.salesforceairesearch.com/), where I lead a team building reliable and trustworthy enterprise AI agents. My research is fundamentally driven by the pursuit of reliability and reasoning in LLMs, specifically focusing on building **robust agents** for long-horizon systems, including **[deep research]((https://www.salesforce.com/blog/trusted-deepresearch/))**, **[uncertainty quantification](https://arxiv.org/abs/2601.15703)**, and advancing **multi-step reasoning** via **[post-training/RL](https://arxiv.org/abs/2509.25666)** and **[test-time scaling](https://aclanthology.org/2025.emnlp-industry.146/)**. I am also deeply interested in pushing the boundaries of AI **self-improvement** (e.g., on-policy self-distillation).
+I am a **Senior Staff Research Scientist** at [Salesforce AI Research](https://blog.salesforceairesearch.com/), where I lead a team building reliable and trustworthy enterprise AI agents. My research is fundamentally driven by the pursuit of reliability and reasoning in LLMs, specifically focusing on building **robust agents** for long-horizon systems, including **[deep research](https://www.salesforce.com/blog/trusted-deepresearch/)**, **[uncertainty quantification](https://arxiv.org/abs/2601.15703)**, and advancing **multi-step reasoning** via **[post-training/RL](https://arxiv.org/abs/2509.25666)** and **[test-time scaling](https://aclanthology.org/2025.emnlp-industry.146/)**. I am also deeply interested in pushing the boundaries of AI **self-improvement** (e.g., on-policy self-distillation).
 
 I am passionate about bridging the gap between frontier AI research and large-scale real-world impact. Prior to Salesforce, I was a **Senior Staff Research Scientist** and a founding member of the AI Research team at [Intuit](https://www.intuit.com/). I architected industry-deployed hallucination detection frameworks (e.g., **[SAC3](https://arxiv.org/abs/2311.01740)**), automatic prompt optimization libraries (**[PhaseEvo](https://arxiv.org/abs/2402.11347v1)**), reliable RAG systems (**[Ski](https://arxiv.org/abs/2410.09629)**), and post-training alignment pipelines (**[IMFL](https://arxiv.org/abs/2310.20153)**) for enterprise financial LLM models, chatbots and agents.
 
