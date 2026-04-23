@@ -2,7 +2,7 @@
 layout: page
 title: Blog
 permalink: /blog/
-nav: true
+nav: false
 nav_order: 4
 ---
 

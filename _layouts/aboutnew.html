@@ -16,6 +16,7 @@ layout: default
             {% if site.title == "blank" %}<span class="font-weight-bold">{{ site.first_name }}</span> {{ site.middle_name }} {{ site.last_name }}{% else %}{{ site.title }}{% endif %}
             </h1>
             <p class="desc">{{ page.subtitle }}</p>
+            <p style="margin-top: 0.3rem; margin-bottom: 0.3rem; font-size: 0.95rem;">Email: <a href="mailto:jxzhangai@gmail.com">jxzhangai@gmail.com</a></p>
             <div class="social">
                 <div class="contact-icons">
                 {% include social.html %}
@@ -37,34 +38,19 @@ layout: default
       {%- include news.html %}
     {%- endif %}
 
-    <!-- Selected Publications (moved up, right after News) -->
-    {% if page.selected_papers -%}
-      <h2 style="font-size: 1.5rem; margin-top: 2.5rem; margin-bottom: 0.5rem; font-weight: bold;"><a href="{{ '/publications/' | relative_url }}" style="color: inherit;">Selected Publications</a></h2>
-      <hr style="border: none; border-top: 2px solid #ddd; margin-top: 0; margin-bottom: 1rem;">
-      <p style="margin-top: 0; margin-bottom: 1rem; font-size: 0.9rem;">(Full publication list can be found on <a href="https://scholar.google.com/citations?user=LiDm8jEAAAAJ&hl=en" target="_blank">Google Scholar</a> and on the <a href="{{ '/publications/' | relative_url }}">Publications</a> page.)</p>
-      {%- include selected_papers.html %}
-    {%- endif %}
-
-    <!-- Recent Talks (new format: latest 5 talks) -->
+    <!-- Recent Talks (before Publications) -->
     {% if page.recent_talks -%}
       <h2 style="font-size: 1.5rem; margin-top: 2.5rem; margin-bottom: 0.5rem; font-weight: bold;">Recent Talks</h2>
       <hr style="border: none; border-top: 2px solid #ddd; margin-top: 0; margin-bottom: 1rem;">
       {%- include recent_talks.html %}
     {%- endif %}
 
-    <!-- Conference Travel -->
-    {% if page.conference_travel -%}
-      <h2 style="font-size: 1.5rem; margin-top: 2.5rem; margin-bottom: 0.5rem; font-weight: bold;">Conference Travel</h2>
+    <!-- Selected Publications -->
+    {% if page.selected_papers -%}
+      <h2 style="font-size: 1.5rem; margin-top: 2.5rem; margin-bottom: 0.5rem; font-weight: bold;"><a href="{{ '/publications/' | relative_url }}" style="color: inherit;">Selected Publications</a></h2>
       <hr style="border: none; border-top: 2px solid #ddd; margin-top: 0; margin-bottom: 1rem;">
-      <ul style="list-style-type: none; padding-left: 0;">
-        <li style="margin-bottom: 0.5rem;">• <strong>Dec 2024</strong>, NeurIPS @ Vancouver 🇨🇦</li>
-        <li style="margin-bottom: 0.5rem;">• <strong>Nov 2024</strong>, EMNLP @ Miami 🇺🇸</li>
-        <li style="margin-bottom: 0.5rem;">• <strong>Jul 2024</strong>, ICML @ Vienna 🇦🇹</li>
-        <li style="margin-bottom: 0.5rem;">• <strong>May 2024</strong>, AISTATS @ Valencia 🇪🇸</li>
-        <li style="margin-bottom: 0.5rem;">• <strong>Jan 2024</strong>, WACV @ Hawaii 🇺🇸</li>
-        <li style="margin-bottom: 0.5rem;">• <strong>Dec 2023</strong>, NeurIPS @ New Orleans 🇺🇸</li>
-        <li style="margin-bottom: 0.5rem;">• <strong>Dec 2023</strong>, EMNLP @ Singapore 🇸🇬</li>
-      </ul>
+      <p style="margin-top: 0; margin-bottom: 1rem; font-size: 0.9rem;">(Full publication list can be found on <a href="https://scholar.google.com/citations?user=LiDm8jEAAAAJ&hl=en" target="_blank">Google Scholar</a> and on the <a href="{{ '/publications/' | relative_url }}">Publications</a> page.)</p>
+      {%- include selected_papers.html %}
     {%- endif %}
 
     <!-- Awards & Honors (from CV) -->
@@ -76,6 +62,8 @@ layout: default
         <li style="margin-bottom: 0.5rem;">• <strong>Intuit A2D Innovation Award</strong> (Top 1%, Team Lead), Intuit 2024, 2025</li>
         <li style="margin-bottom: 0.5rem;">• <strong>Promising Early-Career Researcher Award</strong>, Oak Ridge National Laboratory, US Department of Energy 2020</li>
         <li style="margin-bottom: 0.5rem;">• <strong>Chinese Outstanding Students Abroad Award</strong>, Ministry of Education of the P.R. China 2019</li>
+        <li style="margin-bottom: 0.5rem;">• <strong>Acheson J. Duncan Graduate Research Award</strong>, Johns Hopkins University 2018</li>
+        <li style="margin-bottom: 0.5rem;">• <strong>Dean's Fellowship</strong>, Johns Hopkins University 2014</li>
         <li style="margin-bottom: 0.5rem;">• <strong>China National Scholarship</strong>, Ministry of Education of the P.R. China 2009, 2012</li>
       </ul>
     {%- endif %}
@@ -85,8 +73,32 @@ layout: default
       <h2 style="font-size: 1.5rem; margin-top: 2.5rem; margin-bottom: 0.5rem; font-weight: bold;">Professional Services</h2>
       <hr style="border: none; border-top: 2px solid #ddd; margin-top: 0; margin-bottom: 1rem;">
       <ul style="list-style-type: none; padding-left: 0;">
-        <li style="margin-bottom: 0.5rem;"><strong>Area Chair:</strong> NeurIPS, ACL, EMNLP, NAACL 2024–now</li>
+        <li style="margin-bottom: 0.5rem;"><strong>Area Chair:</strong> NeurIPS, ICLR, ACL, EMNLP, NAACL 2024–now</li>
         <li style="margin-bottom: 0.5rem;"><strong>Reviewer:</strong> NeurIPS, ICML, ICLR, ACL, EMNLP, NAACL, TMLR, JMLR, CVPR, ICCV, ECCV, AAAI, AISTATS, KDD 2020–now</li>
+      </ul>
+    {%- endif %}
+
+    <!-- Conference Travel (moved to bottom) -->
+    {% if page.conference_travel -%}
+      <h2 style="font-size: 1.5rem; margin-top: 2.5rem; margin-bottom: 0.5rem; font-weight: bold;">Conference Travel</h2>
+      <hr style="border: none; border-top: 2px solid #ddd; margin-top: 0; margin-bottom: 1rem;">
+      <ul style="list-style-type: none; padding-left: 0;">
+        <li style="margin-bottom: 0.5rem;">• <strong>Apr 2026</strong>, ICLR 2026 @ Rio de Janeiro 🇧🇷</li>
+        <li style="margin-bottom: 0.5rem;">• <strong>Dec 2025</strong>, NeurIPS 2025 @ San Diego 🇺🇸</li>
+        <li style="margin-bottom: 0.5rem;">• <strong>Dec 2024</strong>, NeurIPS 2024 @ Vancouver 🇨🇦</li>
+        <li style="margin-bottom: 0.5rem;">• <strong>Nov 2024</strong>, EMNLP 2024 @ Miami 🇺🇸</li>
+        <li style="margin-bottom: 0.5rem;">• <strong>Jul 2024</strong>, ICML 2024 @ Vienna 🇦🇹</li>
+        <li style="margin-bottom: 0.5rem;">• <strong>May 2024</strong>, AISTATS 2024 @ Valencia 🇪🇸</li>
+        <li style="margin-bottom: 0.5rem;">• <strong>Jan 2024</strong>, WACV 2024 @ Hawaii 🇺🇸</li>
+        <li style="margin-bottom: 0.5rem;">• <strong>Dec 2023</strong>, NeurIPS 2023 @ New Orleans 🇺🇸</li>
+        <li style="margin-bottom: 0.5rem;">• <strong>Dec 2023</strong>, EMNLP 2023 @ Singapore 🇸🇬</li>
+        <li style="margin-bottom: 0.5rem;">• <strong>Feb 2023</strong>, AAAI 2023 @ Washington, DC 🇺🇸</li>
+        <li style="margin-bottom: 0.5rem;">• <strong>Dec 2022</strong>, NeurIPS 2022 @ New Orleans 🇺🇸</li>
+        <li style="margin-bottom: 0.5rem;">• <strong>Jul 2022</strong>, ICML 2022 @ Baltimore 🇺🇸</li>
+        <li style="margin-bottom: 0.5rem;">• <strong>Jun 2022</strong>, CVPR 2022 @ New Orleans 🇺🇸</li>
+        <li style="margin-bottom: 0.5rem;">• <strong>Dec 2021</strong>, NeurIPS 2021 @ Online 🌐</li>
+        <li style="margin-bottom: 0.5rem;">• <strong>Dec 2020</strong>, NeurIPS 2020 @ Online 🌐</li>
+        <li style="margin-bottom: 0.5rem;">• <strong>Dec 2019</strong>, NeurIPS 2019 @ Vancouver 🇨🇦</li>
       </ul>
     {%- endif %}
 
