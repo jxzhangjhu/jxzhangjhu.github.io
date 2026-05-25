@@ -36,12 +36,13 @@ Buttons:
   abstract={On-policy distillation (OPD) is an increasingly important paradigm for post-training language models. However, we identify a pervasive Scaling Law of Miscalibration: while OPD effectively improves task accuracy, it systematically traps models in severe overconfidence. We trace this failure to an information mismatch: teacher supervision is formed under privileged context available during training, whereas the deployed model must report confidence using only deployment-time information. We formalize this perspective theoretically, showing that teacher-conditioned success is generally not a valid target for deployment-time confidence and that helpful privileged context induces entropy collapse and a systematic optimism bias. To address this, we propose a calibration-aware OPD framework, CaOPD, that estimates empirical confidence from model rollouts, replaces self-reported confidence with this student-grounded target, and distills the revised response through the same self-distillation pipeline. Experiments across various models and domains show that CaOPD achieves Pareto-optimal calibration while maintaining competitive capability, generalizing robustly under out-of-distribution and continual learning.}
 }
 
-# arXiv - Agentic Confidence Calibration
-@article{zhang2026agentic_conf,
+# ICML 2026 - Agentic Confidence Calibration
+@inproceedings{zhang2026agentic_conf,
   title={Agentic Confidence Calibration},
   author={Zhang, Jiaxin and Xiong, Caiming and Wu, Chien-Sheng},
+  booktitle={International Conference on Machine Learning},
   year = {2026},
-  abbr = {arXiv 2026},
+  abbr = {ICML 2026},
   arxiv = {2601.15778},
   pdf = {https://arxiv.org/pdf/2601.15778.pdf},
   category = {Reliability & Safety, Agents, UQ},
@@ -49,12 +50,13 @@ Buttons:
   abstract={AI agents are rapidly advancing from passive language models to autonomous systems executing complex, multi-step tasks. Yet their overconfidence in failure remains a fundamental barrier to deployment in high-stakes settings. Existing calibration methods, built for static single-turn outputs, cannot address the unique challenges of agentic systems, such as compounding errors along trajectories, uncertainty from external tools, and opaque failure modes. To address these challenges, we introduce, for the first time, the problem of Agentic Confidence Calibration and propose Holistic Trajectory Calibration (HTC), a novel diagnostic framework that extracts rich process-level features ranging from macro dynamics to micro stability across an agent's entire trajectory. Powered by a simple, interpretable model, HTC consistently surpasses strong baselines in both calibration and discrimination, across eight benchmarks, multiple LLMs, and diverse agent frameworks. Beyond performance, HTC delivers three essential advances: it provides interpretability by revealing the signals behind failure, enables transferability by applying across domains without retraining, and achieves generalization through a General Agent Calibrator (GAC) that achieves the best calibration (lowest ECE) on the out-of-domain GAIA benchmark. Together, these contributions establish a new process-centric paradigm for confidence calibration, providing a framework for diagnosing and enhancing the reliability of AI agents.} 
 }
 
-# arXiv - Agentic Uncertainty Quantification
-@article{zhang2026agentic_uq,
+# ICML 2026 - Agentic Uncertainty Quantification
+@inproceedings{zhang2026agentic_uq,
   title={Agentic Uncertainty Quantification},
   author={Zhang, Jiaxin and Choubey, Prafulla Kumar and Huang, Kung-Hsiang and Xiong, Caiming and Wu, Chien-Sheng},
+  booktitle={International Conference on Machine Learning},
   year = {2026},
-  abbr = {arXiv 2026},
+  abbr = {ICML 2026},
   arxiv = {2601.15703},
   pdf = {https://arxiv.org/pdf/2601.15703.pdf},
   category = {Reliability & Safety, Agents, UQ},
@@ -117,12 +119,13 @@ Buttons:
   abstract={As large vision-language models (LVLMs) are increasingly deployed in domains like shopping, health, and news, they encounter substantial persuasive content. A critical question is how and why these models, as persuadees, are influenced by multimodal inputs. Understanding their susceptibility to persuasion and the effectiveness of different persuasive strategies is crucial, as overly persuadable models may adopt misleading beliefs, ignore user preferences, or generate unethical or unsafe outputs when exposed to manipulative information. We introduce MMPersuade, a unified framework for systematically studying multimodal persuasion dynamics in LVLMs. MMPersuade provides (i) a comprehensive multimodal dataset pairing images and videos with established persuasion principles, covering commercial, subjective, behavioral, and adversarial scenarios; and (ii) an evaluation framework that quantifies persuasion effectiveness and model susceptibility through third-party consistency scores and self-estimated token probabilities from conversation history. Our study of six leading LVLMs as persuadees yields three key insights: (i) multimodal inputs significantly increase persuasion effectiveness and model susceptibility compared to text-only, especially in misinformation scenarios; (ii) stated prior preferences reduce susceptibility, but multimodal information maintains its persuasive advantage; and (iii) different strategies vary in effectiveness across scenarios, with reciprocity most effective in commercial and subjective scenarios, while credibility and logic dominate in adversarial scenarios. By jointly analyzing persuasion effectiveness and susceptibility, MMPersuade provides a principled foundation for developing models that are robust, consistent, and ethically aligned when handling persuasive multimodal content.} 
 }
 
-# arXiv - LaTtE-Flow
-@article{shen2025latteflow,
+# ICML 2026 - LaTtE-Flow
+@inproceedings{shen2026latteflow,
   title={LaTtE-Flow: Layerwise Timestep-Expert Flow-based Transformer},
   author={Shen, Ying and Xu, Zhiyang and Chen, Jiuhai and Diao, Shizhe and Zhang, Jiaxin and Yao, Yuguang and Rimchala, Joy and Lourentzou, Ismini and Huang, Lifu},
-  year = {2025},
-  abbr = {arXiv 2025},
+  booktitle={International Conference on Machine Learning},
+  year = {2026},
+  abbr = {ICML 2026},
   arxiv = {2506.06952},
   pdf = {https://arxiv.org/pdf/2506.06952.pdf},
   category = {Multimodality & Vision},
