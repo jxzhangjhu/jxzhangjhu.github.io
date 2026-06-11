@@ -8,6 +8,7 @@ tags: rl agents environment-scaling llm
 categories: research-notes
 giscus_comments: true
 related_posts: false
+og_image: https://jxzhangjhu.github.io/assets/img/blog/env-scaling/fig4_anatomy.png
 ---
 
 <div class="lang-switch"><a href="/blog/2026/environment-scaling-for-agentic-rl/">English</a> · <strong>中文</strong></div>
