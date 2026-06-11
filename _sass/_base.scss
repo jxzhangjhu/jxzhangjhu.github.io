@@ -359,6 +359,50 @@ footer.sticky-bottom {
   }
 }
 
+// Lil'Log-style blog listing
+.blog-lillog {
+  .blog-intro {
+    padding-top: 1rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--global-divider-color);
+    margin-bottom: 1rem;
+    h1 {
+      color: var(--global-theme-color);
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    p {
+      color: var(--global-text-color-light);
+      max-width: 42rem;
+      margin-bottom: 0;
+    }
+  }
+
+  .post-list li {
+    .lillog-title {
+      font-size: 1.6rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+      .lillog-ext {
+        color: var(--global-text-color-light);
+        margin-left: 0.25rem;
+      }
+    }
+    .lillog-summary {
+      color: var(--global-text-color);
+      margin-bottom: 0.5rem;
+    }
+    .lillog-meta {
+      a {
+        color: var(--global-text-color-light);
+        &:hover {
+          color: var(--global-theme-color);
+        }
+      }
+    }
+  }
+}
+
 .post-list {
   margin: 0;
   margin-bottom: 40px;
@@ -668,6 +712,11 @@ html.transition *:after {
 
 // Extra Markdown style (post Customization)
 .post{
+  .post-header .post-title {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
   .post-meta{
     color: var(--global-text-color-light);
     font-size: 0.875rem;
@@ -687,9 +736,53 @@ html.transition *:after {
     }
   }
   .post-content{
+    // comfortable reading typography, matching the system-font feel of Lil'Log (PaperMod)
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    font-size: 1.075rem;
+    line-height: 1.72;
+    h1, h2, h3, h4, h5, h6 {
+      font-family: inherit;
+      font-weight: 700;
+      line-height: 1.25;
+      margin-top: 2.2rem;
+      margin-bottom: 0.8rem;
+    }
+    h2 { font-size: 1.7rem; }
+    h3 { font-size: 1.3rem; }
+    // highlighted callout boxes (Takeaway / Trade-off / Insight)
     blockquote {
-      border-left: 5px solid var(--global-theme-color);
-      padding: 8px;
+      border-left: 4px solid var(--global-theme-color);
+      background-color: rgba(128, 128, 128, 0.09);
+      border-radius: 0 6px 6px 0;
+      padding: 0.8rem 1.1rem;
+      margin: 1.6rem 0;
+      box-shadow: 0 1px 5px rgba(0, 0, 0, 0.07);
+      font-size: 1rem;
+      p:last-child { margin-bottom: 0; }
+    }
+    // paper-style tables: clear top/bottom rules + header underline + light row lines
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-size: 0.95rem;
+      border-top: 2px solid var(--global-text-color);
+      border-bottom: 2px solid var(--global-text-color);
+      th, td {
+        padding: 0.5rem 0.75rem;
+        text-align: left;
+        vertical-align: top;
+      }
+      thead th { border-bottom: 1.5px solid var(--global-text-color); }
+      tbody tr { border-bottom: 1px solid var(--global-divider-color); }
+      tbody tr:last-child { border-bottom: none; }
+    }
+    // keep figures within the text column (override the global 90vw rule)
+    img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 1.6rem auto 0.4rem;
     }
   }
 }

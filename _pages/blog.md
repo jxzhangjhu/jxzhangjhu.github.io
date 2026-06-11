@@ -1,67 +1,81 @@
 ---
-layout: page
-title: Blog
+layout: default
 permalink: /blog/
+title: Blog
 nav: false
-nav_order: 4
+nav_order: 3
+pagination:
+  enabled: true
+  collection: posts
+  permalink: /page/:num/
+  per_page: 10
+  sort_field: date
+  sort_reverse: true
+  trail:
+    before: 1
+    after: 3
 ---
 
-Here are my recent blog posts and articles on AI research, industry insights, and technical topics.
+<div class="post blog-lillog">
 
----
+  <div class="blog-intro">
+    <h1>👋 Welcome to Jiaxin's Blog</h1>
+    <p>
+      I document my notes and writings on AI research, LLMs, and engineering here.
+      A mix of long-form posts hosted on this site and selected external articles.
+    </p>
+  </div>
 
-### <span style="font-size: 1.1rem; font-weight: bold;">[Towards Trustworthy Enterprise Deep Research](https://www.salesforce.com/blog/trusted-deepresearch/)</span>
-**October 24, 2025** | 9 min read
+  <ul class="post-list">
 
-Deep Research is about understanding, reasoning, and synthesis—combining adaptive planning, retrieval, analysis, and context engineering to produce long-form, well-cited research outputs. This article explores how Enterprise Deep Research bridges internal knowledge and external insights to serve strategic business goals.
+    {%- if page.pagination.enabled -%}
+      {%- assign postlist = paginator.posts -%}
+    {%- else -%}
+      {%- assign postlist = site.posts -%}
+    {%- endif -%}
 
-[Read more →](https://www.salesforce.com/blog/trusted-deepresearch/)
+    {% for post in postlist %}
 
----
+    {% if post.read_time %}
+      {% assign read_time = post.read_time %}
+    {% elsif post.external_source == blank %}
+      {% assign read_time = post.content | number_of_words | divided_by: 180 | plus: 1 %}
+    {% else %}
+      {% assign read_time = post.feed_content | strip_html | number_of_words | divided_by: 180 | plus: 1 %}
+    {% endif %}
+    {% assign year = post.date | date: "%Y" %}
+    {% assign tags = post.tags | join: "" %}
+    {% assign categories = post.categories | join: "" %}
 
-### <span style="font-size: 1.1rem; font-weight: bold;">[Enhancing LLMs with Synthetic Knowledge Ingestion: A Novel Approach from Intuit AI Research](https://medium.com/intuit-engineering/enhancing-llms-with-synthetic-knowledge-ingestion-a-novel-approach-from-intuit-ai-research-at-01e8f02b9c46)</span>
-**Medium** | Intuit AI Research
+    <li>
+      <h2 class="lillog-title">
+        {% if post.redirect == blank %}
+          <a class="post-title" href="{{ post.url | relative_url }}">{{ post.title }}</a>
+        {% elsif post.redirect contains '://' %}
+          <a class="post-title" href="{{ post.redirect }}" target="_blank" rel="noopener">{{ post.title }}</a>
+          <i class="fas fa-external-link-alt fa-xs lillog-ext"></i>
+        {% else %}
+          <a class="post-title" href="{{ post.redirect | relative_url }}">{{ post.title }}</a>
+        {% endif %}
+      </h2>
 
-This article presents a novel approach to enhancing Large Language Models through synthetic knowledge ingestion, developed during my time at Intuit AI Research.
+      {% if post.description %}<p class="lillog-summary">{{ post.description }}</p>{% endif %}
 
-[Read more →](https://medium.com/intuit-engineering/enhancing-llms-with-synthetic-knowledge-ingestion-a-novel-approach-from-intuit-ai-research-at-01e8f02b9c46)
+      <p class="post-meta lillog-meta">
+        {{ post.date | date: '%B %-d, %Y' }}
+        &nbsp; &middot; &nbsp; {{ read_time }} min read
+        {%- if post.external_source %} &nbsp; &middot; &nbsp; {{ post.external_source }}{%- endif %}
+        {%- if tags != "" %} &nbsp; &middot; &nbsp;
+          {% for tag in post.tags %}<a href="{{ tag | slugify | prepend: '/blog/tag/' | prepend: site.baseurl}}"><i class="fas fa-hashtag fa-sm"></i> {{ tag }}</a>&nbsp;{% endfor %}
+        {%- endif %}
+      </p>
+    </li>
 
----
+    {% endfor %}
+  </ul>
 
-### <span style="font-size: 1.1rem; font-weight: bold;">[WACV 2024: Intuit AI Research Develops End-to-End Method for Document Enhancement using Diffusion](https://medium.com/intuit-engineering/wacv-2024-intuit-ai-research-develops-end-to-end-method-for-document-enhancement-using-diffusion-a4e4a77b8e40)</span>
-**Medium** | Intuit AI Research
+  {%- if page.pagination.enabled -%}
+    {%- include pagination.html -%}
+  {%- endif -%}
 
-Our work on document enhancement using diffusion models, presented at WACV 2024.
-
-[Read more →](https://medium.com/intuit-engineering/wacv-2024-intuit-ai-research-develops-end-to-end-method-for-document-enhancement-using-diffusion-a4e4a77b8e40)
-
----
-
-### <span style="font-size: 1.1rem; font-weight: bold;">[NeurIPS 2023: Intuit AI Research Presents Interactive Framework for Cost-Effective Fine-Tuning of Language Models](https://medium.com/intuit-engineering/neurips-2023-intuit-ai-research-presents-interactive-framework-for-cost-effective-fine-tuning-of-8c1f6af5b87a)</span>
-**Medium** | Intuit AI Research
-
-An interactive framework for cost-effective fine-tuning of language models with sparse human supervision, presented at NeurIPS 2023.
-
-[Read more →](https://medium.com/intuit-engineering/neurips-2023-intuit-ai-research-presents-interactive-framework-for-cost-effective-fine-tuning-of-8c1f6af5b87a)
-
----
-
-### <span style="font-size: 1.1rem; font-weight: bold;">[Intuit AI Research Debuts Novel Approach to Reliable Hallucination Detection in Black Box Language Models](https://medium.com/intuit-engineering/intuit-ai-research-debuts-novel-approach-to-reliable-hallucination-detection-in-black-box-language-746d7f720c50)</span>
-**Medium** | Intuit AI Research
-
-Our work on SAC^3: Reliable Hallucination Detection in Black-Box Language Models via Semantic-aware Cross-check Consistency, accepted by EMNLP 2023.
-
-[Read more →](https://medium.com/intuit-engineering/intuit-ai-research-debuts-novel-approach-to-reliable-hallucination-detection-in-black-box-language-746d7f720c50)
-
----
-
-## More Articles
-
-For more articles and updates, please visit:
-- [Salesforce Blog](https://www.salesforce.com/blog/)
-- [Medium Profile](https://medium.com/@jxzhangai)
-
----
-
-*This page will be updated with new blog posts as they are published.*
-
+</div>
