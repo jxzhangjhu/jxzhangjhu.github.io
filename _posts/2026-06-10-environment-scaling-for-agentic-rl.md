@@ -10,6 +10,8 @@ giscus_comments: true
 related_posts: false
 ---
 
+<div class="lang-switch"><strong>English</strong> · <a href="/blog/2026/environment-scaling-for-agentic-rl-zh/">中文</a></div>
+
 ### Table of Contents
 
 - [Why environments?](#why-environments)
