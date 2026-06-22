@@ -8,6 +8,7 @@ tags: rl rlhf grpo agents post-training
 categories: research-notes
 giscus_comments: true
 related_posts: false
+read_time: 97
 og_image: https://jxzhangjhu.github.io/assets/img/blog/rl-agentic-rl/fig_llm_rl_stack.png
 ---
 

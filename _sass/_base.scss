@@ -4,6 +4,13 @@
 
 // Typography
 
+// Site-wide font stack with an explicit CJK fallback appended. On screen browsers
+// fall back automatically, but print / PDF export renders missing glyphs as blank,
+// so Chinese text needs named CJK fonts in the stack to print correctly.
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Heiti SC", "Noto Sans CJK SC", sans-serif;
+}
+
 p, h1, h2, h3, h4, h5, h6, em, div, li, span, strong {
   color: var(--global-text-color);
 }
@@ -713,7 +720,7 @@ html.transition *:after {
 // Extra Markdown style (post Customization)
 .post{
   .post-header .post-title {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Heiti SC", "Noto Sans CJK SC", sans-serif;
     font-weight: 800;
     letter-spacing: -0.01em;
   }
@@ -746,7 +753,10 @@ html.transition *:after {
       a { color: var(--global-theme-color); text-decoration: none; }
     }
     // comfortable reading typography, matching the system-font feel of Lil'Log (PaperMod)
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    // CJK fonts are appended so Chinese glyphs have an explicit fallback and render
+    // correctly when printing / exporting to PDF (browsers fall back on screen, but
+    // print rendering otherwise drops glyphs that are missing from the Latin stack).
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Heiti SC", "Noto Sans CJK SC", sans-serif;
     font-size: 1.075rem;
     line-height: 1.72;
     h1, h2, h3, h4, h5, h6 {
