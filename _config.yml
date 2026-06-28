@@ -60,7 +60,7 @@ max_width: 1100px
 # -----------------------------------------------------------------------------
 # Display links to the page with a preview object on social media.
 serve_og_meta: true # Include Open Graph meta tags in the HTML head
-serve_schema_org: false # Include Schema.org in the HTML head
+serve_schema_org: true # Include Schema.org JSON-LD (author + social profiles) for SEO
 og_image: https://jxzhangjhu.github.io/assets/img/prof_pic.jpg # The site-wide (default for all links) Open Graph preview image
 
 # -----------------------------------------------------------------------------
@@ -134,20 +134,20 @@ related_blog_posts:
 # Follow instructions on https://giscus.app/ to setup for your repo to fill out
 # the information below.
 giscus:
-  repo: alshedivat/al-folio      # <your-github-user-name>/<your-github-repo-name>
-  repo_id: MDEwOlJlcG9zaXRvcnk2MDAyNDM2NQ==
-  category: Comments             # name of the category under which discussions will be created
-  category_id: DIC_kwDOA5PmLc4CTBt6
-  mapping: title                 # identify discussions by post title
+  repo: jxzhangjhu/jxzhangjhu.github.io   # your repo (enable Discussions + install the giscus app)
+  repo_id:                                # paste from https://giscus.app (it shows data-repo-id)
+  category: Announcements                 # default "Announcements" category (announcement type)
+  category_id:                            # paste from https://giscus.app (it shows data-category-id)
+  mapping: pathname              # identify discussions by page pathname (stable even if a title changes)
   strict: 1                      # use strict identification mode
   reactions_enabled: 1           # enable (1) or disable (0) emoji reactions
-  input_position: bottom         # whether to display input form below (bottom) or above (top) the comments
-  theme: preferred_color_scheme  # name of the color scheme (preferred works well with al-folio light/dark mode)
+  input_position: bottom         # display the input form below the comments
+  theme: preferred_color_scheme  # follows the site's light/dark mode
   emit_metadata: 0
   lang: en
 
 # Disqus comments (DEPRECATED)
-disqus_shortname: al-folio # put your disqus shortname
+disqus_shortname:  # unused — comments are handled by giscus above
 # https://help.disqus.com/en/articles/1717111-what-s-a-shortname
 
 # External sources.
@@ -167,9 +167,6 @@ collections:
       layout: post
     output: true
     permalink: /news/:path/
-  projects:
-    output: false  # unpublished: /projects/* pages are not generated (was orphaned, not in nav)
-    permalink: /projects/:path/
 
 # news_scrollable: true # adds a vertical scroll bar if there are more than 3 news items
 news_limit: 10 # leave blank to include all the news in the `_news` folder
@@ -344,11 +341,11 @@ enable_google_analytics:    false  # enables google analytics
 enable_panelbear_analytics: false  # enables panelbear analytics
 enable_google_verification: false  # enables google site verification
 enable_bing_verification:   false  # enables bing site verification
-enable_masonry:             true   # enables automatic project cards arangement
+enable_masonry:             false  # projects removed; masonry no longer needed
 enable_math:                true   # enables math typesetting (uses MathJax)
 enable_tooltips:            false  # enables automatic tooltip links generated
                                    # for each section titles on pages and posts
-enable_darkmode:            true   # enables switching between light/dark modes
+enable_darkmode:            true   # toggle available; default is light (see assets/js/theme.js)
 enable_navbar_social:       false  # enables displaying social links in the
                                    # navbar on the about page
 enable_project_categories:  true   # enables categorization of projects into

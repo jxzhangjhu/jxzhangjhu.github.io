@@ -69,11 +69,10 @@ let transTheme = () => {
 
 
 let initTheme = (theme) => {
+  // Default to light for first-time visitors (even if their OS prefers dark).
+  // They can still switch to dark with the navbar toggle, and the choice persists.
   if (theme == null || theme == 'null') {
-    const userPref = window.matchMedia;
-    if (userPref && userPref('(prefers-color-scheme: dark)').matches) {
-        theme = 'dark';
-    }
+    theme = 'light';
   }
 
   setTheme(theme);

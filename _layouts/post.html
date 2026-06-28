@@ -57,8 +57,37 @@ layout: default
   {%- if site.disqus_shortname and page.disqus_comments -%}
     {% include disqus.html %}
   {%- endif %}
-  {%- if site.giscus.repo and page.giscus_comments -%}
+  {%- comment -%}
+    Comments via giscus: ON by default for blog posts (opt out per post with
+    `giscus_comments: false`). Only render once repo_id AND category_id are set
+    in _config.yml, so visitors never see a broken comment box before setup.
+  {%- endcomment -%}
+  {%- assign show_giscus = page.giscus_comments -%}
+  {%- if show_giscus == nil and page.collection == 'posts' -%}{%- assign show_giscus = true -%}{%- endif -%}
+  {%- if site.giscus.repo and site.giscus.repo_id and site.giscus.category_id and show_giscus -%}
     {% include giscus.html %}
   {%- endif -%}
 
 </div>
+
+<!-- Highlight interview "Question" blocks and their 🎯 one-line answers -->
+<script>
+  (function () {
+    function markQA() {
+      var paras = document.querySelectorAll(".post-content p");
+      paras.forEach(function (p) {
+        var t = (p.textContent || "").replace(/^\s+/, "");
+        if (t.indexOf("Question") === 0) {
+          p.classList.add("qa-question");
+        } else if (t.indexOf("\uD83C\uDFAF") === 0) {
+          p.classList.add("qa-answer");
+        }
+      });
+    }
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", markQA);
+    } else {
+      markQA();
+    }
+  })();
+</script>
