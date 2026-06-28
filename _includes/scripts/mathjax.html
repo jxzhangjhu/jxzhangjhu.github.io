@@ -1,5 +1,18 @@
+  {%- comment -%}
+    Load MathJax on-demand instead of on every page. It loads on blog posts
+    (collection `posts`, which use $...$ math) or on any page/post that opts in
+    with `math: true` in its front matter; `math: false` force-disables it.
+    This keeps MathJax (a large dependency) off high-traffic, math-free pages
+    like the homepage, CV, repositories, and publications.
+  {%- endcomment -%}
+  {%- assign load_math = false -%}
   {%- if site.enable_math -%}
-  <!-- MathJax -->
+    {%- if page.collection == 'posts' -%}{%- assign load_math = true -%}{%- endif -%}
+    {%- if page.math == true -%}{%- assign load_math = true -%}{%- endif -%}
+    {%- if page.math == false -%}{%- assign load_math = false -%}{%- endif -%}
+  {%- endif -%}
+  {%- if load_math -%}
+  <!-- MathJax (loaded on-demand; see logic above) -->
   <script type="text/javascript">
     window.MathJax = {
       tex: {
@@ -12,5 +25,4 @@
     };
   </script>
   <script defer type="text/javascript" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@{{ site.mathjax.version }}/es5/tex-mml-chtml.js"></script>
-  <script defer src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   {%- endif %}

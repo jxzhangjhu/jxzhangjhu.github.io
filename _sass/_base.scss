@@ -709,11 +709,14 @@ code {
 
 
 // Transitioning Themes
+// Only animate color-related properties (not `all`) and keep it short, so
+// flipping the theme doesn't force the browser to transition every property
+// on every element/pseudo-element (the cause of the laggy toggle).
 html.transition,
 html.transition *,
-html.transition *:before,
-html.transition *:after {
-  transition: all 750ms !important;
+html.transition *::before,
+html.transition *::after {
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, fill 0.2s ease !important;
   transition-delay: 0 !important;
 }
 
@@ -854,9 +857,69 @@ progress {
      display: block;
  }
  
- .progress-bar {
-     background-color: var(--global-theme-color);
-     width: 0%;
-     display: block;
-     height: inherit;
- }
+.progress-bar {
+    background-color: var(--global-theme-color);
+    width: 0%;
+    display: block;
+    height: inherit;
+}
+
+// Q&A highlight: make interview "Question" blocks and their 🎯 one-line answers
+// stand out as a connected card with an accent bar and soft shadow. Classes are
+// added by a small script in _layouts/post.html (works for EN and ZH posts).
+.post .post-content {
+  p.qa-question {
+    margin: 1.9rem 0 0;
+    padding: 0.9rem 1.15rem;
+    background: var(--global-code-bg-color);
+    border: 1px solid var(--global-divider-color);
+    border-left: 4px solid var(--global-theme-color);
+    border-radius: 8px 8px 0 0;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
+    font-size: 1.03em;
+
+    strong { color: var(--global-theme-color); }
+  }
+
+  p.qa-question + p.qa-answer {
+    margin: 0 0 1.5rem;
+    padding: 0.75rem 1.15rem;
+    background: var(--global-card-bg-color);
+    border: 1px solid var(--global-divider-color);
+    border-top: none;
+    border-left: 4px solid var(--global-theme-color);
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+  }
+}
+
+// Printing / PDF export: Chrome's print path does not fall back per-glyph through
+// the font stack the way the screen renderer does, so a Latin-first stack drops
+// Chinese glyphs. Put a CJK-capable font first for printing only (screen is
+// unchanged). MathJax (mjx-*) is intentionally not targeted so math keeps its fonts.
+@media print {
+  body,
+  .post .post-header .post-title,
+  .post .post-content,
+  .post .post-content p,
+  .post .post-content li,
+  .post .post-content td,
+  .post .post-content th,
+  .post .post-content h1,
+  .post .post-content h2,
+  .post .post-content h3,
+  .post .post-content h4,
+  .post .post-content h5,
+  .post .post-content h6,
+  .post .post-content blockquote,
+  .post .post-content a,
+  .post .post-content strong,
+  .post .post-content em,
+  .post .post-content figcaption {
+    // A CJK font with broad availability must come FIRST: Chrome's print pipeline
+    // does not fall through the stack per glyph, and some CJK fonts (e.g. PingFang)
+    // are not exposed to every print/font backend. Hiragino Sans GB ships with
+    // macOS and covers both Latin and CJK, so it reliably renders Chinese in print.
+    font-family: "Hiragino Sans GB", "PingFang SC", "Heiti SC", "Songti SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif !important;
+  }
+}

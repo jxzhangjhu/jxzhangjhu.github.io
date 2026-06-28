@@ -9,3 +9,12 @@ _site
 Gemfile.lock
 vendor
 
+# Working drafts / private content — never commit or publish
+/blog2026/
+/cv2026/
+/*.pdf
+
+# Python caches (from skill scripts)
+__pycache__/
+*.pyc
+

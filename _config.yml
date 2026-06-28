@@ -8,12 +8,10 @@ middle_name:
 last_name: Zhang
 email:
 description: > # the ">" symbol means to ignore newlines until "footer_text:"
-  A simple, whitespace theme for academics. Based on [*folio](https://github.com/bogoli/-folio) design.
+  Jiaxin Zhang — Senior Staff Research Scientist (Research Lead) at Salesforce AI Research, building reliable, calibrated LLMs and self-evolving long-horizon AI agents: agentic reinforcement learning, alignment, calibration, and trustworthy evaluation.
 footer_text: >
-  Powered by <a href="https://jekyllrb.com/" target="_blank">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio">al-folio</a> theme.
-  Hosted by <a href="https://pages.github.com/" target="_blank">GitHub Pages</a>.
-  Photos from <a href="https://unsplash.com" target="_blank">Unsplash</a>.
-keywords: jekyll, jekyll-theme, academic-website, portfolio-website  # add your own keywords or leave empty
+  Built with <a href="https://github.com/alshedivat/al-folio" target="_blank">al-folio</a> and <a href="https://jekyllrb.com/" target="_blank">Jekyll</a>, hosted on <a href="https://pages.github.com/" target="_blank">GitHub Pages</a>.
+keywords: Jiaxin Zhang, Salesforce AI Research, large language models, LLM, agentic reinforcement learning, alignment, calibration, uncertainty quantification, AI agents, post-training, trustworthy AI
 
 lang: en # the language of your site (for example: en, fr, cn, ru, etc.)
 icon: ⚛️  # the emoji used as the favicon (alternatively, provide image name in /assets/img/)
@@ -170,7 +168,7 @@ collections:
     output: true
     permalink: /news/:path/
   projects:
-    output: true
+    output: false  # unpublished: /projects/* pages are not generated (was orphaned, not in nav)
     permalink: /projects/:path/
 
 # news_scrollable: true # adds a vertical scroll bar if there are more than 3 news items
@@ -201,6 +199,9 @@ exclude:
   - Gemfile.lock
   - vendor
   - backup
+  - blog2026                          # working drafts, notes, third-party paper PDFs — never publish
+  - cv2026                            # CV draft PDFs — never publish
+  - "RL-Agentic-RL-中文完整版.pdf"   # stray draft PDF at repo root
 keep_files:
   - CNAME
   - .nojekyll

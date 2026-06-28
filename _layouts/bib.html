@@ -48,9 +48,9 @@
             {%- assign title_link = entry.html -%}
           {%- endif -%}
           {%- if title_link -%}
-            <a href="{{ title_link }}" style="color: #2698BA; text-decoration: none;">{{entry.title}}</a>
+            <a href="{{ title_link }}" style="color: var(--global-theme-color); text-decoration: none;">{{entry.title}}</a>
           {%- else -%}
-            <span style="color: #2698BA;">{{entry.title}}</span>
+            <span style="color: var(--global-theme-color);">{{entry.title}}</span>
           {%- endif -%}
         </div>
         <!-- Author -->
