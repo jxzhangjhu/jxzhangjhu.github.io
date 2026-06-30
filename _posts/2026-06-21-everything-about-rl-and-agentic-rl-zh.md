@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 我从 RL 与 Agentic RL 面试题里学到的东西（中文版）
+title: What I Learned from RL and Agentic RL Interview Questions (中文版)
 date: 2026-06-21 16:00:00
 author: Jiaxin Zhang
 description: 一篇以概念为主线的 LLM post-training / Agentic RL 面试复习指南：从 PPO/GRPO/DPO、RLVR，到环境、评估与系统一致性。
@@ -8,6 +8,7 @@ tags: rl rlhf grpo agents post-training
 categories: research-notes
 giscus_comments: true
 related_posts: false
+ai_assisted: true
 read_time: 97
 og_image: https://jxzhangjhu.github.io/assets/img/blog/rl-agentic-rl/fig_llm_rl_stack.png
 ---

@@ -726,6 +726,22 @@ figure.highlight pre {
   margin: 0;
 }
 
+// "Written with AI assistance" note (opt in per post via `ai_assisted: true`)
+.ai-disclaimer {
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: var(--global-text-color-light);
+  background-color: var(--global-code-bg-color);
+  border-left: 3px solid var(--global-theme-color);
+  border-radius: 6px;
+  padding: 0.6rem 0.9rem;
+  margin: 0 0 1.6rem;
+
+  a {
+    color: var(--global-theme-color);
+  }
+}
+
 
 // Transitioning Themes
 // Only animate color-related properties (not `all`) and keep it short, so
