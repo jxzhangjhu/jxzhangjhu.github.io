@@ -867,7 +867,52 @@ RL 很容易自欺。训练 reward 曲线上升还不够：也许模型找到了
 | Systems | rollout tokens/s、trainer idle time、queue size、staleness 分布、KV-cache 利用率 | rollout 瓶颈、async 不稳 |
 | Quality | held-out pass@1/pass@k、人工抽查、top-reward 审计 | proxy 过拟合、reward hacking |
 
-**Takeaway.** Evaluation 不是一个排行榜数字。它是一块仪表盘，把 proxy reward 与真实能力、train 与 test、pass@1 与 pass@k、模型质量与系统瓶颈分开。
+---
+
+**Question (added):** 一次 RL/GRPO 训练前期稳定、reward 上升，之后却 collapse。怎么 debug？在 W&B 里盯哪些指标、常见原因有哪些？
+
+🎯 *Collapse 几乎总是四大类之一：**entropy/exploration collapse**、**reward/verifier hacking**、**off-policy / trust-region 崩掉**、或 **系统–数值 bug**。别猜——叠一组固定曲线（train reward vs held-out、entropy、KL-to-ref、clip fraction、ratio 直方图、grad-norm、length、group-reward std、all-pass/all-fail），找出**最先**拐头的那条，并读 collapse 那一步的 top-reward rollout。曲线的形状与时序通常就点出了原因。*
+
+**Step 0 — 是 collapse 还是假象？** 先叠 **train reward** 和一个 **held-out verifier eval**，因为它们指向不同问题：
+- train reward ↑ 但 held-out ↓ → **不是 collapse，是 reward/verifier hacking 或过拟合**（§5）：你优化的是 proxy。
+- 两者都 ↓ → **真正的 optimization collapse**（exploration/失稳/系统）。
+- train reward 噪声大/↓ 但 held-out 平 → 往往是 **reward-scale / 数据**问题，或你在读噪声。
+
+**Step 1 — 读这组面板，并记下哪条曲线最先动。** *时序*是最大的线索：真正的 exploration collapse 里 entropy 通常在 reward 掉之前就先死，而系统 bug 表现为 grad-norm/ratio 突然 spike、且之前 entropy 没有漂移。
+
+| W&B 信号 | Collapse 时的形态 | 可能原因 |
+|---|---|---|
+| policy **entropy** | 在 reward 掉之前就冲向 0 | **entropy collapse** —— exploration 死了、mode collapse（§10） |
+| **KL-to-ref** | spike / 快速攀升 | policy 跑出分布；RM overoptimization；KL 系数太低（§5、§7） |
+| **clip fraction** | 冲向 1（大多数 token 被裁） | 步子太大 / 太 off-policy；lr 太高；PPO epoch 太多 |
+| **ratio** $$\pi/\pi_{\text{old}}$$ 直方图 | 重尾，质量远离 1 | off-policy / stale rollout / 训推不一致（§18） |
+| **grad norm** | spike，或变 NaN | 失稳、坏 batch、loss-scaling/all-reduce bug（§16）、lr 太高 |
+| **response length** | 爆炸（或坍缩成极短） | length hacking / 重复；或 mode collapse 到短答案 |
+| **group reward std** | → 0；all-pass/all-fail 率 → 1 | 无学习信号；verifier 坏了；curriculum 太易/太难（§8、§14） |
+| **reward** | 不连续地向*上*跳 | 找到了 reward/verifier **exploit**（§5） |
+
+**Step 2 — 常见原因，逐条列举。**
+- **Exploration / optimization：** entropy collapse（没有 entropy bonus、KL 牵引太紧、温度太低）；learning rate 太高；PPO epoch 太多（batch 内数据变 stale）；advantage 归一化病态（除以接近 0 的 group std 会把 advantage 炸掉，§8——Dr. GRPO 去掉了它）；clip 范围太松。
+- **Reward / verifier：** reward hacking / verifier exploit（§5）；reward scale 或 shaping 不对（length bias、只给格式分）；**中途 prompt/版本变了的 LLM-judge 发生漂移**（§4）。
+- **Data / curriculum：** 太多 all-pass 或 all-fail 的 prompt（零梯度——需要 dynamic sampling，§8）；重复或被污染的 prompt；某个 curriculum step 让所有任务变得平凡或不可能（§14）；第 $$T$$ 步换进了一个坏的 data shard。
+- **系统 / 数值：** **训推不一致**——rollout engine 和 trainer 算出不同 logprob，导致 ratio 错（MoE routing 最严重，§18）；**async staleness 太高**（rollout 太 off-policy，§18）；一个悄悄放大有效 LR 的 **gradient/all-reduce bug**（§16）；fp8/bf16 溢出或 loss-scaling 问题；非确定性 / 非 batch-invariant kernel（§18）；跨 policy 版本复用 KV cache。
+
+**Step 3 — 一步步的 W&B 排查流程。**
+1. **锁定 collapse 步 $$T$$**，x 轴设成 step，放大到 $$T$$ 附近的窗口。
+2. **叠 train reward + held-out eval**（Step 0），区分 hacking vs collapse。
+3. **先看 entropy 和 KL。** entropy 在 $$T$$ 之前 → 0 = exploration 死；KL-to-ref 在 $$T$$ spike = policy 跑离了 base model。
+4. **再看 clip fraction + ratio 直方图。** 高 clip / 重尾 ratio = 步子太大或太 off-policy（降 lr、减 epoch、收紧 staleness）。
+5. **再看 grad-norm 和 lr schedule。** grad-norm spike 或 NaN = 失稳或数值/all-reduce bug；看它是否正好撞上 lr warmup 结束或 KL-anneal 那一步。
+6. **再看 length、group std、all-pass/all-fail。** length 爆炸 = length hacking；group std → 0 = 无信号；all-pass → 1 = 任务太易或 verifier 被轻易满足。
+7. **读 $$T$$ 处的样本** —— top-reward rollout *和*一份随机样本。这一步最常一眼看出原因（重复、退化格式、verifier 漏洞、空推理）。
+8. **和 $$T$$ 处的近期改动对齐**：lr warmup 结束、KL 系数 anneal、一次 curriculum 推进、data-shard 切换、checkpoint reload，或某次基础设施改动。
+9. **二分定位。** 回退到 $$T$$ *之前*的 checkpoint，一次只改**一个**变量（降 lr、加 entropy bonus / 提高 KL、开 dynamic sampling、修 verifier、限 staleness）。collapse debug 就是一次只动一个变量。
+
+**实践中最常见的。** 对 RLVR/reasoning run，头号元凶是 **entropy collapse**（修：entropy bonus / Clip-Cov / KL-Cov、提高 rollout 温度，§10）、**reward hacking**（修：更强/held-out verifier、在 held-out 上 early stop，§5）、以及 **÷std / all-pass-all-fail 信号丢失**（修：dynamic sampling、Dr. GRPO 式归一化，§8）。系统 bug（训推不一致、all-reduce）更少见，但会造成最陡、最突然的 collapse。
+
+**If asked in an interview:** “叠 train vs held-out reward，然后 entropy/KL，然后 clip/ratio，然后 grad-norm——哪条最先动就点出是哪一类（exploration、hacking、off-policy、还是 systems）——并且永远读 collapse 那一步的 top-reward 样本。然后回退一个 checkpoint、一次只改一个变量。”
+
+**Takeaway.** Evaluation 不是一个排行榜数字。它是一块仪表盘，把 proxy reward 与真实能力、train 与 test、pass@1 与 pass@k、模型质量与系统瓶颈分开——而且它就是你 debug collapse 时用的同一块仪表盘：找出最先拐头的那条曲线，然后读样本。
 
 ---
 ## Part V — Agentic RL

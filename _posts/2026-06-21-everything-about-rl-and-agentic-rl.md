@@ -1411,8 +1411,55 @@ rate, rollout throughput, trainer idle time, queue size, staleness, and held-out
 | Systems | rollout tokens/s, trainer idle time, queue size, staleness distribution, KV-cache utilization | rollout bottlenecks, async instability |
 | Quality | held-out pass@1/pass@k, human spot checks, top-reward audit | proxy overfit, reward hacking |
 
+---
+
+**Question (added):** An RL/GRPO run is stable and reward rises, then collapses. How do you debug it — what do you watch in W&B, and what are the usual causes?
+
+🎯 *Collapse is almost always one of four families: **entropy/exploration collapse**, **reward/verifier hacking**, **off-policy / trust-region blow-up**, or a **systems–numerics bug**. Don't guess — overlay a fixed panel (train reward vs held-out, entropy, KL-to-ref, clip fraction, ratio histogram, grad-norm, length, group-reward std, all-pass/all-fail), find which curve turned **first**, and read the top-reward rollouts at the collapse step. The shape and timing usually name the cause.*
+
+**Step 0 — collapse or mirage?** First overlay **train reward** and a **held-out verifier eval**, because they point at different problems:
+- train reward ↑ but held-out ↓ → **not "collapse," it's reward/verifier hacking or overfit** (§5): you optimized the proxy.
+- both ↓ → **true optimization collapse** (exploration/instability/systems).
+- train reward noisy/↓ but held-out flat → often a **reward-scale / data** issue, or you are reading noise.
+
+**Step 1 — read the panel, and note which curve moved first.** The *ordering in time* is the biggest clue: entropy usually dies *before* reward falls in a genuine exploration collapse, whereas a systems bug shows as a grad-norm/ratio spike with no prior entropy drift.
+
+| W&B signal | Collapse-time pattern | Likely cause |
+|---|---|---|
+| policy **entropy** | crashes toward 0 *before* reward falls | **entropy collapse** — exploration died, mode collapse (§10) |
+| **KL-to-ref** | spikes / climbs fast | policy ran off-distribution; RM overoptimization; KL coef too low (§5, §7) |
+| **clip fraction** | rises toward 1 (most tokens clipped) | steps too large / too off-policy; lr too high; too many PPO epochs |
+| **ratio** $$\pi/\pi_{\text{old}}$$ histogram | heavy tails, mass far from 1 | off-policy / stale rollouts / train–inference mismatch (§18) |
+| **grad norm** | spikes, or goes NaN | instability, bad batch, loss-scaling/all-reduce bug (§16), lr too high |
+| **response length** | explodes (or collapses to trivial) | length hacking / repetition; or mode collapse to short answers |
+| **group reward std** | → 0; all-pass/all-fail rate → 1 | no learning signal; verifier broke; curriculum too easy/hard (§8, §14) |
+| **reward** | discontinuous jump *up* | found a reward/verifier **exploit** (§5) |
+
+**Step 2 — the usual causes, enumerated.**
+- **Exploration / optimization:** entropy collapse (no entropy bonus, KL leash too tight, temperature too low); learning rate too high; too many PPO epochs (data goes stale within the batch); advantage-normalization pathology (dividing by a near-zero group std blows up advantages, §8 — Dr. GRPO removes this); clip range too loose.
+- **Reward / verifier:** reward hacking / a verifier exploit (§5); wrong reward scale or shaping (length bias, format-only credit); an **LLM-judge that drifted** because its prompt/version changed mid-run (§4).
+- **Data / curriculum:** too many all-pass or all-fail prompts (zero gradient — needs dynamic sampling, §8); duplicated or contaminated prompts; a curriculum step that made every task trivial or impossible (§14); a bad data shard swapped in at step *T*.
+- **Systems / numerics:** **train–inference mismatch** — the rollout engine and trainer compute different logprobs, so ratios are wrong (worst for MoE routing, §18); **async staleness too high** (rollouts too off-policy, §18); a **gradient/all-reduce bug** that silently scales the effective LR (§16); fp8/bf16 overflow or loss-scaling issues; nondeterminism / non-batch-invariant kernels (§18); reusing a KV cache across policy versions.
+
+**Step 3 — the step-by-step W&B protocol.**
+1. **Pin the collapse step $$T$$** and set the x-axis to steps; zoom to a window around $$T$$.
+2. **Overlay train reward + held-out eval** (Step 0) to classify hacking vs collapse.
+3. **Look at entropy and KL first.** Entropy → 0 *before* $$T$$ = exploration death; KL-to-ref spiking at $$T$$ = the policy ran away from the base model.
+4. **Then clip fraction + ratio histogram.** High clip / heavy-tailed ratios = steps too large or too off-policy (lower lr, fewer epochs, tighten staleness).
+5. **Then grad-norm and lr schedule.** A grad-norm spike or NaN = instability or a numerics/all-reduce bug; check whether it coincides with the end of lr warmup or a KL-anneal step.
+6. **Then length, group std, all-pass/all-fail.** Length explosion = length hacking; group std → 0 = no signal; all-pass → 1 = task too easy or verifier trivially satisfied.
+7. **Read the samples at $$T$$** — the top-reward rollouts *and* a random sample. This single step most often reveals the cause instantly (repetition, degenerate formatting, a verifier loophole, empty reasoning).
+8. **Correlate with recent changes** at $$T$$: lr warmup ending, KL coefficient annealing, a curriculum advance, a data-shard swap, a checkpoint reload, or an infra change.
+9. **Bisect.** Roll back to a checkpoint *before* $$T$$ and change **one** thing (lower lr, add entropy bonus / raise KL, enable dynamic sampling, fix the verifier, bound staleness). Collapse debugging is one-variable-at-a-time.
+
+**Most common in practice.** For RLVR/reasoning runs the top offenders are **entropy collapse** (fix: entropy bonus / Clip-Cov / KL-Cov, higher rollout temperature, §10), **reward hacking** (fix: stronger/held-out verifier, early stop on held-out, §5), and **÷std / all-pass-all-fail** signal loss (fix: dynamic sampling, Dr. GRPO-style normalization, §8). Systems bugs (train–inference mismatch, all-reduce) are rarer but produce the sharpest, most sudden collapses.
+
+**If asked in an interview:** "Overlay train vs held-out reward, then entropy/KL, then clip/ratio, then grad-norm — whichever moved first names the family (exploration, hacking, off-policy, or systems) — and always read the top-reward samples at the collapse step. Then roll back a checkpoint and change one variable."
+
 **Takeaway.** Evaluation is not a leaderboard number. It is a dashboard that separates proxy reward from
-true capability, train from test, pass@1 from pass@k, and model quality from systems bottlenecks.
+true capability, train from test, pass@1 from pass@k, and model quality from systems bottlenecks — and
+it is the same dashboard you use to debug a collapse: find the curve that turned first, then read the
+samples.
 
 ---
 
