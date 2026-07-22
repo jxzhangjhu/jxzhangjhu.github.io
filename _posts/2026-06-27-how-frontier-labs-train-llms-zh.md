@@ -24,6 +24,8 @@ og_image: https://jxzhangjhu.github.io/assets/img/blog/how-frontier-labs-train-l
 - [预训练：scaling、精度与稳定性](#预训练scaling精度与稳定性)
 - [后训练（一）：SFT、冷启动与蒸馏](#后训练一sft冷启动与蒸馏)
 - [后训练（二）：RL，推理的引擎](#后训练二rl推理的引擎)
+- [Agentic RL：长程任务中的信用分配](#agentic-rl长程任务中的信用分配)
+- [灾难性遗忘与持续学习](#灾难性遗忘与持续学习)
 - [对齐：有用性、安全与诚实](#对齐有用性安全与诚实)
 - [评测：度量这场攀登](#评测度量这场攀登)
 - [安全与红队](#安全与红队)
@@ -44,7 +46,7 @@ MAI-Thinking-1 为主线，其他报告则作为合唱。
 
 ## 为什么要读这些技术报告？
 
-在深度学习时代的大部分时间里，*一个前沿模型究竟是怎么训练出来的*一直是业界守口如瓶的秘密：系统卡片里的寥寥数语、一个参数量、一张基准测试表格。你可以读遍每一篇论文，却仍然不知道该如何造出一个。这种情况已经改变了。2024-2026 年间发生了一件了不起的事：一家接一家实验室发布了真正的**端到端技术报告**——不是吊人胃口的预告，而是数据流水线、架构消融实验、优化器、强化学习配方、奖励设计、评测方法以及安全流程。DeepSeek（V3、V3.2、R1）、Qwen3、Kimi K2 和 k1.5、Meta 的 Llama 3、Google 的 Gemma、Microsoft AI 的 MAI-Thinking-1、Zhipu 的 GLM-4.5、Alibaba、Moonshot、Xiaomi 的 MiMo、Tencent 的 Hunyuan、MiniMax、NVIDIA 的 Nemotron，以及完全开源的 OLMo 2 / Tulu 3——它们合在一起，就是一本无心插柳的教科书。
+在深度学习时代的大部分时间里，*一个前沿模型究竟是怎么训练出来的*一直是业界守口如瓶的秘密：系统卡片里的寥寥数语、一个参数量、一张基准测试表格。你可以读遍每一篇论文，却仍然不知道该如何造出一个。这种情况已经改变了。2024-2026 年间发生了一件了不起的事：一家接一家实验室发布了真正的**端到端技术报告**——不是吊人胃口的预告，而是数据流水线、架构消融实验、优化器、强化学习配方、奖励设计、评测方法以及安全流程。DeepSeek（V3、V3.2、R1）、Qwen3、Kimi K2 和 k1.5、Meta 的 Llama 3、Google 的 Gemma、Microsoft AI 的 MAI-Thinking-1、Zhipu 的 GLM-4.5、Alibaba、Moonshot、Xiaomi 的 MiMo、Tencent 的 Hunyuan、MiniMax、NVIDIA 的 Nemotron，以及完全开源的 OLMo 2 / Tulu 3——以及在 2026 年年中涌现的新一波：DeepSeek-V4、GLM-5 / 5.2、Kimi K3、Qwen3.5、xAI 的 Grok 4.5，以及 Thinking Machines 的 Inkling。它们合在一起，就是一本无心插柳的教科书。
 
 把它们并排来读，最令人惊讶的不是各家实验室有多么不同，而是它们变得多么**趋同**。剥去品牌的外衣，几乎每一篇报告走的都是同一条路：
 
@@ -89,7 +91,7 @@ MAI-Thinking-1 为主线，其他报告则作为合唱。
 
 有两个维度仍然存在真正的争议，而工程上的努力也正集中在这两处。
 
-**注意力效率。**GQA 是基线，但前沿则是一大堆缩小 KV cache 或二次方开销的花样：DeepSeek 的 **Multi-head Latent Attention（MLA）**（[DeepSeek-V2](https://arxiv.org/abs/2405.04434)）把 KV 压缩成一个低秩潜在表示（缓存比 GQA 更小，质量却*更好*），后来又用 **DeepSeek Sparse Attention** 加以扩展，使长上下文注意力变为次二次方（[DeepSeek-V3.2](https://arxiv.org/abs/2512.02556)）；Gemma 3 和 MAI 以 **5 局部 : 1 全局** 的方式交错排列注意力层，于是每六层里只有一层需要付出长程开销；MiniMax-M1 走得最远，用 **7:1 的 lightning（线性）注意力** 混合方案，让 1M token 上下文——以及廉价的 long-CoT RL——变得负担得起；Hunyuan 把 GQA 与跨层注意力结合，节省约 95% 的 KV；gpt-oss 加入了 **attention sinks**。MAI 甚至在它的全局层上彻底去掉了位置编码（NoPE），发现这样和 RoPE 一样好却更便宜。到 2026 年，这已成了*那场*竞赛：稀疏/压缩注意力加上 **1M token 上下文** 如今已是入场门槛——DeepSeek-V4 推出了 Compressed-Sparse + Heavily-Compressed Attention 混合方案，GLM-5 采用了 DeepSeek 的 DSA（GLM-5.2 还加入了"IndexShare"，把 1M 上下文的 FLOPs 削减约 2.9×），它们追逐的都是同一个目标：让长上下文便宜到足以*用来训练 RL*，而不只是用来推理部署。
+**注意力效率。**GQA 是基线，但前沿则是一大堆缩小 KV cache 或二次方开销的花样：DeepSeek 的 **Multi-head Latent Attention（MLA）**（[DeepSeek-V2](https://arxiv.org/abs/2405.04434)）把 KV 压缩成一个低秩潜在表示（缓存比 GQA 更小，质量却*更好*），后来又用 **DeepSeek Sparse Attention** 加以扩展，使长上下文注意力变为次二次方（[DeepSeek-V3.2](https://arxiv.org/abs/2512.02556)）；Gemma 3/4 和 MAI 以 **5 局部 : 1 全局** 的方式交错排列注意力层，于是每六层里只有一层需要付出长程开销（Gemma 4 沿用了这一点，并加上 **Proportional RoPE**、全局层共享 KV，以及它的第一个 **MoE** 变体——[Gemma Team, 2026](https://arxiv.org/abs/2607.02770)）；MiniMax-M1 走得最远，用 **7:1 的 lightning（线性）注意力** 混合方案，让 1M token 上下文——以及廉价的 long-CoT RL——变得负担得起；Hunyuan 把 GQA 与跨层注意力结合，节省约 95% 的 KV；gpt-oss 加入了 **attention sinks**。MAI 甚至在它的全局层上彻底去掉了位置编码（NoPE），发现这样和 RoPE 一样好却更便宜。到 2026 年，这已成了*那场*竞赛：稀疏/压缩注意力加上 **1M token 上下文** 如今已是入场门槛——DeepSeek-V4 推出了 Compressed-Sparse + Heavily-Compressed Attention 混合方案，GLM-5 采用了 DeepSeek 的 DSA（GLM-5.2 还加入了"IndexShare"，把 1M 上下文的 FLOPs 削减约 2.9×），它们追逐的都是同一个目标：让长上下文便宜到足以*用来训练 RL*，而不只是用来推理部署。到 2026 年年中，最大胆的押注——**线性/混合注意力**——已在前沿走向主流：[Kimi K3](https://www.kimi.com/en/blog/kimi-k3) 用上了 **Kimi Delta Attention（KDA）**，[Qwen3.5](https://qwen.ai/blog?id=qwen3.5) 用了 **Gated DeltaNet** 混合方案（以约 17B 激活的速度提供 400B 级的质量），再加上 MiniMax 的 lightning attention——它们都在用一点点质量换取近乎线性的长上下文开销。稀疏度也走向了极致：**Kimi K3 只激活 896 个专家中的 16 个**，并用 **Quantile Balancing**（按 router-score 分位数分配，不用 aux-loss 启发式）来做均衡，号称有约 2.5× 于 K2 的 scaling 效率。
 
 **MoE 负载均衡。**被路由的专家必须保持均衡，否则训练就会崩溃、GPU 闲置。同一个问题经历了三个时代：最初的**辅助损失（auxiliary-loss）**（在目标函数里加一个均衡惩罚项——[GShard](https://arxiv.org/abs/2006.16668)）；DeepSeek 的**无辅助损失（auxiliary-loss-free）**方案（把均衡*移出梯度*，变成每个专家的路由偏置，质量*更好*、专精程度也更高，[Wang et al., 2024](https://arxiv.org/abs/2408.15664)）；以及 Qwen 的**全局批次聚合（global-batch aggregation）**洞见——没人注意到的那个 bug，就是按 micro-batch 来计算均衡损失，这会悄悄毁掉专家的专精（[Qiu et al., 2025](https://arxiv.org/abs/2501.11873)）。
 
@@ -132,6 +134,8 @@ MAI-Thinking-1 为主线，其他报告则作为合唱。
 
 > **分歧——合成数据 vs 人类数据。** MAI 采取了反主流的强硬立场：**预训练中不使用任何 LM 生成的合成数据**，并主动地去*检测并移除*爬取数据中的 AI 生成内容（这是一种押注：干净的人类数据可以避开模型崩溃 / 同质化的陷阱）。但相反的一极同样随处可见：Hunyuan-Large 在约 1.5T **合成** token 上训练，这些 token 来自一条四步走的“生成—演化—过滤”流水线；[Persona Hub](https://arxiv.org/abs/2406.20094) 用十亿量级的 persona 来扩展合成数据的*多样性*；Qwen 和 Nemotron 则倚重合成改写与蒸馏。MiniMax 取了个折中（和 MAI 一样，在预训练中回避合成数据）。这个问题确实尚无定论，也是最能干净利落地标记出“实验室之间存在分歧”的一刻。
 
+还有一个值得一提的新数据前沿：**真实的 agent 轨迹**。xAI 的 **[Grok 4.5](https://media.x.ai/v1/website/card-7f81d41b.pdf)**（2026 年 7 月）在 mid-training 阶段用上了*匿名化的 Cursor 开发者会话轨迹*——工程师在真实代码库里浏览、编辑的真实按键记录——以此打磨编码与 agentic 行为，Artificial Analysis 将其在 agentic 工具使用上排到第 1。这是"算力 **+** 轨迹"范式最清晰的一例：一旦算力扩上去了，稀缺的输入就变成了*对目标行为的录制*。（它也带来了尚未解决的数据权属问题——谁的代码、经谁同意。）
+
 最后，**去污染（decontamination）**——把评测基准挡在训练数据之外——是潜伏在这一切之下的一场静默危机。随着基准泄漏到 GitHub 和各类爬取数据里，污染会产出好看却虚假的数字。实验室对此的处理还比较粗糙：MAI 移除所有 huggingface 镜像，并普遍施加 20-gram 模糊去重，而且——这也是大家正在收敛到的做法——依赖那些他们有信心不会出现在网上的**私有、留出（held-out）基准**。我们会在*评估*一节再回到这个话题。
 
 **小结。** 数据是分享得最少、却杠杆最高的阶段：一条已经收敛的漏斗（抽取 → 去重 → 分类 → 混合）之上，压着两个悬而未决的问题——*该有多信任合成数据*，以及*你的评测集是否早已泄漏进了训练数据*。
@@ -149,9 +153,17 @@ MAI-Thinking-1 为主线，其他报告则作为合唱。
 
 > **共识——为推理而过度训练。** 没人再去做算力最优训练了。背后的共同逻辑是：训练只付一次钱，推理却要永远付钱，所以用额外的训练 token 去换一个更小、更便宜的模型。这件事的开放前沿是*数据墙*——在极端的 TPP 下，你会耗尽独一无二的高质量 token，这又绕回到了合成数据之争。
 
+**在小模型上消融、在大模型上落地——以及你怎么知道它能迁移。** 你没法靠训练 1T 模型来 A/B 测试一个 1T 模型；单次训练就要花掉数百万美元。所以*每一个*架构、数据和超参数决策都是在**小的代理模型**上做出、再外推的——而真正的功夫，在于让这种外推变得可信。三件互补的工具挑起了大梁：
+
+- **Scaling ladder + Efficiency-Gain。** 训练一*族*规模/算力递增的模型（一个 IsoFLOP 或恒定 TPP 的阶梯），拟合 loss-对-算力曲线，再读出目标点。MAI 的做法就是范式：一个改动只有在其 **Efficiency-Gain 沿整条阶梯持续或增大**时才被采纳——那种在 1B 上有用、到 30B 就消失的，会被当作小规模假象而否掉。Llama 3 把这一点推到极致，拟合**下游准确率**的 scaling law，把基准分数预测到约 4 个数量级之外，再据此选定 405B/16.5T。
+- **用 μP / μTransfer 迁移超参数。** 对于"我怎么在不做 1T 扫参的情况下选 1T 的学习率"这个问题，干净的答案是：对模型做**重参数化**（**maximal-update parameterization**，[Yang et al., 2022](https://arxiv.org/abs/2203.03466)），使*最优*学习率和初始化对宽度（近乎）不变——在小模型上调好，再**零样本迁移**到大模型。Muon"匹配 AdamW 更新 RMS"的技巧也是同一种让超参数对规模稳定的精神。
+- **小规模不稳定性代理。** 你可以通过在小规模上把学习率拉大来*复现*大规模训练的故障（loss / 注意力 logit 尖峰，[Wortsman et al., 2023](https://arxiv.org/abs/2309.14322)）；QK-norm 和 z-loss 正是这样在有人为大规模训练买单之前就赢得了自己的位置。
+
+> **洞见——scaling law 是在降风险，而不是在给保证。** 令人不安的真相是：迁移会*失效*。**rank 不变性**假设（如果 A 在小规模胜过 B，那 A 在大规模也胜过 B）失效得足够频繁，以至于很危险——MAI 就报告过一个 code-heavy 与 STEM-heavy 的配比在 5B 与 23B 之间*直接换了顺序*——而且有些能力和不稳定性只在规模上**涌现**。所以对"证明它在 1T 上能 work"这个问题，诚实的面试答案是：*你并不去证明，你去降风险。* 用**整条阶梯上的趋势**（而不是某一个点）来判断改动；用 **μP** 迁移超参；在投入之前于**负担得起的最大中间规模**上验证；把最难迁移的决策（数据配比、最终 LR schedule）尽量在贴近目标规模处验证；并偏好那些有**机制性理由**能迁移的改动。最后跳到 1T 那一步永远都带点赌的成分——功夫就在于把这一跳缩到最小。
+
 **精度：BF16 → FP8 → FP4。** 训练精度一路向下行进，从 FP16 混合精度的时代（[Micikevicius et al., 2017](https://arxiv.org/abs/1710.03740)），经过 BF16（[Zamirai et al., 2020](https://arxiv.org/abs/2010.06192)），来到今天的前沿。最显眼的一次效率冲击，是 DeepSeek-V3 **用 FP8** 训练了一个 671B 模型——使用 [FP8 formats](https://arxiv.org/abs/2209.05433)（前向 E4M3、反向 E5M2），配合细粒度的 tile/block 级缩放来驯服离群值——总成本约 $5.6M，相对 BF16 的 loss 误差不到 0.25%（这还得益于 [stochastic rounding](https://arxiv.org/abs/2502.20566) 之类的技巧）。NVIDIA 的 Nemotron 3 更进一步推到了 **NVFP4（4-bit）**，通过逐层的精度规则（让网络最后约 15% 保持高精度）做到了在 25T token 上保持稳定；gpt-oss 则发布了 **MXFP4** MoE 权重，让一个 120B 模型能塞进单张 GPU。MAI 同样用 FP8 训练。那些坚守者也很有启发：Llama 3 出于稳健性留在了 **BF16**——这是一个反复出现的“稳定性优先于效率”的主题。
 
-> **分歧——优化器的垄断正在裂开（而 Muon 正在胜出）。** 十年来，**AdamW** 一直是唯一的答案。如今 **Muon**（[Liu et al., 2025](https://arxiv.org/abs/2502.16982)）——它通过一次 Newton–Schulz 迭代把动量更新正交化，并匹配 AdamW 的更新 RMS——号称有约 2× 的算力效率，而各家旗舰都在切换：**GLM-4.5/GLM-5** 用 Muon，**Kimi K2** 用 **MuonClip**（Muon 加上一个 **QK-Clip**，它会重新缩放 query/key 投影以给注意力 logits 封顶；一次 15.5T token、万亿参数的训练做到了*零 loss 尖峰*），而到了 2026 年，连 **DeepSeek-V4**（[2026](https://arxiv.org/abs/2606.19348)）——一家长期使用 AdamW 的实验室——也采用了 Muon，“以获得更快的收敛和更好的训练稳定性”。AdamW 仍在训练 MAI、Qwen 和 Llama，但这股“动量”（一语双关）显然站在 Muon 一边——这是多年来最具影响力的优化器转变。
+> **分歧——优化器的垄断正在裂开（而 Muon 正在胜出）。** 十年来，**AdamW** 一直是唯一的答案。如今 **Muon**（[Liu et al., 2025](https://arxiv.org/abs/2502.16982)）——它通过一次 Newton–Schulz 迭代把动量更新正交化，并匹配 AdamW 的更新 RMS——号称有约 2× 的算力效率，而各家旗舰都在切换：**GLM-4.5/GLM-5** 用 Muon，**Kimi K2** 用 **MuonClip**（Muon 加上一个 **QK-Clip**，它会重新缩放 query/key 投影以给注意力 logits 封顶；一次 15.5T token、万亿参数的训练做到了*零 loss 尖峰*），而到了 2026 年，连 **DeepSeek-V4**（[2026](https://arxiv.org/abs/2606.19348)）——一家长期使用 AdamW 的实验室——也采用了 Muon，“以获得更快的收敛和更好的训练稳定性”。到 2026 年年中，Kimi K3 更进一步，用上了 **Per-Head Muon**（对每个注意力头独立做正交化）。AdamW 仍在训练 MAI、Qwen 和 Llama，但这股“动量”（一语双关）显然站在 Muon 一边——这是多年来最具影响力的优化器转变。
 
 **稳定性本身就是一个研究领域。** 一次动用上千张 GPU、长达数月的训练，可能会死于 loss 尖峰、发散的 logits，甚至是硬件比特翻转。那些廉价而近乎通用的修法——**QK-norm** 和 **z-loss**——来自那项小规模代理研究（[Wortsman et al., 2023](https://arxiv.org/abs/2309.14322)），而完全开放的 **OLMo 2** 报告则是其余各种技巧的最佳公开清单：一个用于剔除诱发尖峰数据的重复 n-gram 文档过滤器、std-0.02 的初始化、把 AdamW 的 ε 降到 1e-8、重排（pre+post）的 norm、对 embedding 不施加权重衰减——每一项都带有一个对其“尖峰分数（spike score）”的*实测*下降。MAI 的基础设施层还加入了确定性和静默数据损坏（silent-data-corruption）的处理。这些东西，在一份封闭的 system card 里是看不到的。
 
@@ -177,7 +189,38 @@ MAI-Thinking-1 为主线，其他报告则作为合唱。
 
 > **分歧——继承 vs 学习。** 2025 年的主流做法是**蒸馏**：把 R1 的 80 万条长 CoT 轨迹 SFT 进小的 Qwen 和 Llama 模型，在同等规模下*胜过从零开始的大规模 RL*——所以 DeepSeek 甚至把 R1 反向蒸馏回 V3 自己的 SFT 数据，而大多数实验室也都会在某处从一个强推理器进行蒸馏。MAI 则把相反的立场当作立身原则：**"能力应当被学习，而非被继承"**，拒绝从第三方模型蒸馏，因为（他们论证）模仿来的智能缺乏长程爬坡所需的可操控性与鲁棒性。这是该领域最干净的理念分叉：蒸馏更便宜，而且*按美元算*往往效果更好，但只有 RL 才能探索到任何教师*之外*的地方。
 
-**小结。** SFT/冷启动设定起点并安装好 RL 就绪的行为；验证则把模型变成它自己的数据工厂（STaR/ReST-EM/自蒸馏）。开放问题是*继承 vs 学习*——是从一个更强的模型蒸馏，还是用 RL 从你自己的基础模型上培育能力。
+### 蒸馏的三种方式——以及 MOPD 的崛起
+
+既然蒸馏如今已是承重技术（而且 2026 年的报告用的是很不一样的几种），就值得把常被混为一谈的三种口味区分开来：
+
+- **离策略（经典）蒸馏。** 学生在教师产出的一个*固定*集合上训练——要么是教师采样出的补全（序列级 SFT），要么是它在教师/真值序列上的逐 token logits。简单又便宜,小模型的推理能力就是这么来的：把 DeepSeek-R1 的 80 万条长 CoT 轨迹 SFT 进小 Qwen/Llama，或者 **Gemma 4** 去匹配一个更大的 **Gemini** 教师的 logit 分布（[Gemma Team, 2026](https://arxiv.org/abs/2607.02770)）。弱点是**曝光偏差**——学生只见过教师的轨迹、从没见过自己的，于是推理时误差会累积（前向 KL、mode-covering）。
+- **在策略蒸馏（OPD）。** 学生生成*自己的* rollout，教师对这些学生走过的前缀给出稠密的 token 级监督（**反向 KL**、mode-seeking）。这是 DAgger 式的模仿学习——在你真正会走到的状态上训练，把累积误差从 O(T²) 降到 O(T)——从而弥合了离策略 KD 的训练/推理鸿沟。这个想法可追溯到 **GKD**（[Agarwal et al., 2023](https://arxiv.org/abs/2306.13649)）和 **MiniLLM**（[Gu et al., 2023](https://arxiv.org/abs/2306.08543)），在 2025 年底被重新包装成一套干净的配方，到 2026 年已是标准原语（已经有[综述](https://arxiv.org/abs/2604.00626)了）。
+- **自蒸馏。** 教师和学生是*同一*血脉——模型自身的一个特权、更早或更强的检查点。MAI 的"存档点"自蒸馏（见上）是一种；Nemotron-Cascade 2（[NVIDIA, 2026](https://arxiv.org/abs/2603.19220)）则用模型*自己*的中间检查点当教师，在一条长 RL 级联中修补退化。
+
+> **2026 年的整合范式——MOPD。** 蒸馏领域最重要的进展就是 **Multi-Teacher On-Policy Distillation（多教师在策略蒸馏）**：分别训练若干*独立的、按领域划分的 RL 专家*（数学、代码、agentic、指令遵循、闲聊），再把它们**融合成一个通才**——在学生自己的 rollout 上蒸馏所有教师，每个教师在*它自己*领域的 prompt 上给出稠密的 token 级反向 KL 信号，外加一个可验证的结果奖励。它让研发解耦（各团队并行构建领域教师，互不干扰），并能继承*几乎全部*的每个教师的峰值能力：MiMo-V2-Flash 在 Qwen3-30B-A3B 上报告 0.937，而最好的 merge/Mix-RL 基线为 0.882（[Xiaomi, 2026](https://arxiv.org/abs/2601.02780)；[MOPD, 2026](https://arxiv.org/abs/2606.30406)）。
+
+横向看各家，"专家 → OPD 融合"的形态无处不在——但*旋钮*各不相同：
+
+| 模型 | 蒸馏的角色 | 教师 | 损失形式 | 备注 |
+|---|---|---|---|---|
+| MiMo-V2-Flash | 整合（MOPD） | 按领域的 RL 专家 | token 级反向 KL + 可验证奖励 | *提出*了 MOPD；SFT → 教师 → MOPD |
+| DeepSeek-V4 | 整合 | 10+ 领域专家 | **全词表**反向 KL（缓存教师隐状态、按需重建 logits） | 最忠实、最贵 |
+| Nemotron-3 Ultra / Cascade 2 | 整合 + 防退化 | 10+ 专家 / 自己的检查点 | **采样 token**（在 agentic 上胜过 top-k 与全词表）+ MOPD 预热 SFT | support-overlap 很关键 |
+| GLM-5.2 | 整合 | 按领域的专家 | 在策略蒸馏（slime） | 约两天融合 1000+ 个专家 |
+| Qwen3 | 小模型能力迁移 | 大的 Qwen3（235B-A22B） | 先离策略 → 再在策略 | 比 RL 便宜约 10×；提升 pass@64 |
+| Gemma 4 | 预训练/指令微调迁移 | 更大的 Gemini | 离策略 logit 匹配 | 经典 KD；+ MoE、p-RoPE、MTP |
+| Kimi k1.5 | 压缩（long2short） | 长 CoT 的自身 | 合并 / 最短拒采 / DPO / long2short-RL | 把长推理蒸成廉价的短 CoT |
+
+*2026 年的模型怎么做蒸馏。占主导的新形态是"把领域专家分开训练，再在学生自己的 rollout 上用在策略蒸馏融合成一个模型"。*
+
+有两条反复出现、值得背下来的设计规则：
+
+- **同源教师。** 当教师与学生共享 tokenizer/词表和初始化家族时，OPD 才稳定。换上一个*更强的外部*教师（比如 Qwen3-235B），学生的逐 token KL 会跳升约 5×（0.04 → 0.19），熵向单一模式收缩、准确率下降，而激进的 top-k 形式甚至会*直接发散*（约第 18 步）。从你自己的家族蒸馏，而不是排行榜上最强的那个。
+- **损失形式是一场 support-overlap 的权衡。** 全词表反向 KL 最忠实，但你得*每个 token*搬运一个约 10 万维的分布（DeepSeek 靠缓存隐状态来付这笔账）；采样 token / top-k 更便宜，而且——据 Nemotron——在 agentic 任务上还能*更好*，因为当学生的前缀落到教师可靠支撑之外时，宽泛的分布匹配会放大噪声。
+
+> **洞见——蒸馏正在吞掉"整合"这一步。** 两年前你靠把所有 RL 数据混在一起、然后祈祷（Mix-RL）来合并能力；2026 年的默认做法是*把专家分开训练，再用 OPD 融合*。它更模块化、更稳定，而且——因为奖励是一个分布散度而非标量——明显更难被 reward hacking。但那个隐患（也是 MAI 的反对意见）依然成立：学生只能被拉向*已经存在*的教师，所以 OPD **把"继承"工业化了**——只有 RL 仍能探索到每一个教师之外。
+
+**小结。** SFT/冷启动设定起点并安装好 RL 就绪的行为；验证把模型变成它自己的数据工厂（STaR/ReST-EM/自蒸馏）；而**蒸馏**——离策略、在策略或自蒸馏——是 2026 年各家把众多专家*整合*成一个模型的方式，**MOPD** 如今是默认。开放问题仍是*继承 vs 学习*——OPD 把继承工业化了，但只有 RL 能探索到每个教师之外。
 
 ---
 
@@ -213,7 +256,20 @@ MAI-Thinking-1 为主线，其他报告则作为合唱。
 
 **方向一——走向序列级（GSPO）。** GRPO 的重要性比是*逐 token*的，这在 MoE 模型上噪声很大（一个 token 的专家在 rollout 阶段和训练阶段之间可能不同），并迫使人们用前面提到的"router-replay"技巧。Qwen 的 **Group Sequence Policy Optimization (GSPO)**（[Zheng et al., 2025](https://arxiv.org/abs/2507.18071)）转而在**序列**级别（做长度归一化）定义重要性比和裁剪，这样更稳定、与序列级奖励相匹配，而且——值得注意的是——在 MoE 上**消除了对路由重放（routing replay）的需求**。Qwen 称最新的 Qwen3 模型背后就是 GSPO；它是"保持无 critic，但修正 GRPO 的分析单元"这一思路最干净的答案。
 
-**方向二——把 critic 请回来（PPO）。** 更剧烈的反转来自 **GLM**。由 slime 训练的 GLM 系列（[GLM-5, Zhipu, 2026](https://arxiv.org/abs/2602.15763)）起步于 GRPO（外加一个修正训练/推理不匹配的"IcePop"），但 Zhipu 后来的 [**GLM-5.2**](https://huggingface.co/blog/zai-org/glm-52-blog) 在其长程阶段明确地**放弃了组相对优化，转向基于 critic 的 PPO**。原因很具体，值得内化：当一条非常长的 agent 轨迹被**压缩**（compacted）成多条子轨迹时，*同一个* prompt 的不同 rollout 会产出*数量*不同、长度差异极大的可训练轨迹——于是 GRPO"比较一组干净的、可比的 rollout"这一假设就崩溃了。一个 **critic** 估计**单条 rollout 的 token 级别优势**，并不要求各 rollout 在组内可比，这天然地契合压缩（再配上一个 token-level loss 来应对长度不均衡）。在所有人删除价值模型三年之后，价值模型又回来了——为了长程这一情形。
+**方向二——把 critic 请回来（SAO / PPO）。** 更剧烈的反转来自 **GLM**。由 slime 训练的 GLM 系列（[GLM-5, Zhipu, 2026](https://arxiv.org/abs/2602.15763)）起步于 GRPO（外加一个修正训练/推理不匹配的"IcePop"），但后来的 [**GLM-5.2**](https://huggingface.co/blog/zai-org/glm-52-blog)（750B-A40B）在其长程阶段明确地**放弃了组相对优化，转向一种基于 critic 的方法**。原因很具体，值得内化：当一条非常长的 agent 轨迹被**压缩**（compacted）成多条子轨迹时，*同一个* prompt 的不同 rollout 会产出*数量*不同、长度差异极大的可训练轨迹——于是 GRPO"比较一组干净的、可比的 rollout"这一假设就崩溃了。一个 **critic** 估计**单条 rollout 的 token 级别优势**，并不要求各 rollout 在组内可比，这天然地契合压缩。
+
+GLM-5.2 agentic 攀登背后的具体算法——**SAO，即 Single-rollout Asynchronous Optimization（单轨迹异步优化）**（[Hou et al., 2026](https://arxiv.org/abs/2607.07508)）——把这笔交易摆得很明白：用**每个 prompt 一条 rollout**替代组采样，训练一个**真正的价值模型**（配以更快的 critic 更新，以及一种冻结注意力的方案——把注意力参数固定住，只训练 MoE 投影），再加上一个严格的**双侧 token 级裁剪（DIS）**来屏蔽发散的梯度。回报是稳定性：朴素 GRPO 在异步设定下*约 160 步就崩溃*，而 SAO **能稳定训练约 1000 步**，并在 SWE-Bench Verified、BeyondAIME 和 IMOAnswerBench 上胜过 GRPO 家族的基线。在所有人删除价值模型三年之后，价值模型又回来了——为了长程、异步这一情形。随后 GLM-5.2 的**整合**方式与 DeepSeek-V4 一样：先训练多个领域专家，再通过 **on-policy distillation** 把它们融合成一个通才（Z.AI 称在 slime 上约两天融合了 1000+ 个专家）。
+
+具体来说，SAO 是叠在 PPO/GRPO 代理目标之上的四步动作：
+
+1. **单轨迹采样。** 每个 prompt 只用一条 rollout，而不是一组。在*异步* RL 里，一组的速度取决于其中最慢的那条——训练必须等最慢的完成——所以组采样是*由延迟驱动的 off-policy*，也不适配在线/持续演化的环境。单条 rollout 去掉了这道屏障（作者还认为它泛化得更好）。
+2. **把 critic 请回来——但让它负担得起。** 丢掉组基线，改用**价值模型估计 token 级优势**。为了付得起这笔账，SAO **让 critic 的更新频率高于 actor**，并**在冻结注意力的情况下微调价值模型**（只训练它的 MoE/投影参数），于是 critic 比一个完整的第二策略更便宜。
+3. **跳过观测的 token 级 GAE。** 对于带有交错工具/环境反馈的多轮 agent 轨迹，在*动作到动作*的边界上计算优势，并**跳过那些模型并未生成的观测 token**——这样环境文本就不会把噪声注入价值估计。
+4. **严格的双侧 token 级裁剪（DIS）。** 对 token 比率的*两侧*都做裁剪以屏蔽发散的梯度——是"IcePop"掩码的一个更简单的近亲，让 off-policy 更新保持有界。
+
+数字（在 Qwen3-30B-A3B 基座上）：SWE-Bench Verified **23.0 → 27.0（GRPO）→ 29.8（SAO）**；AIME 2025 **80.4 → 84.2 → 97.3**；BeyondAIME **53.3 → 54.8 → 74.8**——而且关键在于，**朴素 GRPO 在约 160 个异步步就崩溃，而 SAO 能稳定到约 1000 步。**
+
+> **开放问题——critic 值不值这笔成本，这套东西能不能推广？** 对 SAO 要从两个维度保持怀疑。（1）**成本：**它把 GRPO 删掉的东西又请了回来——一个约策略规模的第二价值网络——"冻结注意力、更快 critic"的技巧只是减轻而非消除这笔开销；它的赌注是：长程 agentic RL 对 token 级信用分配的需求，强到足以为此买单。（2）**scale 证据：***受控消融*是在 **30B**（Qwen3-30B-A3B）上做的，所以那些漂亮的"SAO > GRPO"曲线是小模型结果；*唯一*的大规模证据是一次 **750B 的生产部署**（GLM-5.2），而不是一次受控的 750B A/B 实验。这确实是很强的信号——一家前沿实验室把它用上了线——但"在 30B 上消融、在 750B 上部署"本身，正是*下一节*要讲的那种信仰之跃。社区的接受度还很早：一家实验室的生产使用，加上一篇新论文，对面站着的是一个花了两年才学会*爱上*无 critic 的领域。
 
 > **分歧——算法又开始变得任务专用。** 干净利落的 2025 年叙事（"GRPO 赢了，算法是大路货"）正在让位于一个 2026 年的叙事：**短的、可验证的任务用 GRPO/CISPO；稳定的 MoE RL 用 GSPO；长的、被压缩的、agentic 的轨迹用基于 critic 的 PPO。** GLM-5.2 回归 PPO 是头条，但更深层的要点是*轨迹的长度与结构如今驱动着 RL 算法的选择。* 注意 DeepSeek-V4（[2026](https://arxiv.org/abs/2606.19348)）又走了另一条路——保持 **GRPO 按领域专家分别训练**，再用 **on-policy distillation** 把这些专家融合起来——而 MiniMax 的 **M2**（[2026](https://arxiv.org/abs/2605.26494)）则围绕长而不均的轨迹构建了一整套 agent 原生的 RL 系统（"Forge"）。不再有单一的默认选项。
 
@@ -270,6 +326,128 @@ MAI-Thinking-1 为主线，其他报告则作为合唱。
 
 ---
 
+## Agentic RL：长程任务中的信用分配
+
+上一节的算法大多是在**单轮推理**上验证的——一个 prompt、一条长 CoT、末尾一个可验证奖励。Agentic 任务打破了这个模式：一个写代码或做研究的智能体会连续跑*几十到几百个回合*，不断调用工具、对一个随机环境做出反应，而唯一可信的奖励往往*只在最末尾出现一次*。最近一篇斯坦福综述（[Zhang et al., 2026](https://arxiv.org/abs/2604.09459)）把这归纳为**信用分配（credit assignment, CA）**问题的两种截然不同的形态：
+
+- **推理 RL**——把信用分摊到单条 CoT（500–30K token）内部的 token/步骤上，环境是确定性的。GRPO 及其修补就是在这里成熟的；靠一个组相对基线，CA 就"够用了"。
+- **Agentic RL**——10–100+ 个回合，每个回合是一次 LLM 调用加一次环境交互，总量达到 100K–1M+ token，还带有随机转移和部分可观测性。此时**回合级（episode-level）奖励几乎变得毫无信息量**：在某个 SWE-bench 设置里，智能体平均要跑约 64 个回合、消耗约 131K token，而第 3 回合一次错误的工具调用，得到的惩罚与其后几十个正确动作*完全一样*。
+
+（关于信用分配之外的完整设计空间——环境、工具集成、记忆、多智能体——可参阅更全面的 [agentic RL 综述](https://arxiv.org/abs/2509.02547)。）
+
+> **为什么 Agentic RL 是真正不同的。** 这篇综述的核心论点是：agentic CA *不是*"推理 RL，只是更长而已"。它逼出了一批在单轮 RL 里毫无先例的技术——**回合级 MDP 重构、事后（hindsight）/反事实信用，以及特权非对称 critic**——并重新打开了那些推理 RL 时代以为已经关上的问题（用不用 critic、密集还是稀疏奖励）。这正是 2026 年后训练最前沿、最鲜活的地方，也是"critic 回归"（上一节的 SAO）最先发生在这里的原因。
+
+### 信用分配：从一个标量到每回合（乃至每 token）
+
+核心问题是*如何把一个末端奖励分摊到一条长轨迹上*。这些方法构成了一条从粗到细的清晰谱系：
+
+- **回合/结果级（默认做法）。** 像 GRPO 那样，把整条轨迹的标量奖励广播给每一个 token。简单，也是大多数*已发布*前沿模型仍在用的做法——但在长程下，这是可能最嘈杂的信用信号。
+- **回合级、无 critic。** 保留 GRPO 的组基线，但*按回合*计算优势。**MT-GRPO**（[Wei et al., 2025](https://arxiv.org/abs/2505.11821)）估计可直接塞进 GRPO 的回合级优势；**GiGPO**（[Feng et al., 2025](https://arxiv.org/abs/2505.10978)）加了一个巧妙的**锚状态分组（anchor-state grouping）**——它在一组轨迹里找出*重复出现的环境状态*，比较从每个状态出发所采取的动作，从而以与 GRPO *相同*的显存和 rollout 成本产出步骤级"微优势"（ALFWorld +12%、WebShop +9%）。树状变体则共享轨迹前缀，让单个结果奖励诱导出逐步的过程信号。
+- **回合级、带 critic。** 把价值模型请回来，但放在*回合*粒度上。**ArCHer**（[Zhou et al., 2024](https://arxiv.org/abs/2402.19446)）是范式：一个高层 off-policy critic 学一个回合级 Q 函数（"*哪个回合*重要"），一个低层 on-policy actor 在回合内优化 token（"*哪些 token*重要"）——比 on-policy 基线的样本效率高约 100×。GLM-5.2 的 **SAO**（上一节）是它的生产级表亲：一个单 rollout 的 token 级 critic，能在轨迹*压实（compaction）*下存活，而组相对方法恰恰在这里失效。
+- **Agentic 独有的新招。** 事后重标（把一次失败的运行，按它*确实*达成了什么重新解释为成功）和**特权/非对称 critic**（critic 能看到 actor 看不到的状态）——按综述的说法，是 agentic 真正原创的贡献。
+
+> **共识——算法式 CA 正在胜过学习式步骤奖励。** 关于*已发布*模型，最令人意外的一点是：几乎没人用一个显式的逐步奖励模型。前沿对长程信用的答案是更好的*优势估计*（回合级分组、锚状态、感知压实的 critic），而不是另训一个网络去给每一步打分。上面那些细粒度方法大多仍停留在研究规模（1.5B–7B）；生产端靠的是结果/可验证奖励加上聪明的基线。
+
+### 逐步奖励：过程奖励，以及前沿为何对它保持警惕
+
+问题的另一半，是*到底如何评估中间步骤*。在数学上，这条脉络已经相当成熟：
+
+- **过程奖励模型（PRM）。** **"Let's Verify Step by Step"**（[Lightman et al., 2023](https://arxiv.org/abs/2305.20050)）表明，在数学验证上步骤级的*人工*标注胜过结果标注；**Math-Shepherd**（[Wang et al., 2023](https://arxiv.org/abs/2312.08935)）去掉了人工——用"从某一步出发的蒙特卡洛 rollout 中抵达正确答案的经验比例"来自动标注该步，然后做逐步 PPO。生成式 PRM（*带一段理由*再打分）是当前的改进方向。
+- **Agentic PRM。** 把这套搬到智能体上意味着给*动作*打分：**AgentPRM**（[2025](https://arxiv.org/abs/2511.08325)）按每一步对目标的"承诺与进展（promise and progress）"给奖励，用 TD + GAE 训练一个充当 critic 的 PRM；SWE-/Code-PRM 则为局部代码编辑加上执行反馈。
+
+但这里有整个领域关于 agentic 奖励最尖锐的一课，而且是一个**负面结果**：
+
+> **分歧——前沿大多*拒绝*了 PRM。** DeepSeek-R1（[2025](https://arxiv.org/abs/2501.12948)）同时尝试了过程奖励模型和 MCTS，然后把两者都*放弃了*：神经 PRM 会招来 **reward hacking**（策略去糊弄打分器），在开放式推理中"一步"本就难以定义，而且 PRM 需要不断地、代价高昂地重新标注；MCTS 的 token 级分支因子又实在太大。他们的结论——用结果/可验证奖励把搜索内化进权重——成了默认。Kimi K2（[2025](https://arxiv.org/abs/2507.20534)）则为*不可验证*的 agentic 任务展示了务实的折中：一个**基于 rubric 的自我批判（self-critique）**奖励（模型对照明确的评分标准给自己打分），并让这个 critic *持续被可验证奖励重新校准*。所以前沿的"逐步奖励"，通常是一个带 rubric 的 LLM 裁判——而不是一个训练出来的 PRM。
+
+### 各家究竟怎么训练智能体
+
+读这些报告会发现，agentic 配方与其说是某个算法，不如说是**环境 + rollout 基础设施 + 奖励管道**：
+
+- **Kimi K2**——最以 agentic 为先的开源报告。它*自己制造*数据：从约 3,000 个真实 MCP 工具出发，演化到 **20,000+ 个合成工具**，孵化出多样的智能体和按 rubric 评分的任务，模拟多轮轨迹（写代码任务还配真实执行沙盒），只保留能通过 LLM 裁判的轨迹。RL 阶段把 **RLVR**（测试/数学）与 rubric **自我批判**结合起来；基础设施用**部分 rollout（partial rollouts）**——把一条没跑完的长轨迹暂停、下一轮再续——好让少数几个 100K token 的回合不至于拖垮整个 batch。
+- **GLM-4.5 → 5.2**——在 **slime** 异步基础设施上做 agentic 优化（工具使用、网页、写代码）；GLM-5.2 为长达数小时的任务加上**轨迹压实**和 **SAO critic**，再把专家用 OPD 融合（见前几节）。
+- **MiMo-V2-Flash**——大规模 agentic RL，用 **MOPD** 整合，并用 MTP 加速 agentic RL 所需的大量 rollout。
+- **Qwen3**——工具集成/agentic RL，用 **GSPO**（序列级比率更适合多轮 MoE rollout）来稳定。
+- **DeepSeek**——结果奖励的纯粹主义者（见上）；V3.2/V4 扩展了长上下文与 agentic 用法，但仍坚持基于规则/可验证的奖励。
+- **Grok 4.5**——在真实的 **Cursor 开发者会话轨迹**（见*数据*一节）上做 mid-training：可以说是信噪比最高的 agentic 数据——真人实际做目标任务的录制。
+- **Nemotron**——通过多环境 RLVR 加 MOPD 整合来做 agentic 推理。
+
+贯穿始终的一点是：**环境才是瓶颈**——这正是一篇姊妹博客 [Environment Scaling for Agentic RL](/blog/2026/environment-scaling-for-agentic-rl/) 的全部主题。一旦你能*模拟*出足够多真实、可验证、可重置的任务，信用分配与奖励设计才是把这些环境转化为能力的东西。
+
+| 方法 | 粒度 | 额外模型？ | 代表工作 / 使用者 |
+|---|---|---|---|
+| 结果广播（GRPO） | 轨迹 | 无 | 默认；DeepSeek、大多数已发布模型 |
+| MT-GRPO / turn-GRPO | 回合 | 无 | MT-GRPO（Wei, 2025） |
+| GiGPO 锚状态 | 步骤（重复状态） | 无 | GiGPO（Feng, 2025） |
+| ArCHer 分层 | 回合（Q）+ token | **critic**（回合级） | ArCHer（Zhou, 2024） |
+| SAO 单 rollout | token | **critic** | GLM-5.2（生产级，750B） |
+| PRM / Math-Shepherd | 步骤 | **奖励模型** | 数学；在前沿基本被弃用 |
+| AgentPRM | 步骤 / 动作 | **奖励模型** | 智能体研究 |
+| rubric 自我批判 | 回合 / 结果 | **LLM 裁判** | Kimi K2（不可验证任务） |
+
+*信用分配与逐步奖励工具箱。更细的粒度能换来样本效率，但要付出算力代价、还会招致 reward hacking——这正是为什么已发布的前沿模型都聚集在粗糙而稳健的一端（结果 + 可验证奖励），而只通过优势估计的技巧、而非训练出来的逐步奖励网络来加入细粒度信用。*
+
+**小结。** Agentic RL 是 2026 年真正的战场：100K–1M token 的长程让单个末端奖励几乎无用，于是各家更多地去打磨**信用分配**（像 GiGPO 那样的回合级分组、像 ArCHer/SAO 那样感知压实的 critic），而不是去加**逐步奖励模型**——DeepSeek-R1 公开的复盘已经表明后者易被 reward hacking、也难以定义。实践中，制胜的要素是*真实的环境、部分/异步 rollout、可验证或 rubric 奖励，以及在恰当粒度上的优势估计*——而环境本身才是真正的瓶颈。
+
+---
+
+## 灾难性遗忘与持续学习
+
+本文里的每一个阶段都在*覆写*它的前一个阶段。mid-training 移动了基座模型，SFT 又移动一次，每一次 RL 爬坡再把它推得更远，而一个不断在新捕获经验上继续训练的智能体，会让它永远地移动下去。风险就是**灾难性遗忘（catastrophic forgetting, CF）**：教会模型某件新事，会悄无声息地抹掉某件旧事（McCloskey & Cohen, 1989；[Kirkpatrick et al., 2017](https://arxiv.org/abs/1612.00796)）。这不是边角情况——它是整条流水线的一个核心张力，而 2024–2026 的报告越来越把后训练当作一个**持续学习（continual learning）**问题来对待：如何*建立*行为、在学习者自己生成的状态上*精炼*它，并在阶段切换之间**保住**它（[综述](https://arxiv.org/abs/2603.12658)；[统一视角](https://arxiv.org/abs/2604.07941)）。
+
+它具体会在哪里咬人：
+
+- **持续预训练**某个新领域，会侵蚀通用能力。
+- **SFT / 对齐**要交一笔**"对齐税（alignment tax）"**——安全和指令微调的梯度会与承载通用技能的参数子空间相互干扰，这是一种 CF 式的效应（[Sun et al., 2026](https://arxiv.org/abs/2602.07892)）。
+- **多阶段 / Cascade RL**——先数学、再代码、再 agentic 地*顺序*训练，意味着每个阶段都在侵蚀上一个（这正是 Nemotron-Cascade 用 OPD 来"恢复基准回退"的原因）。
+- **Agentic 持续学习**——也就是你提到的情形：一个不断从新经验中学习的智能体，有拿昨天的能力去换今天的技能之虞。
+
+### RL's Razor：遗忘其实是一个 KL 问题
+
+最近最锋利的一个结果重构了这一切。**RL's Razor**（[Shenfeld et al., 2025](https://arxiv.org/abs/2509.04259)）表明，*在新任务准确率相同的前提下，RL 比 SFT 遗忘得更少*——而且真正的元凶不是算法，而是**在新任务上测得的、微调后模型与基座模型之间的 KL 散度**。on-policy RL 会隐式地偏向那个能解出任务的众多解里 *KL 最小*的那个；而 SFT 可以漂移到任意远。（一个佐证：把 GRPO 的负梯度开关切来切去，遗忘不变；把 on-policy 数据换成 off-policy，遗忘就变了。）这回过头解释了 RL 那一节里"保留 KL 项"的整个阵营：**KL 惩罚在机制上就是一个遗忘旋钮**——也解释了为什么 *on-policy* 家族（RL、on-policy 蒸馏）在结构上就比朴素 SFT 更温柔地对待旧技能。
+
+> **洞见——保持 on-policy，保持靠近。** 如果遗忘随"新任务上的 KL"而变，那杠杆就很清楚了：优先用 *on-policy* 更新、对一个可信参考模型保留一条显式的 *KL 牵引绳*、并且不要把任何单一阶段推得比新能力所需更远离基座。下面这套工具箱，很大程度上只是限制同一个 KL 的不同方式。
+
+### 缓解工具箱
+
+五大家族，而前沿报告会把它们组合起来用：
+
+- **回放 / 复习（replay/rehearsal）。** 把旧数据混回来。最经典的实例是 InstructGPT 的 **PPO-ptx**（[Ouyang et al., 2022](https://arxiv.org/abs/2203.02155)）——把预训练梯度掺进 RLHF 以抵消对齐税；**Kimi K2** 的 **PTX 辅助损失**就是这一想法在 2026 旗舰上的翻版。更新的变体则按一个*以模型为中心*的时钟来安排回放——当权重真正移动了才回放，遵循艾宾浩斯遗忘曲线（[MSSR, 2026](https://arxiv.org/abs/2603.09892)）。
+- **邻近正则化（proximity regularization）。** 待在参考模型附近：RLHF 的 **KL 惩罚**、经典的 **EWC**（用 Fisher 信息给重要权重加锚，[Kirkpatrick et al., 2017](https://arxiv.org/abs/1612.00796)），或者更新的**正交梯度投影**——精确地剔除一次对齐更新中会与通用能力方向相撞的那一部分（[Sun et al., 2026](https://arxiv.org/abs/2602.07892)）。
+- **参数隔离（PEFT）。** 冻结基座、只学 adapter（LoRA）；你*没法*覆写你没训练的东西——代价是容量。
+- **模型合并 / souping。** 把微调后的模型往基座、或往兄弟检查点方向平均回去：**model soups**（[Wortsman et al., 2022](https://arxiv.org/abs/2203.05482)）、**task arithmetic**（[Ilharco et al., 2022](https://arxiv.org/abs/2212.04089)），以及 Llama 3 在其 RM/SFT/DPO 各检查点上做的 checkpoint-souping。便宜、事后即可做，而且在买回通用性能上出奇地有效。
+- **基于蒸馏的恢复。** 与你的问题最相关的一族。**自蒸馏**（MAI 的"存档点"技巧，见 §SFT），尤其是 **on-policy 蒸馏**，可以*重新唤回微调中丢失的能力*：拿一个更早的检查点当固定教师，在 on-policy 下把学生蒸回它——因为它对着一个固定目标始终保持 on-policy，就能收敛到教师的行为，而*不会*像 SFT 那样回退（Thinking Machines Lab 展示了在文档微调之后用 OPD 几乎完全恢复 IF-eval、且不丢知识；当它卡住时，一个 off-policy 冷启动能修好它，[Li et al., 2026](https://arxiv.org/abs/2604.13016)）。这也是为什么 **MOPD 式的整合同时兼任了遗忘修复**：Nemotron-Cascade 从最强的中间教师做 OPD 来撤销 Cascade-RL 的回退，而通用的"专家 → OPD 融合"范式（GLM-5.2、DeepSeek-V4、MiMo-V2）把技能*解耦*，于是学一个不会砸掉另一个。
+
+| 家族 | 机制 | 代价 | 代表用法 |
+|---|---|---|---|
+| 回放 / 复习 | 把旧 / 预训练数据混回来 | +数据、回放比超参 | **PPO-ptx**（InstructGPT）、Kimi K2 PTX |
+| 邻近正则化 | KL-to-ref · EWC · 正交投影 | 调 KL / λ | RLHF KL 项；OGPSA |
+| 参数隔离（PEFT） | 冻结基座、训 adapter | 容量更小 | LoRA 持续微调 |
+| 合并 / souping | 往基座 / 兄弟检查点平均 | 近乎免费、事后 | model soups；Llama 3 平均 |
+| 蒸馏恢复 | on-policy/自蒸馏来重新唤回技能 | 教师前向开销 | Nemotron OPD；MAI 自蒸馏；专家→融合 |
+
+*抗遗忘工具箱。注意贯穿其中的 RL's Razor 主线：回放、KL 惩罚、on-policy 蒸馏，都是靠让模型分布贴近它出发的地方来起作用的；合并则是事后再做同一件事。*
+
+### Agentic 的转折：在记忆里学，而不是在权重里学
+
+你那个具体的担忧——一个智能体在积累经验时会遗忘——催生了一个截然不同的答案：**把持续学习从权重里挪出来，放进上下文/记忆里。**与其在每一条新经验上微调（并承担 CF 风险），2026 年的智能体系统越来越多地把**记忆当作工具**让智能体去学着用——存储、检索、摘要、丢弃——而基座权重保持冻结：AgeMem（[Yu et al., 2026](https://aclanthology.org/2026.acl-long.981/)）就用 step-wise GRPO 专门训练这些操作，而一些神经认知式设计还加了一个整合回路，把高价值轨迹回放、把其余的剪掉。基座模型不再是那个"记住东西"的角色；一块有界的、经过策展的记忆才是。当各家*确实*要在新经验上更新权重时，他们就退回到上面那套工具箱——回放、一条 KL 牵引绳、OPD 恢复——外加"专家 → 融合"的解耦。（产生这一切经验的环境，正是姊妹博客 [Environment Scaling for Agentic RL](/blog/2026/environment-scaling-for-agentic-rl/) 的主题。）
+
+### 各家前沿实验室怎么处理
+
+- **OpenAI（InstructGPT）**——提出 **PPO-ptx** 回放来抵消对齐税；这是大家继承下来的范式。
+- **Kimi K2**——**PTX 辅助损失** + 温度衰减，在重度 agentic RL 中守住预训练知识。
+- **MAI**——把**自蒸馏**当存档点：从崩溃中恢复，并把进展迁移到一个新基座上而无需从头再训。
+- **DeepSeek-R1**——在推理导向的 RL 之后，用一个覆盖*所有*场景的最终 RL 阶段来恢复通用有用性，并刻意把基于模型偏好奖励的阶段*调短*（1700 步里的最后 400 步）以避免过度漂移和 reward hacking。
+- **Nemotron-Cascade / -3 Ultra**——在整个 Cascade RL 过程中，把从最强中间检查点做的 **on-policy 蒸馏**当作一个显式的防回退装置。
+- **GLM-5.2 · DeepSeek-V4 · MiMo-V2**——把领域专家*分开*构建，再 **OPD 融合**——这是最可扩展的抗遗忘手段，因为技能从一开始就没被纠缠在一起。
+- **Llama 3**——数据混合，再加上跨检查点的**模型平均 / souping**。
+- **Qwen3**——把思考 / 非思考融进一个模型，让两种模式都不被遗忘。
+
+> **开放问题——真正的终身学习仍未解决。** 这里的每一种技术都只是*限制*遗忘；没有一个能*消除*它。目前还没有哪个前沿模型能在生产中、从一条源源不断的新经验流里在线更新自己的权重，而无需一个精心设计的离线回放 / 合并 / 蒸馏循环——这正是 agentic 世界用外部记忆来*绕开*这个问题的原因。权重空间里的终身学习，仍是那个尚未攻克的前沿。
+
+**小结。** 灾难性遗忘是每一步后训练都要交的税，而 2026 年的认识凝聚成了一个想法——**RL's Razor**：遗忘随*新任务上与基座的 KL* 而变，所以 on-policy 更新遗忘更少。可行的组合拳是回放（ptx）+ 一条 KL 牵引绳 + 模型合并 + **用蒸馏来恢复**（自蒸馏与 on-policy），而最深层的结构性解法是"*把专家分开训练，再 OPD 融合*"。对智能体而言，务实的出路是在**记忆**里学、而不是在权重里学——因为真正在线的、权重级的终身学习仍未解决。
+
+---
+
 ## 对齐：有用性、安全与诚实
 
 对齐曾经只是最后才给模型刷上的一层 RLHF 涂装。在 2026 年的配方里，它本身已经成为一组带有专属奖励栈的 RL“攀登”，与推理 RL 并行运行。如今所有人共享的框架是**一种待优化的张力，而非一道待套用的过滤器**：模型必须同时做到*有用*（顺从）和*安全*（有时拒绝），而技艺就在于两者兼得。MAI 将目标表述为“既有用、又始终符合策略的回复”；OpenAI 则把同一目标描述为从拒绝走向*safe completion*。
@@ -282,7 +460,7 @@ MAI-Thinking-1 为主线，其他报告则作为合唱。
 
 **从拒绝到 safe-completions。** 最清晰的对齐演进来自 OpenAI 的转向，记录在 [GPT-5 system card](https://arxiv.org/abs/2601.03267) 中：从**二元的硬拒绝**转向**以输出为中心的 safe-completions**——在*服从于*安全策略的前提下最大化有用性。这对于**双重用途**的问题严格更优：对这类问题，高层次的回答没有问题，但操作层面的细节则不行。gpt-oss 进一步加入了 **deliberative alignment**（模型在推理时对安全策略进行推理）。MAI 的安全攀登带有“有害 vs 边缘”的分类法，并明确对抗*过度拒绝*，本质上是换了名字的同一套理念。
 
-**诚实与校准。** 这是一条更微妙、且多数实验室处理不足的对齐维度：模型应当在知道时作答、在不知道时表达不确定——但*不能*过度含糊以致毫无用处。MAI 的诚实奖励把回复分成五档（自信-正确 → 自信-错误），对自信-正确给予最高奖励，对自信的幻觉给予最重惩罚，对弃答给予中性分数——明确*抑制过度含糊*。这关联到一个更深层的问题（长程智能体中的校准、弃答与不确定性），它有自己专门的姊妹文章。
+**诚实与校准。** 这是一条更微妙、且多数实验室处理不足的对齐维度：模型应当在知道时作答、在不知道时表达不确定——但*不能*过度含糊以致毫无用处。MAI 的诚实奖励把回复分成五档（自信-正确 → 自信-错误），对自信-正确给予最高奖励，对自信的幻觉给予最重惩罚，对弃答给予中性分数——明确*抑制过度含糊*。这关联到一个更深层的问题（长程智能体中的校准、弃答与不确定性），它有自己专门的姊妹文章。如今一些实验室把校准当作头等的设计目标：Thinking Machines 开源的 **[Inkling](https://thinkingmachines.ai/model-card/inkling/)**（975B/41B，原生多模态）就被明确训练成"给出校准过的回答，包括表达不确定性而不是瞎猜"——这标志着*知道自己不知道什么*正从一个研究课题，升级为一项已经落地的模型属性。
 
 > **分歧——披露多少。** *方法*正在趋同，但披露程度并未趋同。OpenAI 的 system cards 是评测/安全方面的参考标杆（Preparedness 类别、红队时长、safe-completions），却几乎不透露任何训练细节；开放配方（OLMo 2、Tulu 3、Magistral）完整披露训练，但安全章节单薄。MAI 居于两者之间，一边借用 OpenAI 的安全话语体系，一边披露多得多的配方细节。
 
@@ -336,19 +514,21 @@ MAI-Thinking-1 为主线，其他报告则作为合唱。
 | [DeepSeek-V3](https://arxiv.org/abs/2412.19437) | DeepSeek | 37B / 671B | MoE + MLA | 14.8T (FP8) | AdamW | GRPO；将 R1 蒸馏进 SFT | 合成 + 人类 |
 | [DeepSeek-R1](https://arxiv.org/abs/2501.12948) | DeepSeek | 37B / 671B | MoE + MLA | (V3) | — | 纯 RL → 多阶段；向外蒸馏 | — |
 | [DeepSeek-V4](https://arxiv.org/abs/2606.19348) | DeepSeek | 49B / 1.6T | MoE + CSA/HCA，1M 上下文 | 32T+ | **Muon** | 按专家分别 GRPO → on-policy 蒸馏 | 合成 + 人类 |
-| [Qwen3](https://arxiv.org/abs/2505.09388) | Alibaba | 22B / 235B | MoE（无共享专家） | 36T | AdamW | **GSPO** + 强→弱蒸馏；思考预算 | 偏重合成 |
-| [Kimi K2](https://arxiv.org/abs/2507.20534) | Moonshot | 32B / 1.04T | MoE + MLA | 15.5T | **MuonClip** | 镜像下降 RL；智能体化 | 改写式合成 |
+| [Qwen3 / 3.5](https://arxiv.org/abs/2505.09388) | Alibaba | 22B/235B；17B/397B | MoE（3.5 加 Gated DeltaNet 线性注意力） | 36T | AdamW | **GSPO** + 强→弱蒸馏；思考预算 | 偏重合成 |
+| [Kimi K2 / K3](https://arxiv.org/abs/2507.20534) | Moonshot | 32B / 1.04T→2.8T | MoE + MLA；**KDA** 线性注意力（K3） | 15.5T→20T+ | **MuonClip / Per-Head Muon** | 镜像下降 RL；智能体化；QAT | 改写式合成 |
 | [GLM-4.5](https://arxiv.org/abs/2508.06471) | Zhipu | 32B / 355B | MoE | 23T | **Muon** | GRPO（无 KL）+ 专家迭代 | — |
-| [GLM-5 / 5.2](https://arxiv.org/abs/2602.15763) | Zhipu | 40B / 744B | MoE + DSA，1M 上下文 | 28.5T | **Muon** | GRPO+IcePop → **带 critic 的 PPO**（长程） | — |
+| [GLM-5 / 5.2](https://arxiv.org/abs/2602.15763) | Zhipu | 40B / 744–750B | MoE + DSA，1M 上下文 | 28.5T | **Muon** | GRPO+IcePop → **SAO**（单轨迹 critic）+ on-policy 蒸馏 | — |
 | [Llama 3](https://arxiv.org/abs/2407.21783) | Meta | 405B | **稠密** | 15.6T (BF16) | AdamW | **SFT+RS+DPO**（无 PPO） | 代码/数学用合成 |
-| [Gemma 3](https://arxiv.org/abs/2503.19786) | Google | 27B | 稠密（多模态） | 14T | — | **蒸馏** + 轻量 RLVR | 教师模型蒸馏 |
-| [MiMo-7B](https://arxiv.org/abs/2505.07608) | Xiaomi | 7B | 稠密 | 25T | AdamW | 从基座起重度 GRPO | 推理密集型合成 |
+| [Gemma 3 / 4](https://arxiv.org/abs/2607.02770) | Google | 27B；4B/26B-A4B | 稠密 + **MoE**（多模态）；p-RoPE、MTP | 14T | — | **离策略蒸馏**（来自 Gemini）+ 轻量 RLVR | 教师模型蒸馏 |
+| [MiMo-7B / V2-Flash](https://arxiv.org/abs/2601.02780) | Xiaomi | 7B；V2 训 27T | 稠密；MoE（V2，SWA+GA） | 25T→27T | AdamW | 从基座 GRPO；**MOPD**（V2-Flash） | 推理密集型合成 |
 | [Hunyuan-Large](https://arxiv.org/abs/2411.02265) | Tencent | 52B / 389B | MoE | 7T（约 1.5T 合成） | AdamW | SFT + **DPO** | **偏重合成** |
 | [MiniMax-M1 / M2](https://arxiv.org/abs/2506.13585) | MiniMax | 10–46B / 0.23–0.46T | MoE + lightning-attn | +7.5T | AdamW | **CISPO** / **Forge** 智能体 RL | 人类（预训练无合成） |
+| [Inkling](https://thinkingmachines.ai/model-card/inkling/) | Thinking Machines | 41B / 975B | MoE（DeepSeek-V3 式），多模态 | 45T（多模态） | — | 校准/不确定性感知；Tinker 微调 | 多模态 |
+| Grok 4.5 | xAI | ~1.5T (V9) | MoE，500K 上下文 | — | — | 在 **Cursor 开发者会话轨迹** 上做异步智能体 RL | + 开发者轨迹 |
 | [OLMo 2 / Tulu 3](https://arxiv.org/abs/2501.00656) | Ai2 | 7–32B | 稠密 | 4–6T | AdamW | SFT→DPO→**RLVR** | 完全开放 |
 | [Nemotron 3](https://arxiv.org/abs/2512.20856) | NVIDIA | 3B+ | **Mamba-MoE** | 10T+ (NVFP4) | — | 多环境 GRPO | 开放 |
 
-*表 3. 一套配方，多种填法。横向逐列读下来，共识（MoE + 现代解码器块 + SFT→RL + 可验证奖励）一目了然——为数不多的几处真正的押注也同样清晰（稠密 vs MoE、AdamW vs Muon、GRPO vs GSPO vs PPO、重 RL vs DPO、合成 vs 人类）。2026 年的几行（DeepSeek-V4、GLM-5/5.2、MiniMax-M2）显示出前沿正在朝着 **1M 上下文、Muon 和长程智能体 RL** 移动。*
+*表 3. 一套配方，多种填法。横向逐列读下来，共识（MoE + 现代解码器块 + SFT→RL + 可验证奖励）一目了然——为数不多的几处真正的押注也同样清晰（稠密 vs MoE、AdamW vs Muon、GRPO vs GSPO vs SAO/PPO、重 RL vs DPO、合成 vs 人类）。2026 年年中的这一波（DeepSeek-V4、GLM-5.2、Kimi K3、Inkling、Grok 4.5、Qwen3.5）把前沿推向 **1M 上下文、线性/混合注意力、Muon 和长程智能体 RL**——而且据 Artificial Analysis 的 Intelligence Index，如今已有六家实验室各自拥有一个前沿级模型，而 6 月初还只有两家。*
 
 **大家一致认同的部分**（八点共识）：现代解码器块；细粒度 + 共享专家的 MoE，并在全局批次上做负载均衡；重度去重 + scaling-law 数据配比 + 一段 mid-training 收尾；刻意过训练；SFT/冷启动 → RL；带熵控制和可训练性筛选的 GRPO 系可验证奖励 RL；在某处包含蒸馏的多阶段后训练；以及安全奖励栈 + preparedness/红队流程。
 
@@ -368,7 +548,7 @@ MAI-Thinking-1 为主线，其他报告则作为合唱。
 
 **污染的诚实问题。** 随着基准趋于饱和并发生泄漏，报告出虚高的数字变得越来越容易——甚至是无意为之。这个领域大多是在*假定*已经做了去污染，而非*证明*之；私有基准和实时基准有所帮助，但跨实验室的可比性正在悄然瓦解。
 
-**千步 RL 的成本与脆弱性——如今算法问题又被重新打开。** 要维持一条对数线性的 RL 攀登曲线，需要一整套稳定器（熵控制、router replay、top-p 掩码 replay、自蒸馏存档点、异步基础设施）以及大量算力，而这部分算力如今在总训练成本中所占的比例正越来越大。而就在 GRPO 看起来已是尘埃落定的默认选项时，**长程智能体 RL 又重新打开了算法之问**：轨迹的“compaction（压实）”会产生长度不一的子轨迹，破坏了组内相对比较，这促使 Qwen 转向序列级的 **GSPO**，也让 GLM-5.2 退回到**带 critic 的 PPO**。这个领域会重新收敛，还是 RL 会永久地变得与任务相关（短的可验证任务用 GRPO/GSPO，长的智能体任务用 critic）——这是真正开放的问题，也是 2026 年最活跃的训练之争。这其中很大一部分仍是手艺，而非科学。
+**千步 RL 的成本与脆弱性——如今算法问题又被重新打开。** 要维持一条对数线性的 RL 攀登曲线，需要一整套稳定器（熵控制、router replay、top-p 掩码 replay、自蒸馏存档点、异步基础设施）以及大量算力，而这部分算力如今在总训练成本中所占的比例正越来越大。而就在 GRPO 看起来已是尘埃落定的默认选项时，**长程智能体 RL 又重新打开了算法之问**：轨迹的“compaction（压实）”会产生长度不一的子轨迹，破坏了组内相对比较，这促使 Qwen 转向序列级的 **GSPO**，也让 GLM-5.2 转向一种**单轨迹 critic 方法（SAO）**——它在异步设定下能比 GRPO 稳定训练 6 倍长。这个领域会重新收敛，还是 RL 会永久地变得与任务相关（短的可验证任务用 GRPO/GSPO，长的智能体任务用 critic）——这是真正开放的问题，也是 2026 年最活跃的训练之争。这其中很大一部分仍是手艺，而非科学。
 
 **可监控性 vs 能力。** CoT monitoring 是推理时代为数不多的安全成果之一——但它只有在我们*不*针对它做优化时才有效。让思维链既忠实、可读，又同时把它训练得高效，是一个尚未解决的张力。
 
@@ -404,200 +584,272 @@ MAI-Thinking-1 为主线，其他报告则作为合唱。
 
 ---
 
+---
+
+---
+
+---
+
+---
+
+---
+
 ## References
 
-[1] Amro Abbas, et al. ["SemDeDup: Data-efficient learning at web-scale through semantic deduplication."](https://arxiv.org/abs/2303.09540) arXiv:2303.09540, 2023.
+[1] Amro Abbas, et al. ["SemDeDup: Data-efficient learning at web-scale through semantic deduplication"](https://arxiv.org/abs/2303.09540) arXiv:2303.09540, 2023.
 
-[2] Joshua Ainslie, et al. ["GQA: Training Generalized Multi-Query Transformer Models from Multi-Head Checkpoints."](https://arxiv.org/abs/2305.13245) arXiv:2305.13245, 2023.
+[2] Rishabh Agarwal, et al. ["On-Policy Distillation of Language Models: Learning from Self-Generated Mistakes"](https://arxiv.org/abs/2306.13649) arXiv:2306.13649, 2023.
 
-[3] Rahul K. Arora, et al. ["HealthBench: Evaluating Large Language Models Towards Improved Human Health."](https://arxiv.org/abs/2505.08775) arXiv:2505.08775, 2025.
+[3] Yu, et al. ["Agentic Memory: Learning Unified Long-Term and Short-Term Memory Management for LLM Agents"](https://aclanthology.org/2026.acl-long.981/) ACL 2026.
 
-[4] Yushi Bai, et al. ["LongBench v2: Towards Deeper Understanding and Reasoning on Realistic Long-context Multitasks."](https://arxiv.org/abs/2412.15204) arXiv:2412.15204, 2024.
+[4] Joshua Ainslie, et al. ["GQA: Training Generalized Multi-Query Transformer Models from Multi-Head Checkpoints"](https://arxiv.org/abs/2305.13245) arXiv:2305.13245, 2023.
 
-[5] Bowen Baker, et al. ["Monitoring Reasoning Models for Misbehavior and the Risks of Promoting Obfuscation."](https://arxiv.org/abs/2503.11926) arXiv:2503.11926, 2025.
+[5] Rahul K. Arora, et al. ["HealthBench: Evaluating Large Language Models Towards Improved Human Health"](https://arxiv.org/abs/2505.08775) arXiv:2505.08775, 2025.
 
-[6] Mayee F. Chen, et al. ["Olmix: A Framework for Data Mixing Throughout LM Development."](https://arxiv.org/abs/2602.12237) arXiv:2602.12237, 2026.
+[6] Yushi Bai, et al. ["LongBench v2: Towards Deeper Understanding and Reasoning on Realistic Long-context Multitasks"](https://arxiv.org/abs/2412.15204) arXiv:2412.15204, 2024.
 
-[7] Aakanksha Chowdhery, et al. ["PaLM: Scaling Language Modeling with Pathways."](https://arxiv.org/abs/2204.02311) arXiv:2204.02311, 2022.
+[7] Bowen Baker, et al. ["Monitoring Reasoning Models for Misbehavior and the Risks of Promoting Obfuscation"](https://arxiv.org/abs/2503.11926) arXiv:2503.11926, 2025.
 
-[8] Ganqu Cui, et al. ["The Entropy Mechanism of Reinforcement Learning for Reasoning Language Models."](https://arxiv.org/abs/2505.22617) arXiv:2505.22617, 2025.
+[8] Mayee F. Chen, et al. ["Olmix: A Framework for Data Mixing Throughout LM Development"](https://arxiv.org/abs/2602.12237) arXiv:2602.12237, 2026.
 
-[9] Damai Dai, et al. ["DeepSeekMoE: Towards Ultimate Expert Specialization in Mixture-of-Experts Language Models."](https://arxiv.org/abs/2401.06066) arXiv:2401.06066, 2024.
+[9] Hongyang Chen, et al. ["Continual Learning in Large Language Models: Methods, Challenges, and Opportunities"](https://arxiv.org/abs/2603.12658) arXiv:2603.12658, 2026.
 
-[10] DeepSeek-AI, et al. ["DeepSeek-V2: A Strong, Economical, and Efficient Mixture-of-Experts Language Model."](https://arxiv.org/abs/2405.04434) arXiv:2405.04434, 2024.
+[10] Aakanksha Chowdhery, et al. ["PaLM: Scaling Language Modeling with Pathways"](https://arxiv.org/abs/2204.02311) arXiv:2204.02311, 2022.
 
-[11] DeepSeek-AI, et al. ["DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning."](https://arxiv.org/abs/2501.12948) arXiv:2501.12948, 2025.
+[11] Ganqu Cui, et al. ["The Entropy Mechanism of Reinforcement Learning for Reasoning Language Models"](https://arxiv.org/abs/2505.22617) arXiv:2505.22617, 2025.
 
-[12] DeepSeek-AI, et al. ["DeepSeek-V3 Technical Report."](https://arxiv.org/abs/2412.19437) arXiv:2412.19437, 2024.
+[12] Damai Dai, et al. ["DeepSeekMoE: Towards Ultimate Expert Specialization in Mixture-of-Experts Language Models"](https://arxiv.org/abs/2401.06066) arXiv:2401.06066, 2024.
 
-[13] DeepSeek-AI, et al. ["DeepSeek-V3.2: Pushing the Frontier of Open Large Language Models."](https://arxiv.org/abs/2512.02556) arXiv:2512.02556, 2025.
+[13] DeepSeek-AI, et al. ["DeepSeek-V2: A Strong, Economical, and Efficient Mixture-of-Experts Language Model"](https://arxiv.org/abs/2405.04434) arXiv:2405.04434, 2024.
 
-[14] DeepSeek-AI, et al. ["DeepSeek-V4: Towards Highly Efficient Million-Token Context Intelligence."](https://arxiv.org/abs/2606.19348) arXiv:2606.19348, 2026.
+[14] DeepSeek-AI, et al. ["DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning"](https://arxiv.org/abs/2501.12948) arXiv:2501.12948, 2025.
 
-[15] Jasper Dekoninck, et al. ["Beyond Benchmarks: MathArena as an Evaluation Platform for Mathematics with LLMs."](https://arxiv.org/abs/2605.00674) arXiv:2605.00674, 2026.
+[15] DeepSeek-AI, et al. ["DeepSeek-V3 Technical Report"](https://arxiv.org/abs/2412.19437) arXiv:2412.19437, 2024.
 
-[16] Yue Deng, et al. ["Multilingual Jailbreak Challenges in Large Language Models."](https://arxiv.org/abs/2310.06474) arXiv:2310.06474, 2023.
+[16] DeepSeek-AI, et al. ["DeepSeek-V3.2: Pushing the Frontier of Open Large Language Models"](https://arxiv.org/abs/2512.02556) arXiv:2512.02556, 2025.
 
-[17] Xiang Deng, et al. ["SWE-Bench Pro: Can AI Agents Solve Long-Horizon Software Engineering Tasks?."](https://arxiv.org/abs/2509.16941) arXiv:2509.16941, 2025.
+[17] DeepSeek-AI, et al. ["DeepSeek-V4: Towards Highly Efficient Million-Token Context Intelligence"](https://arxiv.org/abs/2606.19348) arXiv:2606.19348, 2026.
 
-[18] Shehzaad Dhuliawala, et al. ["Chain-of-Verification Reduces Hallucination in Large Language Models."](https://arxiv.org/abs/2309.11495) arXiv:2309.11495, 2023.
+[18] Jasper Dekoninck, et al. ["Beyond Benchmarks: MathArena as an Evaluation Platform for Mathematics with LLMs"](https://arxiv.org/abs/2605.00674) arXiv:2605.00674, 2026.
 
-[19] Essential AI, et al. ["Essential-Web v1.0: 24T tokens of organized web data."](https://arxiv.org/abs/2506.14111) arXiv:2506.14111, 2025.
+[19] Yue Deng, et al. ["Multilingual Jailbreak Challenges in Large Language Models"](https://arxiv.org/abs/2310.06474) arXiv:2310.06474, 2023.
 
-[20] Kanishk Gandhi, et al. ["Cognitive Behaviors that Enable Self-Improving Reasoners, or, Four Habits of Highly Effective STaRs."](https://arxiv.org/abs/2503.01307) arXiv:2503.01307, 2025.
+[20] Xiang Deng, et al. ["SWE-Bench Pro: Can AI Agents Solve Long-Horizon Software Engineering Tasks?"](https://arxiv.org/abs/2509.16941) arXiv:2509.16941, 2025.
 
-[21] Tao Ge, et al. ["Scaling Synthetic Data Creation with 1,000,000,000 Personas."](https://arxiv.org/abs/2406.20094) arXiv:2406.20094, 2024.
+[21] Shehzaad Dhuliawala, et al. ["Chain-of-Verification Reduces Hallucination in Large Language Models"](https://arxiv.org/abs/2309.11495) arXiv:2309.11495, 2023.
 
-[22] Gemma Team, et al. ["Gemma 3 Technical Report."](https://arxiv.org/abs/2503.19786) arXiv:2503.19786, 2025.
+[22] Essential AI, et al. ["Essential-Web v1.0: 24T tokens of organized web data"](https://arxiv.org/abs/2506.14111) arXiv:2506.14111, 2025.
 
-[23] GLM-4. 5 Team, et al. ["GLM-4.5: Agentic, Reasoning, and Coding (ARC) Foundation Models."](https://arxiv.org/abs/2508.06471) arXiv:2508.06471, 2025.
+[23] Lang Feng, et al. ["Group-in-Group Policy Optimization for LLM Agent Training"](https://arxiv.org/abs/2505.10978) arXiv:2505.10978, 2025.
 
-[24] GLM-5-Team, et al. ["GLM-5: from Vibe Coding to Agentic Engineering."](https://arxiv.org/abs/2602.15763) arXiv:2602.15763, 2026.
+[24] Kanishk Gandhi, et al. ["Cognitive Behaviors that Enable Self-Improving Reasoners, or, Four Habits of Highly Effective STaRs"](https://arxiv.org/abs/2503.01307) arXiv:2503.01307, 2025.
 
-[25] GLM-5.2 Team (Zhipu AI). ["GLM-5.2: Built for Long-Horizon Tasks."](https://huggingface.co/blog/zai-org/glm-52-blog) Zhipu AI / Z.ai, 2026.
+[25] Tao Ge, et al. ["Scaling Synthetic Data Creation with 1,000,000,000 Personas"](https://arxiv.org/abs/2406.20094) arXiv:2406.20094, 2024.
 
-[26] Aaron Grattafiori, et al. ["The Llama 3 Herd of Models."](https://arxiv.org/abs/2407.21783) arXiv:2407.21783, 2024.
+[26] Gemma Team, et al. ["Gemma 4 Technical Report"](https://arxiv.org/abs/2607.02770) arXiv:2607.02770, 2026.
 
-[27] Melody Y. Guan, et al. ["Monitoring Monitorability."](https://arxiv.org/abs/2512.18311) arXiv:2512.18311, 2025.
+[27] GLM-4. 5 Team, et al. ["GLM-4.5: Agentic, Reasoning, and Coding (ARC) Foundation Models"](https://arxiv.org/abs/2508.06471) arXiv:2508.06471, 2025.
 
-[28] Lukas Haas, et al. ["SimpleQA Verified: A Reliable Factuality Benchmark to Measure Parametric Knowledge."](https://arxiv.org/abs/2509.07968) arXiv:2509.07968, 2025.
+[28] GLM-5-Team, et al. ["GLM-5: from Vibe Coding to Agentic Engineering"](https://arxiv.org/abs/2602.15763) arXiv:2602.15763, 2026.
 
-[29] David Heineman, et al. ["Signal and Noise: A Framework for Reducing Uncertainty in Language Model Evaluation."](https://arxiv.org/abs/2508.13144) arXiv:2508.13144, 2025.
+[29] GLM-5.2 Team (Zhipu AI). ["GLM-5.2: Built for Long-Horizon Tasks"](https://huggingface.co/blog/zai-org/glm-52-blog) Zhipu AI / Z.AI, 2026.
 
-[30] Dan Hendrycks, et al. ["Measuring Mathematical Problem Solving With the MATH Dataset."](https://arxiv.org/abs/2103.03874) arXiv:2103.03874, 2021.
+[30] Aaron Grattafiori, et al. ["The Llama 3 Herd of Models"](https://arxiv.org/abs/2407.21783) arXiv:2407.21783, 2024.
 
-[31] Dan Hendrycks, et al. ["Measuring Massive Multitask Language Understanding."](https://arxiv.org/abs/2009.03300) arXiv:2009.03300, 2020.
+[31] Yuxian Gu, et al. ["MiniLLM: On-Policy Distillation of Large Language Models"](https://arxiv.org/abs/2306.08543) arXiv:2306.08543, 2023.
 
-[32] Jordan Hoffmann, et al. ["Training Compute-Optimal Large Language Models."](https://arxiv.org/abs/2203.15556) arXiv:2203.15556, 2022.
+[32] Melody Y. Guan, et al. ["Monitoring Monitorability"](https://arxiv.org/abs/2512.18311) arXiv:2512.18311, 2025.
 
-[33] Jian Hu, et al. ["OpenRLHF: An Easy-to-use, Scalable and High-performance RLHF Framework."](https://arxiv.org/abs/2405.11143) arXiv:2405.11143, 2024.
+[33] Lukas Haas, et al. ["SimpleQA Verified: A Reliable Factuality Benchmark to Measure Parametric Knowledge"](https://arxiv.org/abs/2509.07968) arXiv:2509.07968, 2025.
 
-[34] Jiaxin Huang, et al. ["Large Language Models Can Self-Improve."](https://arxiv.org/abs/2210.11610) arXiv:2210.11610, 2022.
+[34] David Heineman, et al. ["Signal and Noise: A Framework for Reducing Uncertainty in Language Model Evaluation"](https://arxiv.org/abs/2508.13144) arXiv:2508.13144, 2025.
 
-[35] Naman Jain, et al. ["LiveCodeBench: Holistic and Contamination Free Evaluation of Large Language Models for Code."](https://arxiv.org/abs/2403.07974) arXiv:2403.07974, 2024.
+[35] Dan Hendrycks, et al. ["Measuring Mathematical Problem Solving With the MATH Dataset"](https://arxiv.org/abs/2103.03874) arXiv:2103.03874, 2021.
 
-[36] Jared Kaplan, et al. ["Scaling Laws for Neural Language Models."](https://arxiv.org/abs/2001.08361) arXiv:2001.08361, 2020.
+[36] Dan Hendrycks, et al. ["Measuring Massive Multitask Language Understanding"](https://arxiv.org/abs/2009.03300) arXiv:2009.03300, 2020.
 
-[37] Kimi Team, et al. ["Kimi K2: Open Agentic Intelligence."](https://arxiv.org/abs/2507.20534) arXiv:2507.20534, 2025.
+[37] Jordan Hoffmann, et al. ["Training Compute-Optimal Large Language Models"](https://arxiv.org/abs/2203.15556) arXiv:2203.15556, 2022.
 
-[38] Nathan Lambert, et al. ["Tulu 3: Pushing Frontiers in Open Language Model Post-Training."](https://arxiv.org/abs/2411.15124) arXiv:2411.15124, 2024.
+[38] Zhenyu Hou, et al. ["Single-Rollout Asynchronous Optimization for Agentic Reinforcement Learning"](https://arxiv.org/abs/2607.07508) arXiv:2607.07508, 2026.
 
-[39] Dmitry Lepikhin, et al. ["GShard: Scaling Giant Models with Conditional Computation and Automatic Sharding."](https://arxiv.org/abs/2006.16668) arXiv:2006.16668, 2020.
+[39] Jian Hu, et al. ["OpenRLHF: An Easy-to-use, Scalable and High-performance RLHF Framework"](https://arxiv.org/abs/2405.11143) arXiv:2405.11143, 2024.
 
-[40] Nathaniel Li, et al. ["The WMDP Benchmark: Measuring and Reducing Malicious Use With Unlearning."](https://arxiv.org/abs/2403.03218) arXiv:2403.03218, 2024.
+[40] Jiaxin Huang, et al. ["Large Language Models Can Self-Improve"](https://arxiv.org/abs/2210.11610) arXiv:2210.11610, 2022.
 
-[41] Jingyuan Liu, et al. ["Muon is Scalable for LLM Training."](https://arxiv.org/abs/2502.16982) arXiv:2502.16982, 2025.
+[41] Gabriel Ilharco, et al. ["Editing Models with Task Arithmetic"](https://arxiv.org/abs/2212.04089) arXiv:2212.04089, 2022.
 
-[42] Tianqi Liu, et al. ["RRM: Robust Reward Model Training Mitigates Reward Hacking."](https://arxiv.org/abs/2409.13156) arXiv:2409.13156, 2024.
+[42] Naman Jain, et al. ["LiveCodeBench: Holistic and Contamination Free Evaluation of Large Language Models for Code"](https://arxiv.org/abs/2403.07974) arXiv:2403.07974, 2024.
 
-[43] LLM-Core Xiaomi, et al. ["MiMo: Unlocking the Reasoning Potential of Language Model – From Pretraining to Posttraining."](https://arxiv.org/abs/2505.07608) arXiv:2505.07608, 2025.
+[43] Jared Kaplan, et al. ["Scaling Laws for Neural Language Models"](https://arxiv.org/abs/2001.08361) arXiv:2001.08361, 2020.
 
-[44] Anton Lozhkov, et al. ["StarCoder 2 and The Stack v2: The Next Generation."](https://arxiv.org/abs/2402.19173) arXiv:2402.19173, 2024.
+[44] Kimi Team, et al. ["Kimi K2: Open Agentic Intelligence"](https://arxiv.org/abs/2507.20534) arXiv:2507.20534, 2025.
 
-[45] Wenhan Ma, et al. ["Stabilizing MoE Reinforcement Learning by Aligning Training and Inference Routers."](https://arxiv.org/abs/2510.11370) arXiv:2510.11370, 2025.
+[45] Kimi Team. ["Kimi K3: Open Frontier Intelligence"](https://www.kimi.com/en/blog/kimi-k3) Moonshot AI (blog), 2026.
 
-[46] Aman Madaan, et al. ["Self-Refine: Iterative Refinement with Self-Feedback."](https://arxiv.org/abs/2303.17651) arXiv:2303.17651, 2023.
+[46] James Kirkpatrick, et al. ["Overcoming catastrophic forgetting in neural networks"](https://arxiv.org/abs/1612.00796) arXiv:1612.00796, 2016.
 
-[47] Rabeeh Karimi Mahabadi, et al. ["Nemotron-CC-Math: A 133 Billion-Token-Scale High Quality Math Pretraining Dataset."](https://arxiv.org/abs/2508.15096) arXiv:2508.15096, 2025.
+[47] Nathan Lambert, et al. ["Tulu 3: Pushing Frontiers in Open Language Model Post-Training"](https://arxiv.org/abs/2411.15124) arXiv:2411.15124, 2024.
 
-[48] Anay Mehrotra, et al. ["Tree of Attacks: Jailbreaking Black-Box LLMs Automatically."](https://arxiv.org/abs/2312.02119) arXiv:2312.02119, 2023.
+[48] Dmitry Lepikhin, et al. ["GShard: Scaling Giant Models with Conditional Computation and Automatic Sharding"](https://arxiv.org/abs/2006.16668) arXiv:2006.16668, 2020.
 
-[49] Mike A. Merrill, et al. ["Terminal-Bench: Benchmarking Agents on Hard, Realistic Tasks in Command Line Interfaces."](https://arxiv.org/abs/2601.11868) arXiv:2601.11868, 2026.
+[49] Nathaniel Li, et al. ["The WMDP Benchmark: Measuring and Reducing Malicious Use With Unlearning"](https://arxiv.org/abs/2403.03218) arXiv:2403.03218, 2024.
 
-[50] Paulius Micikevicius, et al. ["FP8 Formats for Deep Learning."](https://arxiv.org/abs/2209.05433) arXiv:2209.05433, 2022.
+[50] Yaxuan Li, et al. ["Rethinking On-Policy Distillation of Large Language Models: Phenomenology, Mechanism, and Recipe"](https://arxiv.org/abs/2604.13016) arXiv:2604.13016, 2026.
 
-[51] Paulius Micikevicius, et al. ["Mixed Precision Training."](https://arxiv.org/abs/1710.03740) arXiv:1710.03740, 2017.
+[51] Hunter Lightman, et al. ["Let's Verify Step by Step"](https://arxiv.org/abs/2305.20050) arXiv:2305.20050, 2023.
 
-[52] The Microsoft AI Team. ["MAI-Thinking-1: Building a Hill-Climbing Machine."](https://microsoft.ai/pdf/mai-thinking-1.pdf) Microsoft AI, 2026.
+[52] Jingyuan Liu, et al. ["Muon is Scalable for LLM Training"](https://arxiv.org/abs/2502.16982) arXiv:2502.16982, 2025.
 
-[53] Sewon Min, et al. ["FActScore: Fine-grained Atomic Evaluation of Factual Precision in Long Form Text Generation."](https://arxiv.org/abs/2305.14251) arXiv:2305.14251, 2023.
+[53] Tianqi Liu, et al. ["RRM: Robust Reward Model Training Mitigates Reward Hacking"](https://arxiv.org/abs/2409.13156) arXiv:2409.13156, 2024.
 
-[54] MiniMax, et al. ["MiniMax-M1: Scaling Test-Time Compute Efficiently with Lightning Attention."](https://arxiv.org/abs/2506.13585) arXiv:2506.13585, 2025.
+[54] Anton Lozhkov, et al. ["StarCoder 2 and The Stack v2: The Next Generation"](https://arxiv.org/abs/2402.19173) arXiv:2402.19173, 2024.
 
-[55] MiniMax, et al. ["The MiniMax-M2 Series: Mini Activations Unleashing Max Real-World Intelligence."](https://arxiv.org/abs/2605.26494) arXiv:2605.26494, 2026.
+[55] Yiyang Lu, et al. ["MSSR: Memory-Aware Adaptive Replay for Continual LLM Fine-Tuning"](https://arxiv.org/abs/2603.09892) arXiv:2603.09892, 2026.
 
-[56] Mistral-AI, et al. ["Magistral."](https://arxiv.org/abs/2506.10910) arXiv:2506.10910, 2025.
+[56] Wenhan Ma, et al. ["Stabilizing MoE Reinforcement Learning by Aligning Training and Inference Routers"](https://arxiv.org/abs/2510.11370) arXiv:2510.11370, 2025.
 
-[57] Gary D. Lopez Munoz, et al. ["PyRIT: A Framework for Security Risk Identification and Red Teaming in Generative AI System."](https://arxiv.org/abs/2410.02828) arXiv:2410.02828, 2024.
+[57] Wenhan Ma, et al. ["MOPD: Multi-Teacher On-Policy Distillation for Capability Integration in LLM Post-Training"](https://arxiv.org/abs/2606.30406) arXiv:2606.30406, 2026.
 
-[58] NVIDIA, et al. ["NVIDIA Nemotron 3: Efficient and Open Intelligence."](https://arxiv.org/abs/2512.20856) arXiv:2512.20856, 2025.
+[58] Aman Madaan, et al. ["Self-Refine: Iterative Refinement with Self-Feedback"](https://arxiv.org/abs/2303.17651) arXiv:2303.17651, 2023.
 
-[59] Kaan Ozkara, et al. ["Stochastic Rounding for LLM Training: Theory and Practice."](https://arxiv.org/abs/2502.20566) arXiv:2502.20566, 2025.
+[59] Rabeeh Karimi Mahabadi, et al. ["Nemotron-CC-Math: A 133 Billion-Token-Scale High Quality Math Pretraining Dataset"](https://arxiv.org/abs/2508.15096) arXiv:2508.15096, 2025.
 
-[60] Long Phan, et al. ["Humanity's Last Exam."](https://arxiv.org/abs/2501.14249) arXiv:2501.14249, 2025.
+[60] Anay Mehrotra, et al. ["Tree of Attacks: Jailbreaking Black-Box LLMs Automatically"](https://arxiv.org/abs/2312.02119) arXiv:2312.02119, 2023.
 
-[61] Mary Phuong, et al. ["Evaluating Frontier Models for Dangerous Capabilities."](https://arxiv.org/abs/2403.13793) arXiv:2403.13793, 2024.
+[61] Mike A. Merrill, et al. ["Terminal-Bench: Benchmarking Agents on Hard, Realistic Tasks in Command Line Interfaces"](https://arxiv.org/abs/2601.11868) arXiv:2601.11868, 2026.
 
-[62] Felipe Maia Polo, et al. ["tinyBenchmarks: evaluating LLMs with fewer examples."](https://arxiv.org/abs/2402.14992) arXiv:2402.14992, 2024.
+[62] Paulius Micikevicius, et al. ["FP8 Formats for Deep Learning"](https://arxiv.org/abs/2209.05433) arXiv:2209.05433, 2022.
 
-[63] Zihan Qiu, et al. ["Demons in the Detail: On Implementing Load Balancing Loss for Training Specialized Mixture-of-Expert Models."](https://arxiv.org/abs/2501.11873) arXiv:2501.11873, 2025.
+[63] Paulius Micikevicius, et al. ["Mixed Precision Training"](https://arxiv.org/abs/1710.03740) arXiv:1710.03740, 2017.
 
-[64] Jack W. Rae, et al. ["Scaling Language Models: Methods, Analysis & Insights from Training Gopher."](https://arxiv.org/abs/2112.11446) arXiv:2112.11446, 2021.
+[64] The Microsoft AI Team. ["MAI-Thinking-1: Building a Hill-Climbing Machine"](https://microsoft.ai/pdf/mai-thinking-1.pdf) Microsoft AI, 2026.
 
-[65] David Rein, et al. ["GPQA: A Graduate-Level Google-Proof Q&A Benchmark."](https://arxiv.org/abs/2311.12022) arXiv:2311.12022, 2023.
+[65] Sewon Min, et al. ["FActScore: Fine-grained Atomic Evaluation of Factual Precision in Long Form Text Generation"](https://arxiv.org/abs/2305.14251) arXiv:2305.14251, 2023.
 
-[66] Mark Russinovich, et al. ["Great, Now Write an Article About That: The Crescendo Multi-Turn LLM Jailbreak Attack."](https://arxiv.org/abs/2404.01833) arXiv:2404.01833, 2024.
+[66] MiniMax, et al. ["MiniMax-M1: Scaling Test-Time Compute Efficiently with Lightning Attention"](https://arxiv.org/abs/2506.13585) arXiv:2506.13585, 2025.
 
-[67] John Schulman, et al. ["Proximal Policy Optimization Algorithms."](https://arxiv.org/abs/1707.06347) arXiv:1707.06347, 2017.
+[67] MiniMax, et al. ["The MiniMax-M2 Series: Mini Activations Unleashing Max Real-World Intelligence"](https://arxiv.org/abs/2605.26494) arXiv:2605.26494, 2026.
 
-[68] Zhihong Shao, et al. ["DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models."](https://arxiv.org/abs/2402.03300) arXiv:2402.03300, 2024.
+[68] Mistral-AI, et al. ["Magistral"](https://arxiv.org/abs/2506.10910) arXiv:2506.10910, 2025.
 
-[69] Noam Shazeer. ["GLU Variants Improve Transformer."](https://arxiv.org/abs/2002.05202) arXiv:2002.05202, 2020.
+[69] Gary D. Lopez Munoz, et al. ["PyRIT: A Framework for Security Risk Identification and Red Teaming in Generative AI System"](https://arxiv.org/abs/2410.02828) arXiv:2410.02828, 2024.
 
-[70] Guangming Sheng, et al. ["HybridFlow: A Flexible and Efficient RLHF Framework."](https://arxiv.org/abs/2409.19256) arXiv:2409.19256, 2024.
+[70] NVIDIA, et al. ["NVIDIA Nemotron 3: Efficient and Open Intelligence"](https://arxiv.org/abs/2512.20856) arXiv:2512.20856, 2025.
 
-[71] Avi Singh, et al. ["Beyond Human Data: Scaling Self-Training for Problem-Solving with Language Models."](https://arxiv.org/abs/2312.06585) arXiv:2312.06585, 2023.
+[71] Long Ouyang, et al. ["Training language models to follow instructions with human feedback"](https://arxiv.org/abs/2203.02155) arXiv:2203.02155, 2022.
 
-[72] Aaditya Singh, et al. ["OpenAI GPT-5 System Card."](https://arxiv.org/abs/2601.03267) arXiv:2601.03267, 2025.
+[72] Kaan Ozkara, et al. ["Stochastic Rounding for LLM Training: Theory and Practice"](https://arxiv.org/abs/2502.20566) arXiv:2502.20566, 2025.
 
-[73] Jianlin Su, et al. ["RoFormer: Enhanced Transformer with Rotary Position Embedding."](https://arxiv.org/abs/2104.09864) arXiv:2104.09864, 2021.
+[73] Long Phan, et al. ["Humanity's Last Exam"](https://arxiv.org/abs/2501.14249) arXiv:2501.14249, 2025.
 
-[74] Xingwu Sun, et al. ["Hunyuan-Large: An Open-Source MoE Model with 52 Billion Activated Parameters by Tencent."](https://arxiv.org/abs/2411.02265) arXiv:2411.02265, 2024.
+[74] Mary Phuong, et al. ["Evaluating Frontier Models for Dangerous Capabilities"](https://arxiv.org/abs/2403.13793) arXiv:2403.13793, 2024.
 
-[75] Team OLMo, et al. ["2 OLMo 2 Furious."](https://arxiv.org/abs/2501.00656) arXiv:2501.00656, 2024.
+[75] Felipe Maia Polo, et al. ["tinyBenchmarks: evaluating LLMs with fewer examples"](https://arxiv.org/abs/2402.14992) arXiv:2402.14992, 2024.
 
-[76] Kushal Tirumala, et al. ["D4: Improving LLM Pretraining via Document De-Duplication and Diversification."](https://arxiv.org/abs/2308.12284) arXiv:2308.12284, 2023.
+[76] Zihan Qiu, et al. ["Demons in the Detail: On Implementing Load Balancing Loss for Training Specialized Mixture-of-Expert Models"](https://arxiv.org/abs/2501.11873) arXiv:2501.11873, 2025.
 
-[77] Kiran Vodrahalli, et al. ["Michelangelo: Long Context Evaluations Beyond Haystacks via Latent Structure Queries."](https://arxiv.org/abs/2409.12640) arXiv:2409.12640, 2024.
+[77] Qwen Team. ["Qwen3.5: Towards Native Multimodal Agents"](https://qwen.ai/blog?id=qwen3.5) Alibaba (blog), 2026.
 
-[78] Eric Wallace, et al. ["The Instruction Hierarchy: Training LLMs to Prioritize Privileged Instructions."](https://arxiv.org/abs/2404.13208) arXiv:2404.13208, 2024.
+[78] Jack W. Rae, et al. ["Scaling Language Models: Methods, Analysis & Insights from Training Gopher"](https://arxiv.org/abs/2112.11446) arXiv:2112.11446, 2021.
 
-[79] Shengye Wan, et al. ["CYBERSECEVAL 3: Advancing the Evaluation of Cybersecurity Risks and Capabilities in Large Language Models."](https://arxiv.org/abs/2408.01605) arXiv:2408.01605, 2024.
+[79] David Rein, et al. ["GPQA: A Graduate-Level Google-Proof Q&A Benchmark"](https://arxiv.org/abs/2311.12022) arXiv:2311.12022, 2023.
 
-[80] Zengzhi Wang, et al. ["OctoThinker: Mid-training Incentivizes Reinforcement Learning Scaling."](https://arxiv.org/abs/2506.20512) arXiv:2506.20512, 2025.
+[80] Mark Russinovich, et al. ["Great, Now Write an Article About That: The Crescendo Multi-Turn LLM Jailbreak Attack"](https://arxiv.org/abs/2404.01833) arXiv:2404.01833, 2024.
 
-[81] Lean Wang, et al. ["Auxiliary-Loss-Free Load Balancing Strategy for Mixture-of-Experts."](https://arxiv.org/abs/2408.15664) arXiv:2408.15664, 2024.
+[81] John Schulman, et al. ["Proximal Policy Optimization Algorithms"](https://arxiv.org/abs/1707.06347) arXiv:1707.06347, 2017.
 
-[82] Jason Wei, et al. ["Measuring short-form factuality in large language models."](https://arxiv.org/abs/2411.04368) arXiv:2411.04368, 2024.
+[82] Zhihong Shao, et al. ["DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models"](https://arxiv.org/abs/2402.03300) arXiv:2402.03300, 2024.
 
-[83] Mitchell Wortsman, et al. ["Small-scale proxies for large-scale Transformer training instabilities."](https://arxiv.org/abs/2309.14322) arXiv:2309.14322, 2023.
+[83] Noam Shazeer. ["GLU Variants Improve Transformer"](https://arxiv.org/abs/2002.05202) arXiv:2002.05202, 2020.
 
-[84] Zhiheng Xi, et al. ["BAPO: Stabilizing Off-Policy Reinforcement Learning for LLMs via Balanced Policy Optimization with Adaptive Clipping."](https://arxiv.org/abs/2510.18927) arXiv:2510.18927, 2025.
+[84] Idan Shenfeld, et al. ["RL's Razor: Why Online Reinforcement Learning Forgets Less"](https://arxiv.org/abs/2509.04259) arXiv:2509.04259, 2025.
 
-[85] Violet Xiang, et al. ["Just Enough Thinking: Efficient Reasoning with Adaptive Length Penalties Reinforcement Learning."](https://arxiv.org/abs/2506.05256) arXiv:2506.05256, 2025.
+[85] Guangming Sheng, et al. ["HybridFlow: A Flexible and Efficient RLHF Framework"](https://arxiv.org/abs/2409.19256) arXiv:2409.19256, 2024.
 
-[86] Can Xu, et al. ["WizardLM: Empowering large pre-trained language models to follow complex instructions."](https://arxiv.org/abs/2304.12244) arXiv:2304.12244, 2023.
+[86] Avi Singh, et al. ["Beyond Human Data: Scaling Self-Training for Problem-Solving with Language Models"](https://arxiv.org/abs/2312.06585) arXiv:2312.06585, 2023.
 
-[87] An Yang, et al. ["Qwen3 Technical Report."](https://arxiv.org/abs/2505.09388) arXiv:2505.09388, 2025.
+[87] Aaditya Singh, et al. ["OpenAI GPT-5 System Card"](https://arxiv.org/abs/2601.03267) arXiv:2601.03267, 2025.
 
-[88] Jiasheng Ye, et al. ["Data Mixing Laws: Optimizing Data Mixtures by Predicting Language Modeling Performance."](https://arxiv.org/abs/2403.16952) arXiv:2403.16952, 2024.
+[88] Mingyang Song and Mao Zheng. ["A Survey of On-Policy Distillation for Large Language Models"](https://arxiv.org/abs/2604.00626) arXiv:2604.00626, 2026.
 
-[89] Qiying Yu, et al. ["DAPO: An Open-Source LLM Reinforcement Learning System at Scale."](https://arxiv.org/abs/2503.14476) arXiv:2503.14476, 2025.
+[89] Jianlin Su, et al. ["RoFormer: Enhanced Transformer with Rotary Position Embedding"](https://arxiv.org/abs/2104.09864) arXiv:2104.09864, 2021.
 
-[90] Pedram Zamirai, et al. ["Revisiting BFloat16 Training."](https://arxiv.org/abs/2010.06192) arXiv:2010.06192, 2020.
+[90] Xingwu Sun, et al. ["Hunyuan-Large: An Open-Source MoE Model with 52 Billion Activated Parameters by Tencent"](https://arxiv.org/abs/2411.02265) arXiv:2411.02265, 2024.
 
-[91] Eric Zelikman, et al. ["STaR: Bootstrapping Reasoning With Reasoning."](https://arxiv.org/abs/2203.14465) arXiv:2203.14465, 2022.
+[91] Guanglong Sun, et al. ["Safety Alignment as Continual Learning: Mitigating the Alignment Tax via Orthogonal Gradient Projection"](https://arxiv.org/abs/2602.07892) arXiv:2602.07892, 2026.
 
-[92] Yi Zeng, et al. ["How Johnny Can Persuade LLMs to Jailbreak Them: Rethinking Persuasion to Challenge AI Safety by Humanizing LLMs."](https://arxiv.org/abs/2401.06373) arXiv:2401.06373, 2024.
+[92] Team OLMo, et al. ["2 OLMo 2 Furious"](https://arxiv.org/abs/2501.00656) arXiv:2501.00656, 2024.
 
-[93] Yi Zeng, et al. ["AIR-Bench 2024: A Safety Benchmark Based on Risk Categories from Regulations and Policies."](https://arxiv.org/abs/2407.17436) arXiv:2407.17436, 2024.
+[93] Thinking Machines Lab. ["Inkling (Model Card)."](https://thinkingmachines.ai/model-card/inkling/) Thinking Machines, 2026.
 
-[94] Biao Zhang and Rico Sennrich. ["Root Mean Square Layer Normalization."](https://arxiv.org/abs/1910.07467) arXiv:1910.07467, 2019.
+[94] Thinking Machines Lab. ["On-Policy Distillation (blog)."](https://thinkingmachines.ai/blog/on-policy-distillation/) Thinking Machines, 2025.
 
-[95] Yulai Zhao, et al. ["One Token to Fool LLM-as-a-Judge."](https://arxiv.org/abs/2507.08794) arXiv:2507.08794, 2025.
+[95] Kushal Tirumala, et al. ["D4: Improving LLM Pretraining via Document De-Duplication and Diversification"](https://arxiv.org/abs/2308.12284) arXiv:2308.12284, 2023.
 
-[96] Siyan Zhao, et al. ["Self-Distilled Reasoner: On-Policy Self-Distillation for Large Language Models."](https://arxiv.org/abs/2601.18734) arXiv:2601.18734, 2026.
+[96] Kiran Vodrahalli, et al. ["Michelangelo: Long Context Evaluations Beyond Haystacks via Latent Structure Queries"](https://arxiv.org/abs/2409.12640) arXiv:2409.12640, 2024.
 
-[97] Chujie Zheng, et al. ["Group Sequence Policy Optimization."](https://arxiv.org/abs/2507.18071) arXiv:2507.18071, 2025.
+[97] Eric Wallace, et al. ["The Instruction Hierarchy: Training LLMs to Prioritize Privileged Instructions"](https://arxiv.org/abs/2404.13208) arXiv:2404.13208, 2024.
 
-[98] Yuxin Zuo, et al. ["MedXpertQA: Benchmarking Expert-Level Medical Reasoning and Understanding."](https://arxiv.org/abs/2501.18362) arXiv:2501.18362, 2025.
+[98] Shengye Wan, et al. ["CYBERSECEVAL 3: Advancing the Evaluation of Cybersecurity Risks and Capabilities in Large Language Models"](https://arxiv.org/abs/2408.01605) arXiv:2408.01605, 2024.
+
+[99] Peiyi Wang, et al. ["Math-Shepherd: Verify and Reinforce LLMs Step-by-step without Human Annotations"](https://arxiv.org/abs/2312.08935) arXiv:2312.08935, 2023.
+
+[100] Lean Wang, et al. ["Auxiliary-Loss-Free Load Balancing Strategy for Mixture-of-Experts"](https://arxiv.org/abs/2408.15664) arXiv:2408.15664, 2024.
+
+[101] Zengzhi Wang, et al. ["OctoThinker: Mid-training Incentivizes Reinforcement Learning Scaling"](https://arxiv.org/abs/2506.20512) arXiv:2506.20512, 2025.
+
+[102] Jason Wei, et al. ["Measuring short-form factuality in large language models"](https://arxiv.org/abs/2411.04368) arXiv:2411.04368, 2024.
+
+[103] Quan Wei, et al. ["Reinforcing Multi-Turn Reasoning in LLM Agents via Turn-Level Reward Design"](https://arxiv.org/abs/2505.11821) arXiv:2505.11821, 2025.
+
+[104] Mitchell Wortsman, et al. ["Small-scale proxies for large-scale Transformer training instabilities"](https://arxiv.org/abs/2309.14322) arXiv:2309.14322, 2023.
+
+[105] Mitchell Wortsman, et al. ["Model soups: averaging weights of multiple fine-tuned models improves accuracy without increasing inference time"](https://arxiv.org/abs/2203.05482) arXiv:2203.05482, 2022.
+
+[106] xAI (SpaceXAI). ["Grok 4.5 (Model Card)."](https://media.x.ai/v1/website/card-7f81d41b.pdf) xAI, 2026.
+
+[107] Zhiheng Xi, et al. ["BAPO: Stabilizing Off-Policy Reinforcement Learning for LLMs via Balanced Policy Optimization with Adaptive Clipping"](https://arxiv.org/abs/2510.18927) arXiv:2510.18927, 2025.
+
+[108] Zhiheng Xi, et al. ["AgentPRM: Process Reward Models for LLM Agents via Step-Wise Promise and Progress"](https://arxiv.org/abs/2511.08325) arXiv:2511.08325, 2025.
+
+[109] Violet Xiang, et al. ["Just Enough Thinking: Efficient Reasoning with Adaptive Length Penalties Reinforcement Learning"](https://arxiv.org/abs/2506.05256) arXiv:2506.05256, 2025.
+
+[110] Xiaomi LLM-Core Team, et al. ["MiMo-V2-Flash Technical Report"](https://arxiv.org/abs/2601.02780) arXiv:2601.02780, 2026.
+
+[111] Can Xu, et al. ["WizardLM: Empowering large pre-trained language models to follow complex instructions"](https://arxiv.org/abs/2304.12244) arXiv:2304.12244, 2023.
+
+[112] Greg Yang, et al. ["Tensor Programs V: Tuning Large Neural Networks via Zero-Shot Hyperparameter Transfer"](https://arxiv.org/abs/2203.03466) arXiv:2203.03466, 2022.
+
+[113] An Yang, et al. ["Qwen3 Technical Report"](https://arxiv.org/abs/2505.09388) arXiv:2505.09388, 2025.
+
+[114] Zhuolin Yang, et al. ["Nemotron-Cascade 2: Post-Training LLMs with Cascade RL and Multi-Domain On-Policy Distillation"](https://arxiv.org/abs/2603.19220) arXiv:2603.19220, 2026.
+
+[115] Jiasheng Ye, et al. ["Data Mixing Laws: Optimizing Data Mixtures by Predicting Language Modeling Performance"](https://arxiv.org/abs/2403.16952) arXiv:2403.16952, 2024.
+
+[116] Qiying Yu, et al. ["DAPO: An Open-Source LLM Reinforcement Learning System at Scale"](https://arxiv.org/abs/2503.14476) arXiv:2503.14476, 2025.
+
+[117] Pedram Zamirai, et al. ["Revisiting BFloat16 Training"](https://arxiv.org/abs/2010.06192) arXiv:2010.06192, 2020.
+
+[118] Eric Zelikman, et al. ["STaR: Bootstrapping Reasoning With Reasoning"](https://arxiv.org/abs/2203.14465) arXiv:2203.14465, 2022.
+
+[119] Yi Zeng, et al. ["How Johnny Can Persuade LLMs to Jailbreak Them: Rethinking Persuasion to Challenge AI Safety by Humanizing LLMs"](https://arxiv.org/abs/2401.06373) arXiv:2401.06373, 2024.
+
+[120] Yi Zeng, et al. ["AIR-Bench 2024: A Safety Benchmark Based on Risk Categories from Regulations and Policies"](https://arxiv.org/abs/2407.17436) arXiv:2407.17436, 2024.
+
+[121] Biao Zhang and Rico Sennrich. ["Root Mean Square Layer Normalization"](https://arxiv.org/abs/1910.07467) arXiv:1910.07467, 2019.
+
+[122] Chenchen Zhang. ["From Reasoning to Agentic: Credit Assignment in Reinforcement Learning for Large Language Models"](https://arxiv.org/abs/2604.09459) arXiv:2604.09459, 2026.
+
+[123] Guibin Zhang, et al. ["The Landscape of Agentic Reinforcement Learning for LLMs: A Survey"](https://arxiv.org/abs/2509.02547) arXiv:2509.02547, 2025.
+
+[124] Siyan Zhao, et al. ["Self-Distilled Reasoner: On-Policy Self-Distillation for Large Language Models"](https://arxiv.org/abs/2601.18734) arXiv:2601.18734, 2026.
+
+[125] Shiwan Zhao, et al. ["Large Language Model Post-Training: A Unified View of Off-Policy and On-Policy Learning"](https://arxiv.org/abs/2604.07941) arXiv:2604.07941, 2026.
+
+[126] Yulai Zhao, et al. ["One Token to Fool LLM-as-a-Judge"](https://arxiv.org/abs/2507.08794) arXiv:2507.08794, 2025.
+
+[127] Chujie Zheng, et al. ["Group Sequence Policy Optimization"](https://arxiv.org/abs/2507.18071) arXiv:2507.18071, 2025.
+
+[128] Yifei Zhou, et al. ["ArCHer: Training Language Model Agents via Hierarchical Multi-Turn RL"](https://arxiv.org/abs/2402.19446) arXiv:2402.19446, 2024.
+
+[129] Yuxin Zuo, et al. ["MedXpertQA: Benchmarking Expert-Level Medical Reasoning and Understanding"](https://arxiv.org/abs/2501.18362) arXiv:2501.18362, 2025.

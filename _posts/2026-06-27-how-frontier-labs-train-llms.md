@@ -24,6 +24,8 @@ og_image: https://jxzhangjhu.github.io/assets/img/blog/how-frontier-labs-train-l
 - [Pre-training: scaling, precision, stability](#pre-training-scaling-precision-stability)
 - [Post-training I: SFT, cold-start, and distillation](#post-training-i-sft-cold-start-and-distillation)
 - [Post-training II: RL, the engine of reasoning](#post-training-ii-rl-the-engine-of-reasoning)
+- [Agentic RL: credit assignment over long horizons](#agentic-rl-credit-assignment-over-long-horizons)
+- [Catastrophic forgetting and continual learning](#catastrophic-forgetting-and-continual-learning)
 - [Alignment: helpfulness, safety, honesty](#alignment-helpfulness-safety-honesty)
 - [Evaluation: measuring the climb](#evaluation-measuring-the-climb)
 - [Safety and red-teaming](#safety-and-red-teaming)
@@ -51,8 +53,9 @@ after lab published a genuine **end-to-end technical report** — not a teaser, 
 architecture ablations, the optimizer, the reinforcement-learning recipe, the reward design, the evaluation
 methodology, and the safety process. DeepSeek (V3, V3.2, R1), Qwen3, Kimi K2 and k1.5, Meta's Llama 3,
 Google's Gemma, Microsoft AI's MAI-Thinking-1, Zhipu's GLM-4.5, Alibaba, Moonshot, Xiaomi's MiMo, Tencent's
-Hunyuan, MiniMax, NVIDIA's Nemotron, and the fully-open OLMo 2 / Tulu 3 — together they are an accidental
-textbook.
+Hunyuan, MiniMax, NVIDIA's Nemotron, and the fully-open OLMo 2 / Tulu 3 — and, through mid-2026, a fresh
+wave: DeepSeek-V4, GLM-5 / 5.2, Kimi K3, Qwen3.5, xAI's Grok 4.5, and Thinking Machines' Inkling. Together
+they are an accidental textbook.
 
 Read them side by side and the striking thing is not how different the labs are, but how **convergent** they
 have become. Strip away the branding and almost every report walks the same path:
@@ -145,15 +148,22 @@ KV cache or the quadratic cost: DeepSeek's **Multi-head Latent Attention (MLA)**
 ([DeepSeek-V2](https://arxiv.org/abs/2405.04434)) compresses KV into a low-rank latent (a smaller cache
 than GQA at *better* quality), later extended with **DeepSeek Sparse Attention** to make long-context
 attention sub-quadratic ([DeepSeek-V3.2](https://arxiv.org/abs/2512.02556));
-Gemma 3 and MAI interleave **5 local : 1 global** attention layers so only every sixth layer pays the
-long-range cost; MiniMax-M1 goes furthest with a **7:1 lightning(linear)-attention** hybrid that makes
+Gemma 3/4 and MAI interleave **5 local : 1 global** attention layers so only every sixth layer pays the
+long-range cost (Gemma 4 keeps this and adds **Proportional RoPE**, unified KV on global layers, and its
+first **MoE** variant — [Gemma Team, 2026](https://arxiv.org/abs/2607.02770)); MiniMax-M1 goes furthest with a **7:1 lightning(linear)-attention** hybrid that makes
 1M-token context — and cheap long-CoT RL — affordable; Hunyuan combines GQA with cross-layer attention
 for ~95% KV savings; gpt-oss adds **attention sinks**. MAI even drops positional encoding entirely on
 its global layers (NoPE), finding it as good as RoPE but cheaper. By 2026 this had become *the* race:
 sparse/compressed attention plus **1M-token context** is now table stakes — DeepSeek-V4 ships a
 Compressed-Sparse + Heavily-Compressed Attention hybrid, GLM-5 adopts DeepSeek's DSA (and GLM-5.2 adds
 "IndexShare" to cut 1M-context FLOPs ~2.9×), all chasing the same goal of long context that's cheap
-enough to *train RL on*, not just serve.
+enough to *train RL on*, not just serve. By mid-2026 the boldest bet — **linear/hybrid attention** — went
+mainstream at the frontier: [Kimi K3](https://www.kimi.com/en/blog/kimi-k3) ships **Kimi Delta Attention
+(KDA)**, [Qwen3.5](https://qwen.ai/blog?id=qwen3.5) a **Gated DeltaNet** hybrid (400B-class quality at
+~17B-active speed), alongside MiniMax's lightning attention — all trading a
+little quality for near-linear long-context cost. Sparsity also went extreme: **Kimi K3 activates just 16
+of 896 experts** and balances them with **Quantile Balancing** (allocate from router-score quantiles, no
+aux-loss heuristic), claiming ~2.5× K2's scaling efficiency.
 
 **MoE load balancing.** Routed experts must stay balanced or training collapses and GPUs idle. There
 have been three eras of the same problem: the original **auxiliary-loss** (add a balance penalty to the
@@ -256,6 +266,14 @@ The sharpest disagreement in this whole post lives here:
 > MiniMax splits the difference (avoids synthetic in pre-training, like MAI). This is genuinely
 > unresolved, and it is the cleanest "the labs disagree" moment to flag.
 
+A newer data frontier is worth flagging: **real agent traces**. xAI's
+**[Grok 4.5](https://media.x.ai/v1/website/card-7f81d41b.pdf)** (July 2026) was
+mid-trained on *anonymized Cursor developer-session traces* — the actual keystrokes
+of engineers navigating and editing real codebases — to sharpen coding and agentic behavior, and Artificial
+Analysis ranked it #1 on agentic tool-use. It's the clearest instance of a "compute **+** traces"
+paradigm: once you've scaled compute, the scarce input becomes *recordings of the target behavior*. (It
+also raises unresolved data-rights questions — whose code, under what consent.)
+
 Finally, **decontamination** — keeping eval benchmarks out of training — is the quiet crisis under all
 of this. As benchmarks leak onto GitHub and into crawls, contamination produces flattering, fake
 numbers. Labs handle it coarsely: MAI removes all huggingface mirrors and applies universal 20-gram
@@ -299,6 +317,36 @@ right. Labs ablate near compute-optimal but ship deep in the over-trained regime
 > model. The open edge of this is the *data wall* — at extreme TPP you run out of unique high-quality
 > tokens, which loops back to the synthetic-data debate.
 
+**Ablate small, ship big — and how you know it transfers.** You cannot A/B-test a 1T model by training
+1T models; a single run costs millions. So *every* architecture, data, and hyperparameter decision is made
+on **small proxies** and extrapolated — and the real skill is making that extrapolation trustworthy. Three
+complementary tools do the heavy lifting:
+
+- **Scaling ladders + Efficiency-Gain.** Train a *family* of models at increasing size/compute (an
+  IsoFLOP or constant-TPP ladder), fit the loss-vs-compute curve, and read off the target. MAI's
+  discipline is the template: a change is adopted only if its **Efficiency-Gain persists or grows across
+  the whole ladder** — something that helps at 1B but fades by 30B is rejected as a small-scale artifact.
+  Llama 3 pushed this furthest, fitting **downstream-accuracy** scaling laws to predict benchmark scores
+  ~4 orders of magnitude out, then choosing 405B/16.5T from the fit.
+- **μP / μTransfer for hyperparameters.** The clean answer to "how do I pick the 1T learning rate without
+  sweeping at 1T": re-parameterize the model (**maximal-update parameterization**, [Yang et al., 2022](https://arxiv.org/abs/2203.03466))
+  so the *optimal* LR and init are (near-)invariant to width — tune them on a small model and **transfer
+  zero-shot** to the large one. Muon's "match AdamW's update RMS" trick is in the same spirit of making
+  hyperparameters scale-stable.
+- **Small-scale instability proxies.** You can *reproduce* big-run failures (loss/attention-logit spikes)
+  at small scale by cranking the LR ([Wortsman et al., 2023](https://arxiv.org/abs/2309.14322)); that's how
+  QK-norm and z-loss earned their place before anyone paid for a large run.
+
+> **Insight — scaling laws de-risk, they don't guarantee.** The uncomfortable truth is that transfer can
+> *break*: the **rank-invariance** assumption (if A beats B small, A beats B big) fails often enough to be
+> dangerous — MAI reports a code-heavy vs STEM-heavy mixture that literally *swapped order* between 5B and
+> 23B — and some capabilities and instabilities only **emerge** at scale. So the honest interview answer to
+> "prove it works at 1T" is: *you don't prove it, you de-risk it.* Judge changes by the **trend across the
+> ladder** (not one point), tune HPs with **μP**, verify at the **largest affordable intermediate scale**
+> before committing, keep the least-transferable calls (data mixture, final LR schedule) validated as near
+> the target as budget allows, and prefer changes with a **mechanistic reason** to transfer. The final
+> jump to 1T is always partly a bet — the craft is in shrinking it.
+
 **Precision: BF16 → FP8 → FP4.** Training precision has marched down from the FP16 mixed-precision era
 ([Micikevicius et al., 2017](https://arxiv.org/abs/1710.03740)) through BF16
 ([Zamirai et al., 2020](https://arxiv.org/abs/2010.06192)) to today's frontier. The most visible
@@ -318,8 +366,9 @@ efficiency" theme.
 > uses **MuonClip** (Muon + a **QK-Clip** that rescales the query/key projections to cap attention
 > logits; a 15.5T-token trillion-parameter run with *zero loss spikes*), and as of 2026 even
 > **DeepSeek-V4** ([2026](https://arxiv.org/abs/2606.19348)) — long an AdamW shop — adopts Muon "for
-> faster convergence and greater training stability." AdamW still trains MAI, Qwen, and Llama, but the
-> momentum (pun intended) is clearly with Muon — the most consequential optimizer shift in years.
+> faster convergence and greater training stability." Mid-2026 Kimi K3 pushes it further with **Per-Head
+> Muon** (orthogonalizing each attention head independently). AdamW still trains MAI, Qwen, and Llama, but
+> the momentum (pun intended) is clearly with Muon — the most consequential optimizer shift in years.
 
 **Stability is its own research area.** A thousand-GPU, months-long run dies from loss spikes, diverging
 logits, or even hardware bit-flips. The cheap, near-universal fixes — **QK-norm** and **z-loss** — come
@@ -405,9 +454,77 @@ is the deep reason mid-training and cold-start matter: they install the behavior
 > philosophical fork in the field: distillation is cheaper and often better *per dollar*, but only RL
 > can explore *beyond* any teacher.
 
+### Distillation, three ways — and the rise of MOPD
+
+Because distillation is now load-bearing (and because the 2026 reports use very different kinds), it's
+worth separating three flavors that get lumped together:
+
+- **Off-policy (classic) distillation.** The student trains on a *fixed* set the teacher produced — the
+  teacher's sampled completions (sequence-level SFT) or its per-token logits on teacher/ground-truth
+  sequences. Simple and cheap, and it's how small models get their reasoning: DeepSeek-R1's 800K long-CoT
+  traces SFT'd into small Qwen/Llama, or **Gemma 4** matching a larger **Gemini** teacher's logit
+  distribution ([Gemma Team, 2026](https://arxiv.org/abs/2607.02770)). Weakness: **exposure bias** — the
+  student only ever sees the teacher's trajectories, never its own, so errors compound at inference
+  (forward-KL, mode-covering).
+- **On-policy distillation (OPD).** The student generates *its own* rollouts and the teacher scores those
+  student-visited prefixes with dense, token-level guidance (**reverse-KL**, mode-seeking). This is
+  imitation learning à la DAgger — training on the states you'll actually visit cuts compounding error
+  from O(T²) to O(T) — closing the train/inference gap that off-policy KD suffers. The idea goes back to
+  **GKD** ([Agarwal et al., 2023](https://arxiv.org/abs/2306.13649)) and **MiniLLM**
+  ([Gu et al., 2023](https://arxiv.org/abs/2306.08543)), was repackaged as a clean recipe in late 2025,
+  and by 2026 is a standard primitive (there's already a [survey](https://arxiv.org/abs/2604.00626)).
+- **Self-distillation.** Teacher and student are the *same* lineage — a privileged, earlier, or stronger
+  checkpoint of the model itself. MAI's "save-point" self-distillation (above) is one flavor; Nemotron-
+  Cascade 2 ([NVIDIA, 2026](https://arxiv.org/abs/2603.19220)) uses the model's *own* intermediate
+  checkpoints as teachers to repair regressions during a long RL cascade.
+
+> **The 2026 consolidation pattern — MOPD.** The single most important distillation development is
+> **Multi-Teacher On-Policy Distillation**: train several *independent, per-domain RL specialists* (math,
+> code, agentic, instruction-following, chat), then **fuse them into one generalist** by distilling all of
+> them onto the student's own rollouts — each teacher supplying a dense token-level reverse-KL signal on
+> the prompts in *its* domain, alongside a verifiable outcome reward. It decouples development (teams build
+> domain teachers in parallel, with no cross-domain interference) and inherits *nearly all* of each
+> teacher's peak skill: MiMo-V2-Flash reports 0.937 vs 0.882 for the best merge/Mix-RL baseline on
+> Qwen3-30B-A3B ([Xiaomi, 2026](https://arxiv.org/abs/2601.02780); [MOPD, 2026](https://arxiv.org/abs/2606.30406)).
+
+Read across the labs and the "specialists → OPD-merge" shape is everywhere — but the *knobs* differ:
+
+| Model | Distillation's role | Teachers | Loss form | Note |
+|---|---|---|---|---|
+| MiMo-V2-Flash | consolidation (MOPD) | per-domain RL specialists | token-level reverse-KL + verifiable reward | *introduced* MOPD; SFT → teachers → MOPD |
+| DeepSeek-V4 | consolidation | 10+ domain specialists | **full-vocabulary** reverse-KL (caches teacher hidden states, rebuilds logits on the fly) | most faithful, most expensive |
+| Nemotron-3 Ultra / Cascade 2 | consolidation + regression-repair | 10+ specialists / own checkpoints | **sampled-token** (beat top-k & full-vocab on agentic) + MOPD-warmup SFT | support-overlap matters |
+| GLM-5.2 | consolidation | per-domain specialists | on-policy distillation (slime) | ~1,000+ specialists fused in ~2 days |
+| Qwen3 | small-model capability transfer | large Qwen3 (235B-A22B) | off-policy → then on-policy | ~10× cheaper than RL; raises pass@64 |
+| Gemma 4 | pre-/instruction-tuning transfer | larger Gemini | off-policy logit matching | classic KD; + MoE, p-RoPE, MTP |
+| Kimi k1.5 | compression (long2short) | long-CoT self | merge / shortest-RS / DPO / long2short-RL | distills long reasoning into cheap short-CoT |
+
+*How the 2026 models distill. The dominant new shape is "train domain specialists separately, then merge
+them into one model via on-policy distillation on the student's own rollouts."*
+
+Two design rules recur and are worth memorizing:
+
+- **Same-origin teachers.** OPD is stable when teachers share the student's tokenizer/vocab and init
+  family. Swap in a *stronger external* teacher (e.g. Qwen3-235B) and the student's per-token KL jumps
+  ~5× (0.04 → 0.19), entropy contracts toward a single mode, accuracy drops, and the aggressive top-k
+  form can *diverge outright* (~step 18). Distill from your own family, not the best model on the board.
+- **Loss form is a support-overlap trade.** Full-vocabulary reverse-KL is most faithful but you must move
+  a ~100k-way distribution *per token* (DeepSeek pays for it via hidden-state caching); sampled-token/top-k
+  are cheaper and — per Nemotron — can *win* on agentic tasks, because broad distribution-matching
+  amplifies noise wherever the student's prefixes fall outside the teacher's reliable support.
+
+> **Insight — distillation is eating the "consolidation" step.** Two years ago you merged skills by mixing
+> all the RL data together and hoping (Mix-RL); the 2026 default is *train specialists separately, then
+> OPD-merge them.* It's more modular, more stable, and — because the reward is a distributional divergence
+> rather than a scalar — meaningfully harder to reward-hack. The catch (and MAI's objection) still stands:
+> a student can only be pulled toward teachers that already exist, so OPD **industrializes inheritance** —
+> and only RL still explores past every teacher.
+
 **Takeaway.** SFT/cold-start sets the starting point and installs RL-ready behaviors; verification turns
-the model into its own data factory (STaR/ReST-EM/self-distillation). The open question is *inherit vs
-learn* — distill from a stronger model, or grow capability with RL from your own base.
+the model into its own data factory (STaR/ReST-EM/self-distillation); and **distillation** — off-policy,
+on-policy, or self — is how 2026 labs *consolidate* many specialists into one model, with **MOPD** now the
+default. The open question is still *inherit vs learn* — OPD industrializes inheritance, but only RL
+explores past every teacher.
 
 ---
 
@@ -483,16 +600,57 @@ at the **sequence** level (length-normalized), which is more stable, matches the
 and — notably — **eliminates the need for routing replay** on MoE. Qwen reports GSPO behind the latest
 Qwen3 models; it is the cleanest "stay critic-free but fix GRPO's unit of analysis" answer.
 
-**Direction 2 — bring back the critic (PPO).** The sharper reversal comes from **GLM**. The slime-trained
-GLM line ([GLM-5, Zhipu, 2026](https://arxiv.org/abs/2602.15763)) starts on GRPO (plus an "IcePop"
-train/inference-mismatch fix), but Zhipu's later [**GLM-5.2**](https://huggingface.co/blog/zai-org/glm-52-blog) explicitly **abandons
-group-relative optimization for a critic-based PPO** in its long-horizon stage. The reason is concrete and worth
-internalizing: when a very long agent trajectory is **compacted** into multiple sub-traces, different
-rollouts of the *same* prompt yield different *numbers* of trainable traces with wildly different lengths
-— so GRPO's "compare a clean group of comparable rollouts" assumption breaks. A **critic** estimates
-**token-level advantages for a single rollout**, with no requirement that rollouts be group-comparable,
-which fits compaction naturally (paired with a token-level loss for length imbalance). After three years
-of everyone deleting the value model, the value model is coming back — for the long-horizon case.
+**Direction 2 — bring back the critic (SAO / PPO).** The sharper reversal comes from **GLM**. The
+slime-trained GLM line ([GLM-5, Zhipu, 2026](https://arxiv.org/abs/2602.15763)) starts on GRPO (plus an
+"IcePop" train/inference-mismatch fix), but the later [**GLM-5.2**](https://huggingface.co/blog/zai-org/glm-52-blog)
+(750B-A40B) explicitly **abandons group-relative optimization for a critic-based method** in its
+long-horizon stage. The reason is concrete and worth internalizing: when a very long agent trajectory is
+**compacted** into multiple sub-traces, different rollouts of the *same* prompt yield different *numbers*
+of trainable traces with wildly different lengths — so GRPO's "compare a clean group of comparable
+rollouts" assumption breaks. A **critic** estimates **token-level advantages for a single rollout**, with
+no requirement that rollouts be group-comparable, which fits compaction naturally.
+
+The concrete algorithm behind GLM-5.2's agentic climb, **SAO — Single-rollout Asynchronous Optimization**
+([Hou et al., 2026](https://arxiv.org/abs/2607.07508)) — makes the trade explicit: replace group sampling
+with **one rollout per prompt**, train a **real value model** (with faster critic updates and a
+frozen-attention scheme so the MoE projections train while attention is held fixed), and add a strict
+**double-sided token-level clip (DIS)** that masks divergent gradients. The payoff is stability: vanilla
+GRPO *collapses at ~160 asynchronous steps*, while SAO **trains stably for ~1,000 steps** and beats
+GRPO-family baselines on SWE-Bench Verified, BeyondAIME, and IMOAnswerBench. After three years of everyone
+deleting the value model, the value model is back — for the long-horizon, asynchronous case. GLM-5.2 then
+**consolidates** the way DeepSeek-V4 does: train separate domain specialists, then merge them into one
+generalist via **on-policy distillation** (Z.AI reports fusing 1,000+ specialists in ~2 days on slime).
+
+Concretely, SAO is four moves layered on the PPO/GRPO surrogate:
+
+1. **Single-rollout sampling.** One rollout per prompt instead of a group. In *asynchronous* RL a group
+   is only as fast as its slowest member — training must wait for the laggard — so group sampling is
+   *latency-driven off-policy* and doesn't fit online/continually-evolving environments. One rollout
+   removes that barrier (and, the authors argue, generalizes better).
+2. **A critic — made affordable.** Drop the group baseline and estimate **token-level advantages with a
+   value model**. To pay for it, SAO **updates the critic more often than the actor** and **fine-tunes the
+   value model with frozen attention** (train only its MoE/projection params), so the critic is cheaper to
+   fit than a full second policy.
+3. **Skip-observation token-level GAE.** For multi-turn agent traces with interleaved tool/environment
+   feedback, compute advantages across *action-to-action* boundaries and **skip the observation tokens**
+   the model didn't generate — so environment text doesn't inject noise into the value estimate.
+4. **Strict double-sided token-level clipping (DIS).** Clip *both* sides of the token ratio to mask
+   divergent gradients — a simpler cousin of the "IcePop" mask that keeps off-policy updates bounded.
+
+The numbers (on a Qwen3-30B-A3B base): SWE-Bench Verified **23.0 → 27.0 (GRPO) → 29.8 (SAO)**; AIME 2025
+**80.4 → 84.2 → 97.3**; BeyondAIME **53.3 → 54.8 → 74.8** — and, crucially, **vanilla GRPO collapses at
+~160 asynchronous steps while SAO stays stable to ~1,000.**
+
+> **Open question — is the critic worth its cost, and does this generalize?** Read SAO skeptically on two
+> axes. (1) **Cost:** it re-introduces exactly what GRPO deleted — a second, ~policy-scale value network —
+> and the "frozen-attention, faster-critic" tricks reduce but don't erase that overhead; the bet is that
+> long-horizon agentic RL needs token-level credit assignment badly enough to pay for it. (2) **Scale
+> evidence:** the *controlled ablations* are at **30B** (Qwen3-30B-A3B), so the clean "SAO > GRPO" curves
+> are a small-model result; the *only* large-scale evidence is a single **production deployment at 750B**
+> (GLM-5.2), not a controlled 750B A/B test. That's a genuinely strong signal — a frontier lab shipped it
+> — but "ablate at 30B, deploy at 750B" is itself the leap-of-faith the *next* section is about. Community
+> acceptance is early: one lab's production use plus a fresh paper, against a field that spent two years
+> learning to *love* being critic-free.
 
 > **Divergence — the algorithm is becoming task-specific again.** The clean 2025 narrative ("GRPO won,
 > the algorithm is a commodity") is giving way to a 2026 one: **GRPO/CISPO for short, verifiable tasks;
@@ -616,6 +774,276 @@ train/inference-consistency tricks. The big bets are *how much* to lean on RL an
 
 ---
 
+## Agentic RL: credit assignment over long horizons
+
+The last section's algorithms were mostly proven on **single-turn reasoning** — one prompt, one long
+chain of thought, one verifiable reward at the end. Agentic tasks break that mold: a coding or research
+agent runs for *dozens to hundreds of turns*, calling tools and reacting to a stochastic environment, and
+the only trustworthy reward often arrives *once, at the very end*. A recent Stanford survey
+([Zhang et al., 2026](https://arxiv.org/abs/2604.09459)) frames this as two distinct regimes of the
+**credit-assignment (CA)** problem:
+
+- **Reasoning RL** — spread credit across tokens/steps inside a single CoT (500–30K tokens), deterministic
+  environment. This is where GRPO-and-fixes matured; CA is "solved enough" by a group-relative baseline.
+- **Agentic RL** — 10–100+ turns, each an LLM call plus an environment interaction, totaling 100K–1M+
+  tokens, with stochastic transitions and partial observability. Here **episode-level reward becomes
+  almost uninformative**: in one SWE-bench setup an agent averaged ~64 turns and ~131K tokens, and a single
+  wrong tool call at turn 3 gets the *same* penalty as dozens of correct actions afterward.
+
+(For the full design space beyond credit assignment — environments, tool integration, memory, multi-agent —
+see the broader [survey of agentic RL for LLMs](https://arxiv.org/abs/2509.02547).)
+
+> **Why agentic RL is genuinely different.** The survey's headline is that agentic CA is *not* just
+> "reasoning RL, but longer." It forces techniques with no real precedent in single-turn RL — **turn-level
+> MDP reformulations, hindsight/counterfactual credit, and privileged asymmetric critics** — and it
+> re-opens questions (critic vs critic-free, dense vs sparse reward) that the reasoning-RL era thought it
+> had closed. This is the live frontier of 2026 post-training, and it's why the "return of the critic"
+> (SAO, last section) happened here first.
+
+### Credit assignment: from one scalar to per-turn (and per-token)
+
+The core question is *how to spread one terminal reward over a long trajectory*. The methods form a clean
+spectrum from coarse to fine:
+
+- **Episode/outcome-level (the default).** Broadcast the trajectory's scalar reward to every token,
+  GRPO-style. Simple, and what most *shipped* frontier models still do — but the noisiest possible credit
+  at long horizons.
+- **Turn-level, critic-free.** Keep GRPO's group baseline but compute advantages *per turn*. **MT-GRPO**
+  ([Wei et al., 2025](https://arxiv.org/abs/2505.11821)) estimates turn-level advantages that drop into
+  GRPO; **GiGPO** ([Feng et al., 2025](https://arxiv.org/abs/2505.10978)) adds a clever **anchor-state
+  grouping** — it finds *repeated environment states* across a group of trajectories and compares the
+  actions taken from each, producing step-level "micro-advantages" at the *same* memory and rollout cost as
+  GRPO (+12% ALFWorld, +9% WebShop). Tree-structured variants share trajectory prefixes so a single
+  outcome reward induces step-wise signals.
+- **Turn-level, with a critic.** Bring back a value model, but at the *turn* granularity. **ArCHer**
+  ([Zhou et al., 2024](https://arxiv.org/abs/2402.19446)) is the template: a high-level off-policy critic
+  learns a turn-level Q-function ("*which turn* mattered") while a low-level on-policy actor optimizes
+  tokens within a turn ("*which tokens* mattered") — ~100× more sample-efficient than on-policy baselines.
+  GLM-5.2's **SAO** (last section) is the production-scale cousin: a single-rollout token-level critic that
+  survives trajectory *compaction*, exactly where group-relative methods break.
+- **New-to-agentic.** Hindsight relabeling (reinterpret a failed run as a success for whatever it *did*
+  achieve) and **privileged/asymmetric critics** (the critic sees state the actor can't) are, per the
+  survey, the genuinely novel agentic contributions.
+
+> **Consensus — algorithmic CA is winning over learned step-rewards.** The striking thing about the
+> *shipped* models is how few use an explicit per-step reward model. The frontier answer to long-horizon
+> credit is better *advantage estimation* (turn-level grouping, anchor states, compaction-aware critics),
+> not a separate network scoring every step. The fine-grained methods above are still mostly research-scale
+> (1.5B–7B); production leans on outcome/verifiable rewards plus smart baselines.
+
+### Stepwise reward: process rewards, and why the frontier is wary
+
+The other half of the problem is *evaluating intermediate steps at all*. The lineage is well-developed for
+math:
+
+- **Process reward models (PRMs).** **"Let's Verify Step by Step"**
+  ([Lightman et al., 2023](https://arxiv.org/abs/2305.20050)) showed step-level *human* labels beat outcome
+  labels for math verification; **Math-Shepherd** ([Wang et al., 2023](https://arxiv.org/abs/2312.08935))
+  removed the humans, auto-labeling a step by the empirical fraction of Monte-Carlo rollouts from it that
+  reach the correct answer, then training step-by-step PPO. Generative PRMs (score *with a rationale*) are
+  the current refinement.
+- **Agentic PRMs.** Porting this to agents means scoring *actions*: **AgentPRM**
+  ([2025](https://arxiv.org/abs/2511.08325)) rewards each step by its "promise and progress" toward the
+  goal, using TD + GAE to train a PRM that serves as the critic; SWE-/Code-PRMs add execution feedback on
+  partial code edits.
+
+But here is the field's sharpest agentic-reward lesson, and it's a **negative result**:
+
+> **Divergence — the frontier mostly *rejected* PRMs.** DeepSeek-R1
+> ([2025](https://arxiv.org/abs/2501.12948)) tried both process reward models and MCTS and *abandoned
+> them*: neural PRMs invite **reward hacking** (the policy games the scorer), "a step" is ambiguous to
+> define in open-ended reasoning, and PRMs need constant costly re-labeling; MCTS's token-level branching
+> factor is simply too large. Their conclusion — internalize search into the weights with
+> outcome/verifiable rewards — became the default. Kimi K2
+> ([2025](https://arxiv.org/abs/2507.20534)) shows the pragmatic middle path for *non-verifiable* agentic
+> tasks: a **rubric-based self-critique** reward (the model grades itself against explicit rubrics), with
+> the critic *continuously recalibrated by verifiable rewards*. So the frontier's "stepwise reward" is
+> usually an LLM-judge with a rubric — not a trained PRM.
+
+### How the labs actually train agents
+
+Reading the reports, the agentic recipe is less about a single algorithm and more about **environments +
+rollout infrastructure + reward plumbing**:
+
+- **Kimi K2** — the most agentic-first open report. It *manufactures* its data: start from ~3,000 real MCP
+  tools, evolve to **20,000+ synthetic tools**, spawn diverse agents and rubric-graded tasks, simulate
+  multi-turn trajectories (with real execution sandboxes for code), and keep only trajectories an LLM judge
+  passes. RL then combines **RLVR** (tests/math) with the rubric **self-critique**; the infra uses
+  **partial rollouts** — pause an unfinished long trajectory and resume it next iteration — so a few
+  100K-token episodes can't stall the batch.
+- **GLM-4.5 → 5.2** — agentic-optimized (tool use, web, coding) on the **slime** async infra; GLM-5.2 adds
+  **trajectory compaction** and the **SAO critic** for hour-long tasks, then OPD-merges specialists
+  (previous sections).
+- **MiMo-V2-Flash** — large-scale agentic RL, consolidated via **MOPD**, with MTP to speed up the many
+  rollouts agentic RL demands.
+- **Qwen3** — tool-integrated/agentic RL stabilized by **GSPO** (sequence-level ratios suit multi-turn MoE
+  rollouts).
+- **DeepSeek** — the outcome-reward purist (above); V3.2/V4 extend long-context and agentic use but keep
+  rule-based/verifiable rewards.
+- **Grok 4.5** — mid-trained on real **Cursor developer-session traces** (the *Data* section): arguably the
+  highest-signal agentic data of all, recordings of humans actually doing the target task.
+- **Nemotron** — agentic reasoning via multi-environment RLVR plus MOPD consolidation.
+
+The through-line is that the **environment is the bottleneck** — the entire subject of a companion post,
+[Environment Scaling for Agentic RL](/blog/2026/environment-scaling-for-agentic-rl/). Once you can
+*simulate* enough realistic, verifiable, resettable tasks, credit assignment and reward design are what
+turn those environments into capability.
+
+| Approach | Granularity | Extra model? | Representative work / user |
+|---|---|---|---|
+| Outcome broadcast (GRPO) | trajectory | no | default; DeepSeek, most shipped models |
+| MT-GRPO / turn-GRPO | turn | no | MT-GRPO (Wei, 2025) |
+| GiGPO anchor-state | step (repeated states) | no | GiGPO (Feng, 2025) |
+| ArCHer hierarchical | turn (Q) + token | **critic** (turn-level) | ArCHer (Zhou, 2024) |
+| SAO single-rollout | token | **critic** | GLM-5.2 (production, 750B) |
+| PRM / Math-Shepherd | step | **reward model** | math; largely rejected at frontier |
+| AgentPRM | step / action | **reward model** | agent research |
+| Rubric self-critique | turn / outcome | **LLM-judge** | Kimi K2 (non-verifiable) |
+
+*The credit-assignment and stepwise-reward toolbox. Finer granularity buys sample-efficiency but costs
+compute and invites reward hacking — which is why shipped frontier models cluster at the coarse, robust end
+(outcome + verifiable rewards) and add fine-grained credit through advantage-estimation tricks, not trained
+step-reward networks.*
+
+**Takeaway.** Agentic RL is where 2026's action is: horizons of 100K–1M tokens make one terminal reward
+almost useless, so labs sharpen **credit assignment** (turn-level grouping like GiGPO, compaction-aware
+critics like ArCHer/SAO) far more than they add **stepwise reward models** — which DeepSeek-R1's public
+post-mortem showed are reward-hackable and hard to define. In practice the winning ingredients are
+*realistic environments, partial/async rollouts, verifiable-or-rubric rewards, and advantage estimation at
+the right granularity* — with the environment itself the real bottleneck.
+
+---
+
+## Catastrophic forgetting and continual learning
+
+Every stage in this post *overwrites* the one before it. Mid-training moves the base model, SFT moves it
+again, each RL climb moves it further, and an agent that keeps training on freshly captured experience moves
+it forever. The risk is **catastrophic forgetting (CF)**: teaching the model something new silently erases
+something old (McCloskey & Cohen, 1989; [Kirkpatrick et al., 2017](https://arxiv.org/abs/1612.00796)). This
+is not a corner case — it is a central tension of the whole pipeline, and the 2024–2026 reports increasingly
+treat post-training as a **continual-learning** problem: how to *establish* behavior, *refine* it on
+learner-generated states, and **preserve** it across stage transitions
+([survey](https://arxiv.org/abs/2603.12658); [unified view](https://arxiv.org/abs/2604.07941)).
+
+Where it bites, concretely:
+
+- **Continual pre-training** on a new domain erodes general ability.
+- **SFT / alignment** pays an **"alignment tax"** — safety and instruction-tuning gradients interfere with
+  the parameter subspaces that hold general skills, a CF-like effect
+  ([Sun et al., 2026](https://arxiv.org/abs/2602.07892)).
+- **Multi-stage / Cascade RL** — training math, then code, then agentic *in sequence* means each stage
+  erodes the last (exactly why Nemotron-Cascade uses OPD to "recover benchmark regressions").
+- **Agentic continual learning** — the case you raised: an agent that keeps learning from new experience
+  risks trading yesterday's competence for today's skill.
+
+### RL's Razor: forgetting is a KL problem
+
+The sharpest recent result reframes all of this. **RL's Razor**
+([Shenfeld et al., 2025](https://arxiv.org/abs/2509.04259)) shows that, *at matched new-task accuracy, RL
+forgets less than SFT* — and that the culprit is not the algorithm but the **KL divergence from the base
+model, measured on the new task**. On-policy RL is implicitly biased toward the *KL-minimal* solution among
+the many that solve a task; SFT can drift arbitrarily far. (The tell: toggling GRPO's negative gradients in
+or out doesn't change forgetting; swapping on-policy data for off-policy does.) This retroactively explains
+the whole "keep the KL term" camp from the RL section: **the KL penalty is, mechanically, a forgetting
+knob** — and it explains why the *on-policy* family (RL, on-policy distillation) is structurally gentler on
+old skills than plain SFT.
+
+> **Insight — stay on-policy, stay close.** If forgetting tracks KL-on-the-new-task, the levers are obvious:
+> prefer *on-policy* updates, keep an explicit *KL leash* to a trusted reference, and don't push any single
+> stage further from the base than the new capability requires. Much of the toolbox below is just different
+> ways of bounding that same KL.
+
+### The mitigation toolbox
+
+Five families, and the frontier reports combine all of them:
+
+- **Replay / rehearsal.** Mix old data back in. The canonical instance is InstructGPT's **PPO-ptx**
+  ([Ouyang et al., 2022](https://arxiv.org/abs/2203.02155)) — blend pretraining gradients into RLHF to
+  cancel the alignment tax; **Kimi K2**'s **PTX auxiliary loss** is the same idea in a 2026 flagship. Newer
+  variants schedule replay by a *model-centric* clock — replay when the weights have actually moved,
+  following the Ebbinghaus forgetting curve ([MSSR, 2026](https://arxiv.org/abs/2603.09892)).
+- **Proximity regularization.** Stay near a reference: the RLHF **KL penalty**, classic **EWC**
+  (Fisher-weighted anchoring of important weights, [Kirkpatrick et al., 2017](https://arxiv.org/abs/1612.00796)),
+  or the newer **orthogonal gradient projection** that strips out exactly the part of an alignment update
+  that would collide with general-capability directions
+  ([Sun et al., 2026](https://arxiv.org/abs/2602.07892)).
+- **Parameter isolation (PEFT).** Freeze the base and learn adapters (LoRA); you *can't* overwrite what you
+  don't train — at the cost of capacity.
+- **Model merging / souping.** Average the fine-tuned model back toward the base or toward sibling
+  checkpoints: **model soups** ([Wortsman et al., 2022](https://arxiv.org/abs/2203.05482)), **task
+  arithmetic** ([Ilharco et al., 2022](https://arxiv.org/abs/2212.04089)), and the checkpoint-souping Llama 3
+  runs across its RM/SFT/DPO models. Cheap, post-hoc, and surprisingly good at buying back general
+  performance.
+- **Distillation-based recovery.** The family most relevant to your question. **Self-distillation** (MAI's
+  save-point trick, §SFT) and especially **on-policy distillation** can *re-invoke capabilities lost during
+  fine-tuning*: use an earlier checkpoint as a fixed teacher and OPD the student back toward it on-policy —
+  because it stays on-policy against a fixed target, it converges to the teacher's behavior *without* the
+  regression SFT causes (Thinking Machines Lab showed OPD recovering nearly full IF-eval after document
+  fine-tuning with no knowledge loss; when it stalls, an off-policy cold start fixes it,
+  [Li et al., 2026](https://arxiv.org/abs/2604.13016)). This is why **MOPD-style consolidation doubles as
+  forgetting-repair**: Nemotron-Cascade OPDs from the strongest intermediate teacher to undo Cascade-RL
+  regressions, and the general "specialists → OPD-merge" pattern (GLM-5.2, DeepSeek-V4, MiMo-V2) *decouples*
+  skills so learning one can't clobber another.
+
+| Family | Mechanism | Cost | Representative use |
+|---|---|---|---|
+| Replay / rehearsal | mix old / pretrain data back in | +data, replay-ratio HP | **PPO-ptx** (InstructGPT), Kimi K2 PTX |
+| Proximity regularization | KL-to-ref · EWC · orthogonal projection | tune KL / λ | RLHF KL term; OGPSA |
+| Parameter isolation (PEFT) | freeze base, train adapters | less capacity | LoRA continual FT |
+| Merging / souping | average toward base / siblings | ~free, post-hoc | model soups; Llama 3 averaging |
+| Distillation recovery | on-policy/self-distill to re-invoke skills | teacher forward passes | Nemotron OPD; MAI self-distill; specialists→merge |
+
+*The anti-forgetting toolbox. Note the RL's-Razor throughline: replay, KL penalties, and on-policy
+distillation all work by keeping the model's distribution close to where it started; merging does the same
+thing after the fact.*
+
+### The agentic twist: learn in memory, not weights
+
+Your specific worry — an agent that forgets as it accumulates experience — has provoked a distinct answer:
+**move continual learning out of the weights and into context/memory.** Rather than fine-tune on every new
+experience (and risk CF), 2026 agent systems increasingly expose **memory as tools** the agent learns to use
+— store, retrieve, summarize, discard — while the base weights stay frozen: AgeMem
+([Yu et al., 2026](https://aclanthology.org/2026.acl-long.981/)) trains exactly these operations with
+step-wise GRPO, and neurocognitive designs add a consolidation loop that replays high-utility traces and
+prunes the rest. The base model stops being the thing that remembers; a bounded, curated memory does. When
+labs *do* update weights on new experience, they fall back on the toolbox above — replay, a KL leash,
+OPD-recovery — plus the "specialists → merge" decoupling. (The environments that generate all this
+experience are the subject of the companion post,
+[Environment Scaling for Agentic RL](/blog/2026/environment-scaling-for-agentic-rl/).)
+
+### How the frontier labs handle it
+
+- **OpenAI (InstructGPT)** — introduced **PPO-ptx** replay to cancel the alignment tax; the template
+  everyone inherited.
+- **Kimi K2** — **PTX auxiliary loss** + temperature decay to hold onto pretraining knowledge through heavy
+  agentic RL.
+- **MAI** — **self-distillation** as a save-point: resume from a collapse, and carry progress onto a new base
+  without retraining from scratch.
+- **DeepSeek-R1** — a final RL stage over *all* scenarios to restore general helpfulness after
+  reasoning-focused RL, with a deliberately *short* model-preference-reward phase (the last 400 of 1,700
+  steps) to avoid over-drift and reward hacking.
+- **Nemotron-Cascade / -3 Ultra** — **on-policy distillation** from the best intermediate checkpoint as an
+  explicit regression-repair device throughout Cascade RL.
+- **GLM-5.2 · DeepSeek-V4 · MiMo-V2** — build domain specialists *separately*, then **OPD-merge** — the most
+  scalable anti-forgetting move, because the skills are never entangled in the first place.
+- **Llama 3** — data mixing plus **model averaging/souping** across checkpoints.
+- **Qwen3** — fuse thinking / non-thinking into one model so neither mode is forgotten.
+
+> **Open question — true lifelong learning is still unsolved.** Every technique here *bounds* forgetting;
+> none abolishes it. No frontier model yet updates its own weights online, in production, from a stream of
+> new experience without a careful offline replay / merge / distill cycle — which is precisely why the
+> agentic world is routing *around* the problem with external memory. Weight-space lifelong learning remains
+> the open frontier.
+
+**Takeaway.** Catastrophic forgetting is the tax on every post-training step, and 2026's understanding
+crystallized around one idea — **RL's Razor**: forgetting tracks *KL-from-base on the new task*, so
+on-policy updates forget less. The working stack is replay (ptx) + a KL leash + model merging +
+**distillation to recover** (self- and on-policy), with the deepest structural fix being "*train specialists
+separately, then OPD-merge*." For agents, the pragmatic escape is to learn in **memory**, not weights —
+because genuine online, weight-level lifelong learning is still unsolved.
+
+---
+
 ## Alignment: helpfulness, safety, honesty
 
 Alignment used to be a final RLHF coat of paint. In the 2026 recipe it is its own set of RL "climbs"
@@ -656,7 +1084,11 @@ answer when it knows and hedge when it doesn't — *without* over-hedging into u
 reward grades responses into five buckets (confident-correct → confident-incorrect), rewarding
 confident-correct most, penalizing confident hallucination most, and giving abstention a neutral score —
 explicitly *discouraging over-hedging*. This connects to a deeper problem (calibration, abstention, and
-uncertainty in long-horizon agents) that has its own companion post.
+uncertainty in long-horizon agents) that has its own companion post. Some labs now make calibration a
+headline design goal: Thinking Machines' open **[Inkling](https://thinkingmachines.ai/model-card/inkling/)**
+(975B/41B, natively multimodal) is explicitly trained "to give calibrated answers, including expressing
+uncertainty rather than guessing" — a sign that *knowing what it doesn't know* is graduating from a
+research topic into a shipped model property.
 
 > **Divergence — how much to disclose.** The *methods* are converging, but disclosure is not. OpenAI's
 > system cards are the eval/safety reference (Preparedness categories, red-team hours, safe-completions),
@@ -772,8 +1204,6 @@ but only as long as we don't train models to hide their thoughts.
 
 ---
 
----
-
 ## The convergent recipe
 
 Step back from the stages and the claim from the top of the post holds up: by 2026 there is **one
@@ -792,22 +1222,26 @@ report in the table below reads like a fill-in-the-blanks.
 | [DeepSeek-V3](https://arxiv.org/abs/2412.19437) | DeepSeek | 37B / 671B | MoE + MLA | 14.8T (FP8) | AdamW | GRPO; R1-distill into SFT | synthetic + human |
 | [DeepSeek-R1](https://arxiv.org/abs/2501.12948) | DeepSeek | 37B / 671B | MoE + MLA | (V3) | — | pure-RL → multi-stage; distills outward | — |
 | [DeepSeek-V4](https://arxiv.org/abs/2606.19348) | DeepSeek | 49B / 1.6T | MoE + CSA/HCA, 1M ctx | 32T+ | **Muon** | GRPO per-expert → on-policy distillation | synthetic + human |
-| [Qwen3](https://arxiv.org/abs/2505.09388) | Alibaba | 22B / 235B | MoE (no shared) | 36T | AdamW | **GSPO** + strong→weak distill; thinking budget | synthetic-heavy |
-| [Kimi K2](https://arxiv.org/abs/2507.20534) | Moonshot | 32B / 1.04T | MoE + MLA | 15.5T | **MuonClip** | mirror-descent RL; agentic | rephrase-synthetic |
+| [Qwen3 / 3.5](https://arxiv.org/abs/2505.09388) | Alibaba | 22B/235B; 17B/397B | MoE (+ Gated DeltaNet linear attn in 3.5) | 36T | AdamW | **GSPO** + strong→weak distill; thinking budget | synthetic-heavy |
+| [Kimi K2 / K3](https://arxiv.org/abs/2507.20534) | Moonshot | 32B / 1.04T→2.8T | MoE + MLA; **KDA** linear attn (K3) | 15.5T→20T+ | **MuonClip / Per-Head Muon** | mirror-descent RL; agentic; QAT | rephrase-synthetic |
 | [GLM-4.5](https://arxiv.org/abs/2508.06471) | Zhipu | 32B / 355B | MoE | 23T | **Muon** | GRPO (no KL) + expert-iteration | — |
-| [GLM-5 / 5.2](https://arxiv.org/abs/2602.15763) | Zhipu | 40B / 744B | MoE + DSA, 1M ctx | 28.5T | **Muon** | GRPO+IcePop → **critic PPO** (long-horizon) | — |
+| [GLM-5 / 5.2](https://arxiv.org/abs/2602.15763) | Zhipu | 40B / 744–750B | MoE + DSA, 1M ctx | 28.5T | **Muon** | GRPO+IcePop → **SAO** (single-rollout critic) + on-policy distill | — |
 | [Llama 3](https://arxiv.org/abs/2407.21783) | Meta | 405B | **dense** | 15.6T (BF16) | AdamW | **SFT+RS+DPO** (no PPO) | synthetic for code/math |
-| [Gemma 3](https://arxiv.org/abs/2503.19786) | Google | 27B | dense (MM) | 14T | — | **distillation** + light RLVR | distill teacher |
-| [MiMo-7B](https://arxiv.org/abs/2505.07608) | Xiaomi | 7B | dense | 25T | AdamW | heavy GRPO from base | reasoning-dense synth |
+| [Gemma 3 / 4](https://arxiv.org/abs/2607.02770) | Google | 27B; 4B/26B-A4B | dense + **MoE** (MM); p-RoPE, MTP | 14T | — | **off-policy distillation** (from Gemini) + light RLVR | distill teacher |
+| [MiMo-7B / V2-Flash](https://arxiv.org/abs/2601.02780) | Xiaomi | 7B; 27T-trained V2 | dense; MoE (V2, SWA+GA) | 25T→27T | AdamW | GRPO from base; **MOPD** (V2-Flash) | reasoning-dense synth |
 | [Hunyuan-Large](https://arxiv.org/abs/2411.02265) | Tencent | 52B / 389B | MoE | 7T (~1.5T synth) | AdamW | SFT + **DPO** | **synthetic-heavy** |
 | [MiniMax-M1 / M2](https://arxiv.org/abs/2506.13585) | MiniMax | 10–46B / 0.23–0.46T | MoE + lightning-attn | +7.5T | AdamW | **CISPO** / **Forge** agent-RL | human (no synth pretrain) |
+| [Inkling](https://thinkingmachines.ai/model-card/inkling/) | Thinking Machines | 41B / 975B | MoE (DeepSeek-V3-style), multimodal | 45T (multimodal) | — | calibrated/uncertainty-aware; Tinker fine-tuning | multimodal |
+| Grok 4.5 | xAI | ~1.5T (V9) | MoE, 500K ctx | — | — | async agentic RL on **Cursor dev-session traces** | + developer traces |
 | [OLMo 2 / Tulu 3](https://arxiv.org/abs/2501.00656) | Ai2 | 7–32B | dense | 4–6T | AdamW | SFT→DPO→**RLVR** | fully open |
 | [Nemotron 3](https://arxiv.org/abs/2512.20856) | NVIDIA | 3B+ | **Mamba-MoE** | 10T+ (NVFP4) | — | multi-env GRPO | open |
 
 *Table 3. One recipe, many fills. Reading across the columns, the consensus (MoE + modern block +
 SFT→RL + verifiable rewards) is visible — and so are the handful of real bets (dense vs MoE, AdamW vs
-Muon, GRPO vs GSPO vs PPO, RL-heavy vs DPO, synthetic vs human). The 2026 rows (DeepSeek-V4, GLM-5/5.2,
-MiniMax-M2) show the frontier moving toward **1M context, Muon, and long-horizon agentic RL**.*
+Muon, GRPO vs GSPO vs SAO/PPO, RL-heavy vs DPO, synthetic vs human). The mid-2026 wave (DeepSeek-V4,
+GLM-5.2, Kimi K3, Inkling, Grok 4.5, Qwen3.5) pushes the frontier toward **1M context, linear/hybrid
+attention, Muon, and long-horizon agentic RL** — and, per the Artificial Analysis Intelligence Index,
+six labs now field a frontier-class model where two did in early June.*
 
 **What everyone agrees on** (the eight points of consensus): the modern decoder block; fine-grained +
 shared-expert MoE balanced over the global batch; heavy dedup + scaling-law data mixing + a mid-training
@@ -855,10 +1289,11 @@ log-linear RL climb takes a stack of stabilizers (entropy control, router replay
 self-distillation save-points, asynchronous infra) and a lot of compute that is now a growing fraction of
 total training cost. And just as GRPO looked like a settled default, **long-horizon agentic RL has
 reopened the algorithm question**: trajectory "compaction" produces variable-length sub-traces that break
-group-relative comparison, pushing Qwen to sequence-level **GSPO** and GLM-5.2 back to a **critic-based
-PPO**. Whether the field reconverges — or RL stays permanently task-specific (GRPO/GSPO for short
-verifiable tasks, critics for long agentic ones) — is genuinely open, and it is the most active training
-debate of 2026. Much of this is still craft, not science.
+group-relative comparison, pushing Qwen to sequence-level **GSPO** and GLM-5.2 to a **single-rollout
+critic method (SAO)** that trains stably 6× longer than GRPO in the asynchronous setting. Whether the
+field reconverges — or RL stays permanently task-specific (GRPO/GSPO for short verifiable tasks, critics
+for long agentic ones) — is genuinely open, and it is the most active training debate of 2026. Much of
+this is still craft, not science.
 
 **Monitorability vs capability.** CoT monitoring is one of the few safety wins of the reasoning era — but
 it only works if we *don't* optimize against it. Keeping chains of thought faithful and legible while
@@ -906,200 +1341,272 @@ figures are original.*
 
 ---
 
+---
+
+---
+
+---
+
+---
+
+---
+
 ## References
 
-[1] Amro Abbas, et al. ["SemDeDup: Data-efficient learning at web-scale through semantic deduplication."](https://arxiv.org/abs/2303.09540) arXiv:2303.09540, 2023.
+[1] Amro Abbas, et al. ["SemDeDup: Data-efficient learning at web-scale through semantic deduplication"](https://arxiv.org/abs/2303.09540) arXiv:2303.09540, 2023.
 
-[2] Joshua Ainslie, et al. ["GQA: Training Generalized Multi-Query Transformer Models from Multi-Head Checkpoints."](https://arxiv.org/abs/2305.13245) arXiv:2305.13245, 2023.
+[2] Rishabh Agarwal, et al. ["On-Policy Distillation of Language Models: Learning from Self-Generated Mistakes"](https://arxiv.org/abs/2306.13649) arXiv:2306.13649, 2023.
 
-[3] Rahul K. Arora, et al. ["HealthBench: Evaluating Large Language Models Towards Improved Human Health."](https://arxiv.org/abs/2505.08775) arXiv:2505.08775, 2025.
+[3] Yu, et al. ["Agentic Memory: Learning Unified Long-Term and Short-Term Memory Management for LLM Agents"](https://aclanthology.org/2026.acl-long.981/) ACL 2026.
 
-[4] Yushi Bai, et al. ["LongBench v2: Towards Deeper Understanding and Reasoning on Realistic Long-context Multitasks."](https://arxiv.org/abs/2412.15204) arXiv:2412.15204, 2024.
+[4] Joshua Ainslie, et al. ["GQA: Training Generalized Multi-Query Transformer Models from Multi-Head Checkpoints"](https://arxiv.org/abs/2305.13245) arXiv:2305.13245, 2023.
 
-[5] Bowen Baker, et al. ["Monitoring Reasoning Models for Misbehavior and the Risks of Promoting Obfuscation."](https://arxiv.org/abs/2503.11926) arXiv:2503.11926, 2025.
+[5] Rahul K. Arora, et al. ["HealthBench: Evaluating Large Language Models Towards Improved Human Health"](https://arxiv.org/abs/2505.08775) arXiv:2505.08775, 2025.
 
-[6] Mayee F. Chen, et al. ["Olmix: A Framework for Data Mixing Throughout LM Development."](https://arxiv.org/abs/2602.12237) arXiv:2602.12237, 2026.
+[6] Yushi Bai, et al. ["LongBench v2: Towards Deeper Understanding and Reasoning on Realistic Long-context Multitasks"](https://arxiv.org/abs/2412.15204) arXiv:2412.15204, 2024.
 
-[7] Aakanksha Chowdhery, et al. ["PaLM: Scaling Language Modeling with Pathways."](https://arxiv.org/abs/2204.02311) arXiv:2204.02311, 2022.
+[7] Bowen Baker, et al. ["Monitoring Reasoning Models for Misbehavior and the Risks of Promoting Obfuscation"](https://arxiv.org/abs/2503.11926) arXiv:2503.11926, 2025.
 
-[8] Ganqu Cui, et al. ["The Entropy Mechanism of Reinforcement Learning for Reasoning Language Models."](https://arxiv.org/abs/2505.22617) arXiv:2505.22617, 2025.
+[8] Mayee F. Chen, et al. ["Olmix: A Framework for Data Mixing Throughout LM Development"](https://arxiv.org/abs/2602.12237) arXiv:2602.12237, 2026.
 
-[9] Damai Dai, et al. ["DeepSeekMoE: Towards Ultimate Expert Specialization in Mixture-of-Experts Language Models."](https://arxiv.org/abs/2401.06066) arXiv:2401.06066, 2024.
+[9] Hongyang Chen, et al. ["Continual Learning in Large Language Models: Methods, Challenges, and Opportunities"](https://arxiv.org/abs/2603.12658) arXiv:2603.12658, 2026.
 
-[10] DeepSeek-AI, et al. ["DeepSeek-V2: A Strong, Economical, and Efficient Mixture-of-Experts Language Model."](https://arxiv.org/abs/2405.04434) arXiv:2405.04434, 2024.
+[10] Aakanksha Chowdhery, et al. ["PaLM: Scaling Language Modeling with Pathways"](https://arxiv.org/abs/2204.02311) arXiv:2204.02311, 2022.
 
-[11] DeepSeek-AI, et al. ["DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning."](https://arxiv.org/abs/2501.12948) arXiv:2501.12948, 2025.
+[11] Ganqu Cui, et al. ["The Entropy Mechanism of Reinforcement Learning for Reasoning Language Models"](https://arxiv.org/abs/2505.22617) arXiv:2505.22617, 2025.
 
-[12] DeepSeek-AI, et al. ["DeepSeek-V3 Technical Report."](https://arxiv.org/abs/2412.19437) arXiv:2412.19437, 2024.
+[12] Damai Dai, et al. ["DeepSeekMoE: Towards Ultimate Expert Specialization in Mixture-of-Experts Language Models"](https://arxiv.org/abs/2401.06066) arXiv:2401.06066, 2024.
 
-[13] DeepSeek-AI, et al. ["DeepSeek-V3.2: Pushing the Frontier of Open Large Language Models."](https://arxiv.org/abs/2512.02556) arXiv:2512.02556, 2025.
+[13] DeepSeek-AI, et al. ["DeepSeek-V2: A Strong, Economical, and Efficient Mixture-of-Experts Language Model"](https://arxiv.org/abs/2405.04434) arXiv:2405.04434, 2024.
 
-[14] DeepSeek-AI, et al. ["DeepSeek-V4: Towards Highly Efficient Million-Token Context Intelligence."](https://arxiv.org/abs/2606.19348) arXiv:2606.19348, 2026.
+[14] DeepSeek-AI, et al. ["DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning"](https://arxiv.org/abs/2501.12948) arXiv:2501.12948, 2025.
 
-[15] Jasper Dekoninck, et al. ["Beyond Benchmarks: MathArena as an Evaluation Platform for Mathematics with LLMs."](https://arxiv.org/abs/2605.00674) arXiv:2605.00674, 2026.
+[15] DeepSeek-AI, et al. ["DeepSeek-V3 Technical Report"](https://arxiv.org/abs/2412.19437) arXiv:2412.19437, 2024.
 
-[16] Yue Deng, et al. ["Multilingual Jailbreak Challenges in Large Language Models."](https://arxiv.org/abs/2310.06474) arXiv:2310.06474, 2023.
+[16] DeepSeek-AI, et al. ["DeepSeek-V3.2: Pushing the Frontier of Open Large Language Models"](https://arxiv.org/abs/2512.02556) arXiv:2512.02556, 2025.
 
-[17] Xiang Deng, et al. ["SWE-Bench Pro: Can AI Agents Solve Long-Horizon Software Engineering Tasks?."](https://arxiv.org/abs/2509.16941) arXiv:2509.16941, 2025.
+[17] DeepSeek-AI, et al. ["DeepSeek-V4: Towards Highly Efficient Million-Token Context Intelligence"](https://arxiv.org/abs/2606.19348) arXiv:2606.19348, 2026.
 
-[18] Shehzaad Dhuliawala, et al. ["Chain-of-Verification Reduces Hallucination in Large Language Models."](https://arxiv.org/abs/2309.11495) arXiv:2309.11495, 2023.
+[18] Jasper Dekoninck, et al. ["Beyond Benchmarks: MathArena as an Evaluation Platform for Mathematics with LLMs"](https://arxiv.org/abs/2605.00674) arXiv:2605.00674, 2026.
 
-[19] Essential AI, et al. ["Essential-Web v1.0: 24T tokens of organized web data."](https://arxiv.org/abs/2506.14111) arXiv:2506.14111, 2025.
+[19] Yue Deng, et al. ["Multilingual Jailbreak Challenges in Large Language Models"](https://arxiv.org/abs/2310.06474) arXiv:2310.06474, 2023.
 
-[20] Kanishk Gandhi, et al. ["Cognitive Behaviors that Enable Self-Improving Reasoners, or, Four Habits of Highly Effective STaRs."](https://arxiv.org/abs/2503.01307) arXiv:2503.01307, 2025.
+[20] Xiang Deng, et al. ["SWE-Bench Pro: Can AI Agents Solve Long-Horizon Software Engineering Tasks?"](https://arxiv.org/abs/2509.16941) arXiv:2509.16941, 2025.
 
-[21] Tao Ge, et al. ["Scaling Synthetic Data Creation with 1,000,000,000 Personas."](https://arxiv.org/abs/2406.20094) arXiv:2406.20094, 2024.
+[21] Shehzaad Dhuliawala, et al. ["Chain-of-Verification Reduces Hallucination in Large Language Models"](https://arxiv.org/abs/2309.11495) arXiv:2309.11495, 2023.
 
-[22] Gemma Team, et al. ["Gemma 3 Technical Report."](https://arxiv.org/abs/2503.19786) arXiv:2503.19786, 2025.
+[22] Essential AI, et al. ["Essential-Web v1.0: 24T tokens of organized web data"](https://arxiv.org/abs/2506.14111) arXiv:2506.14111, 2025.
 
-[23] GLM-4. 5 Team, et al. ["GLM-4.5: Agentic, Reasoning, and Coding (ARC) Foundation Models."](https://arxiv.org/abs/2508.06471) arXiv:2508.06471, 2025.
+[23] Lang Feng, et al. ["Group-in-Group Policy Optimization for LLM Agent Training"](https://arxiv.org/abs/2505.10978) arXiv:2505.10978, 2025.
 
-[24] GLM-5-Team, et al. ["GLM-5: from Vibe Coding to Agentic Engineering."](https://arxiv.org/abs/2602.15763) arXiv:2602.15763, 2026.
+[24] Kanishk Gandhi, et al. ["Cognitive Behaviors that Enable Self-Improving Reasoners, or, Four Habits of Highly Effective STaRs"](https://arxiv.org/abs/2503.01307) arXiv:2503.01307, 2025.
 
-[25] GLM-5.2 Team (Zhipu AI). ["GLM-5.2: Built for Long-Horizon Tasks."](https://huggingface.co/blog/zai-org/glm-52-blog) Zhipu AI / Z.ai, 2026.
+[25] Tao Ge, et al. ["Scaling Synthetic Data Creation with 1,000,000,000 Personas"](https://arxiv.org/abs/2406.20094) arXiv:2406.20094, 2024.
 
-[26] Aaron Grattafiori, et al. ["The Llama 3 Herd of Models."](https://arxiv.org/abs/2407.21783) arXiv:2407.21783, 2024.
+[26] Gemma Team, et al. ["Gemma 4 Technical Report"](https://arxiv.org/abs/2607.02770) arXiv:2607.02770, 2026.
 
-[27] Melody Y. Guan, et al. ["Monitoring Monitorability."](https://arxiv.org/abs/2512.18311) arXiv:2512.18311, 2025.
+[27] GLM-4. 5 Team, et al. ["GLM-4.5: Agentic, Reasoning, and Coding (ARC) Foundation Models"](https://arxiv.org/abs/2508.06471) arXiv:2508.06471, 2025.
 
-[28] Lukas Haas, et al. ["SimpleQA Verified: A Reliable Factuality Benchmark to Measure Parametric Knowledge."](https://arxiv.org/abs/2509.07968) arXiv:2509.07968, 2025.
+[28] GLM-5-Team, et al. ["GLM-5: from Vibe Coding to Agentic Engineering"](https://arxiv.org/abs/2602.15763) arXiv:2602.15763, 2026.
 
-[29] David Heineman, et al. ["Signal and Noise: A Framework for Reducing Uncertainty in Language Model Evaluation."](https://arxiv.org/abs/2508.13144) arXiv:2508.13144, 2025.
+[29] GLM-5.2 Team (Zhipu AI). ["GLM-5.2: Built for Long-Horizon Tasks"](https://huggingface.co/blog/zai-org/glm-52-blog) Zhipu AI / Z.AI, 2026.
 
-[30] Dan Hendrycks, et al. ["Measuring Mathematical Problem Solving With the MATH Dataset."](https://arxiv.org/abs/2103.03874) arXiv:2103.03874, 2021.
+[30] Aaron Grattafiori, et al. ["The Llama 3 Herd of Models"](https://arxiv.org/abs/2407.21783) arXiv:2407.21783, 2024.
 
-[31] Dan Hendrycks, et al. ["Measuring Massive Multitask Language Understanding."](https://arxiv.org/abs/2009.03300) arXiv:2009.03300, 2020.
+[31] Yuxian Gu, et al. ["MiniLLM: On-Policy Distillation of Large Language Models"](https://arxiv.org/abs/2306.08543) arXiv:2306.08543, 2023.
 
-[32] Jordan Hoffmann, et al. ["Training Compute-Optimal Large Language Models."](https://arxiv.org/abs/2203.15556) arXiv:2203.15556, 2022.
+[32] Melody Y. Guan, et al. ["Monitoring Monitorability"](https://arxiv.org/abs/2512.18311) arXiv:2512.18311, 2025.
 
-[33] Jian Hu, et al. ["OpenRLHF: An Easy-to-use, Scalable and High-performance RLHF Framework."](https://arxiv.org/abs/2405.11143) arXiv:2405.11143, 2024.
+[33] Lukas Haas, et al. ["SimpleQA Verified: A Reliable Factuality Benchmark to Measure Parametric Knowledge"](https://arxiv.org/abs/2509.07968) arXiv:2509.07968, 2025.
 
-[34] Jiaxin Huang, et al. ["Large Language Models Can Self-Improve."](https://arxiv.org/abs/2210.11610) arXiv:2210.11610, 2022.
+[34] David Heineman, et al. ["Signal and Noise: A Framework for Reducing Uncertainty in Language Model Evaluation"](https://arxiv.org/abs/2508.13144) arXiv:2508.13144, 2025.
 
-[35] Naman Jain, et al. ["LiveCodeBench: Holistic and Contamination Free Evaluation of Large Language Models for Code."](https://arxiv.org/abs/2403.07974) arXiv:2403.07974, 2024.
+[35] Dan Hendrycks, et al. ["Measuring Mathematical Problem Solving With the MATH Dataset"](https://arxiv.org/abs/2103.03874) arXiv:2103.03874, 2021.
 
-[36] Jared Kaplan, et al. ["Scaling Laws for Neural Language Models."](https://arxiv.org/abs/2001.08361) arXiv:2001.08361, 2020.
+[36] Dan Hendrycks, et al. ["Measuring Massive Multitask Language Understanding"](https://arxiv.org/abs/2009.03300) arXiv:2009.03300, 2020.
 
-[37] Kimi Team, et al. ["Kimi K2: Open Agentic Intelligence."](https://arxiv.org/abs/2507.20534) arXiv:2507.20534, 2025.
+[37] Jordan Hoffmann, et al. ["Training Compute-Optimal Large Language Models"](https://arxiv.org/abs/2203.15556) arXiv:2203.15556, 2022.
 
-[38] Nathan Lambert, et al. ["Tulu 3: Pushing Frontiers in Open Language Model Post-Training."](https://arxiv.org/abs/2411.15124) arXiv:2411.15124, 2024.
+[38] Zhenyu Hou, et al. ["Single-Rollout Asynchronous Optimization for Agentic Reinforcement Learning"](https://arxiv.org/abs/2607.07508) arXiv:2607.07508, 2026.
 
-[39] Dmitry Lepikhin, et al. ["GShard: Scaling Giant Models with Conditional Computation and Automatic Sharding."](https://arxiv.org/abs/2006.16668) arXiv:2006.16668, 2020.
+[39] Jian Hu, et al. ["OpenRLHF: An Easy-to-use, Scalable and High-performance RLHF Framework"](https://arxiv.org/abs/2405.11143) arXiv:2405.11143, 2024.
 
-[40] Nathaniel Li, et al. ["The WMDP Benchmark: Measuring and Reducing Malicious Use With Unlearning."](https://arxiv.org/abs/2403.03218) arXiv:2403.03218, 2024.
+[40] Jiaxin Huang, et al. ["Large Language Models Can Self-Improve"](https://arxiv.org/abs/2210.11610) arXiv:2210.11610, 2022.
 
-[41] Jingyuan Liu, et al. ["Muon is Scalable for LLM Training."](https://arxiv.org/abs/2502.16982) arXiv:2502.16982, 2025.
+[41] Gabriel Ilharco, et al. ["Editing Models with Task Arithmetic"](https://arxiv.org/abs/2212.04089) arXiv:2212.04089, 2022.
 
-[42] Tianqi Liu, et al. ["RRM: Robust Reward Model Training Mitigates Reward Hacking."](https://arxiv.org/abs/2409.13156) arXiv:2409.13156, 2024.
+[42] Naman Jain, et al. ["LiveCodeBench: Holistic and Contamination Free Evaluation of Large Language Models for Code"](https://arxiv.org/abs/2403.07974) arXiv:2403.07974, 2024.
 
-[43] LLM-Core Xiaomi, et al. ["MiMo: Unlocking the Reasoning Potential of Language Model – From Pretraining to Posttraining."](https://arxiv.org/abs/2505.07608) arXiv:2505.07608, 2025.
+[43] Jared Kaplan, et al. ["Scaling Laws for Neural Language Models"](https://arxiv.org/abs/2001.08361) arXiv:2001.08361, 2020.
 
-[44] Anton Lozhkov, et al. ["StarCoder 2 and The Stack v2: The Next Generation."](https://arxiv.org/abs/2402.19173) arXiv:2402.19173, 2024.
+[44] Kimi Team, et al. ["Kimi K2: Open Agentic Intelligence"](https://arxiv.org/abs/2507.20534) arXiv:2507.20534, 2025.
 
-[45] Wenhan Ma, et al. ["Stabilizing MoE Reinforcement Learning by Aligning Training and Inference Routers."](https://arxiv.org/abs/2510.11370) arXiv:2510.11370, 2025.
+[45] Kimi Team. ["Kimi K3: Open Frontier Intelligence"](https://www.kimi.com/en/blog/kimi-k3) Moonshot AI (blog), 2026.
 
-[46] Aman Madaan, et al. ["Self-Refine: Iterative Refinement with Self-Feedback."](https://arxiv.org/abs/2303.17651) arXiv:2303.17651, 2023.
+[46] James Kirkpatrick, et al. ["Overcoming catastrophic forgetting in neural networks"](https://arxiv.org/abs/1612.00796) arXiv:1612.00796, 2016.
 
-[47] Rabeeh Karimi Mahabadi, et al. ["Nemotron-CC-Math: A 133 Billion-Token-Scale High Quality Math Pretraining Dataset."](https://arxiv.org/abs/2508.15096) arXiv:2508.15096, 2025.
+[47] Nathan Lambert, et al. ["Tulu 3: Pushing Frontiers in Open Language Model Post-Training"](https://arxiv.org/abs/2411.15124) arXiv:2411.15124, 2024.
 
-[48] Anay Mehrotra, et al. ["Tree of Attacks: Jailbreaking Black-Box LLMs Automatically."](https://arxiv.org/abs/2312.02119) arXiv:2312.02119, 2023.
+[48] Dmitry Lepikhin, et al. ["GShard: Scaling Giant Models with Conditional Computation and Automatic Sharding"](https://arxiv.org/abs/2006.16668) arXiv:2006.16668, 2020.
 
-[49] Mike A. Merrill, et al. ["Terminal-Bench: Benchmarking Agents on Hard, Realistic Tasks in Command Line Interfaces."](https://arxiv.org/abs/2601.11868) arXiv:2601.11868, 2026.
+[49] Nathaniel Li, et al. ["The WMDP Benchmark: Measuring and Reducing Malicious Use With Unlearning"](https://arxiv.org/abs/2403.03218) arXiv:2403.03218, 2024.
 
-[50] Paulius Micikevicius, et al. ["FP8 Formats for Deep Learning."](https://arxiv.org/abs/2209.05433) arXiv:2209.05433, 2022.
+[50] Yaxuan Li, et al. ["Rethinking On-Policy Distillation of Large Language Models: Phenomenology, Mechanism, and Recipe"](https://arxiv.org/abs/2604.13016) arXiv:2604.13016, 2026.
 
-[51] Paulius Micikevicius, et al. ["Mixed Precision Training."](https://arxiv.org/abs/1710.03740) arXiv:1710.03740, 2017.
+[51] Hunter Lightman, et al. ["Let's Verify Step by Step"](https://arxiv.org/abs/2305.20050) arXiv:2305.20050, 2023.
 
-[52] The Microsoft AI Team. ["MAI-Thinking-1: Building a Hill-Climbing Machine."](https://microsoft.ai/pdf/mai-thinking-1.pdf) Microsoft AI, 2026.
+[52] Jingyuan Liu, et al. ["Muon is Scalable for LLM Training"](https://arxiv.org/abs/2502.16982) arXiv:2502.16982, 2025.
 
-[53] Sewon Min, et al. ["FActScore: Fine-grained Atomic Evaluation of Factual Precision in Long Form Text Generation."](https://arxiv.org/abs/2305.14251) arXiv:2305.14251, 2023.
+[53] Tianqi Liu, et al. ["RRM: Robust Reward Model Training Mitigates Reward Hacking"](https://arxiv.org/abs/2409.13156) arXiv:2409.13156, 2024.
 
-[54] MiniMax, et al. ["MiniMax-M1: Scaling Test-Time Compute Efficiently with Lightning Attention."](https://arxiv.org/abs/2506.13585) arXiv:2506.13585, 2025.
+[54] Anton Lozhkov, et al. ["StarCoder 2 and The Stack v2: The Next Generation"](https://arxiv.org/abs/2402.19173) arXiv:2402.19173, 2024.
 
-[55] MiniMax, et al. ["The MiniMax-M2 Series: Mini Activations Unleashing Max Real-World Intelligence."](https://arxiv.org/abs/2605.26494) arXiv:2605.26494, 2026.
+[55] Yiyang Lu, et al. ["MSSR: Memory-Aware Adaptive Replay for Continual LLM Fine-Tuning"](https://arxiv.org/abs/2603.09892) arXiv:2603.09892, 2026.
 
-[56] Mistral-AI, et al. ["Magistral."](https://arxiv.org/abs/2506.10910) arXiv:2506.10910, 2025.
+[56] Wenhan Ma, et al. ["Stabilizing MoE Reinforcement Learning by Aligning Training and Inference Routers"](https://arxiv.org/abs/2510.11370) arXiv:2510.11370, 2025.
 
-[57] Gary D. Lopez Munoz, et al. ["PyRIT: A Framework for Security Risk Identification and Red Teaming in Generative AI System."](https://arxiv.org/abs/2410.02828) arXiv:2410.02828, 2024.
+[57] Wenhan Ma, et al. ["MOPD: Multi-Teacher On-Policy Distillation for Capability Integration in LLM Post-Training"](https://arxiv.org/abs/2606.30406) arXiv:2606.30406, 2026.
 
-[58] NVIDIA, et al. ["NVIDIA Nemotron 3: Efficient and Open Intelligence."](https://arxiv.org/abs/2512.20856) arXiv:2512.20856, 2025.
+[58] Aman Madaan, et al. ["Self-Refine: Iterative Refinement with Self-Feedback"](https://arxiv.org/abs/2303.17651) arXiv:2303.17651, 2023.
 
-[59] Kaan Ozkara, et al. ["Stochastic Rounding for LLM Training: Theory and Practice."](https://arxiv.org/abs/2502.20566) arXiv:2502.20566, 2025.
+[59] Rabeeh Karimi Mahabadi, et al. ["Nemotron-CC-Math: A 133 Billion-Token-Scale High Quality Math Pretraining Dataset"](https://arxiv.org/abs/2508.15096) arXiv:2508.15096, 2025.
 
-[60] Long Phan, et al. ["Humanity's Last Exam."](https://arxiv.org/abs/2501.14249) arXiv:2501.14249, 2025.
+[60] Anay Mehrotra, et al. ["Tree of Attacks: Jailbreaking Black-Box LLMs Automatically"](https://arxiv.org/abs/2312.02119) arXiv:2312.02119, 2023.
 
-[61] Mary Phuong, et al. ["Evaluating Frontier Models for Dangerous Capabilities."](https://arxiv.org/abs/2403.13793) arXiv:2403.13793, 2024.
+[61] Mike A. Merrill, et al. ["Terminal-Bench: Benchmarking Agents on Hard, Realistic Tasks in Command Line Interfaces"](https://arxiv.org/abs/2601.11868) arXiv:2601.11868, 2026.
 
-[62] Felipe Maia Polo, et al. ["tinyBenchmarks: evaluating LLMs with fewer examples."](https://arxiv.org/abs/2402.14992) arXiv:2402.14992, 2024.
+[62] Paulius Micikevicius, et al. ["FP8 Formats for Deep Learning"](https://arxiv.org/abs/2209.05433) arXiv:2209.05433, 2022.
 
-[63] Zihan Qiu, et al. ["Demons in the Detail: On Implementing Load Balancing Loss for Training Specialized Mixture-of-Expert Models."](https://arxiv.org/abs/2501.11873) arXiv:2501.11873, 2025.
+[63] Paulius Micikevicius, et al. ["Mixed Precision Training"](https://arxiv.org/abs/1710.03740) arXiv:1710.03740, 2017.
 
-[64] Jack W. Rae, et al. ["Scaling Language Models: Methods, Analysis & Insights from Training Gopher."](https://arxiv.org/abs/2112.11446) arXiv:2112.11446, 2021.
+[64] The Microsoft AI Team. ["MAI-Thinking-1: Building a Hill-Climbing Machine"](https://microsoft.ai/pdf/mai-thinking-1.pdf) Microsoft AI, 2026.
 
-[65] David Rein, et al. ["GPQA: A Graduate-Level Google-Proof Q&A Benchmark."](https://arxiv.org/abs/2311.12022) arXiv:2311.12022, 2023.
+[65] Sewon Min, et al. ["FActScore: Fine-grained Atomic Evaluation of Factual Precision in Long Form Text Generation"](https://arxiv.org/abs/2305.14251) arXiv:2305.14251, 2023.
 
-[66] Mark Russinovich, et al. ["Great, Now Write an Article About That: The Crescendo Multi-Turn LLM Jailbreak Attack."](https://arxiv.org/abs/2404.01833) arXiv:2404.01833, 2024.
+[66] MiniMax, et al. ["MiniMax-M1: Scaling Test-Time Compute Efficiently with Lightning Attention"](https://arxiv.org/abs/2506.13585) arXiv:2506.13585, 2025.
 
-[67] John Schulman, et al. ["Proximal Policy Optimization Algorithms."](https://arxiv.org/abs/1707.06347) arXiv:1707.06347, 2017.
+[67] MiniMax, et al. ["The MiniMax-M2 Series: Mini Activations Unleashing Max Real-World Intelligence"](https://arxiv.org/abs/2605.26494) arXiv:2605.26494, 2026.
 
-[68] Zhihong Shao, et al. ["DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models."](https://arxiv.org/abs/2402.03300) arXiv:2402.03300, 2024.
+[68] Mistral-AI, et al. ["Magistral"](https://arxiv.org/abs/2506.10910) arXiv:2506.10910, 2025.
 
-[69] Noam Shazeer. ["GLU Variants Improve Transformer."](https://arxiv.org/abs/2002.05202) arXiv:2002.05202, 2020.
+[69] Gary D. Lopez Munoz, et al. ["PyRIT: A Framework for Security Risk Identification and Red Teaming in Generative AI System"](https://arxiv.org/abs/2410.02828) arXiv:2410.02828, 2024.
 
-[70] Guangming Sheng, et al. ["HybridFlow: A Flexible and Efficient RLHF Framework."](https://arxiv.org/abs/2409.19256) arXiv:2409.19256, 2024.
+[70] NVIDIA, et al. ["NVIDIA Nemotron 3: Efficient and Open Intelligence"](https://arxiv.org/abs/2512.20856) arXiv:2512.20856, 2025.
 
-[71] Avi Singh, et al. ["Beyond Human Data: Scaling Self-Training for Problem-Solving with Language Models."](https://arxiv.org/abs/2312.06585) arXiv:2312.06585, 2023.
+[71] Long Ouyang, et al. ["Training language models to follow instructions with human feedback"](https://arxiv.org/abs/2203.02155) arXiv:2203.02155, 2022.
 
-[72] Aaditya Singh, et al. ["OpenAI GPT-5 System Card."](https://arxiv.org/abs/2601.03267) arXiv:2601.03267, 2025.
+[72] Kaan Ozkara, et al. ["Stochastic Rounding for LLM Training: Theory and Practice"](https://arxiv.org/abs/2502.20566) arXiv:2502.20566, 2025.
 
-[73] Jianlin Su, et al. ["RoFormer: Enhanced Transformer with Rotary Position Embedding."](https://arxiv.org/abs/2104.09864) arXiv:2104.09864, 2021.
+[73] Long Phan, et al. ["Humanity's Last Exam"](https://arxiv.org/abs/2501.14249) arXiv:2501.14249, 2025.
 
-[74] Xingwu Sun, et al. ["Hunyuan-Large: An Open-Source MoE Model with 52 Billion Activated Parameters by Tencent."](https://arxiv.org/abs/2411.02265) arXiv:2411.02265, 2024.
+[74] Mary Phuong, et al. ["Evaluating Frontier Models for Dangerous Capabilities"](https://arxiv.org/abs/2403.13793) arXiv:2403.13793, 2024.
 
-[75] Team OLMo, et al. ["2 OLMo 2 Furious."](https://arxiv.org/abs/2501.00656) arXiv:2501.00656, 2024.
+[75] Felipe Maia Polo, et al. ["tinyBenchmarks: evaluating LLMs with fewer examples"](https://arxiv.org/abs/2402.14992) arXiv:2402.14992, 2024.
 
-[76] Kushal Tirumala, et al. ["D4: Improving LLM Pretraining via Document De-Duplication and Diversification."](https://arxiv.org/abs/2308.12284) arXiv:2308.12284, 2023.
+[76] Zihan Qiu, et al. ["Demons in the Detail: On Implementing Load Balancing Loss for Training Specialized Mixture-of-Expert Models"](https://arxiv.org/abs/2501.11873) arXiv:2501.11873, 2025.
 
-[77] Kiran Vodrahalli, et al. ["Michelangelo: Long Context Evaluations Beyond Haystacks via Latent Structure Queries."](https://arxiv.org/abs/2409.12640) arXiv:2409.12640, 2024.
+[77] Qwen Team. ["Qwen3.5: Towards Native Multimodal Agents"](https://qwen.ai/blog?id=qwen3.5) Alibaba (blog), 2026.
 
-[78] Eric Wallace, et al. ["The Instruction Hierarchy: Training LLMs to Prioritize Privileged Instructions."](https://arxiv.org/abs/2404.13208) arXiv:2404.13208, 2024.
+[78] Jack W. Rae, et al. ["Scaling Language Models: Methods, Analysis & Insights from Training Gopher"](https://arxiv.org/abs/2112.11446) arXiv:2112.11446, 2021.
 
-[79] Shengye Wan, et al. ["CYBERSECEVAL 3: Advancing the Evaluation of Cybersecurity Risks and Capabilities in Large Language Models."](https://arxiv.org/abs/2408.01605) arXiv:2408.01605, 2024.
+[79] David Rein, et al. ["GPQA: A Graduate-Level Google-Proof Q&A Benchmark"](https://arxiv.org/abs/2311.12022) arXiv:2311.12022, 2023.
 
-[80] Zengzhi Wang, et al. ["OctoThinker: Mid-training Incentivizes Reinforcement Learning Scaling."](https://arxiv.org/abs/2506.20512) arXiv:2506.20512, 2025.
+[80] Mark Russinovich, et al. ["Great, Now Write an Article About That: The Crescendo Multi-Turn LLM Jailbreak Attack"](https://arxiv.org/abs/2404.01833) arXiv:2404.01833, 2024.
 
-[81] Lean Wang, et al. ["Auxiliary-Loss-Free Load Balancing Strategy for Mixture-of-Experts."](https://arxiv.org/abs/2408.15664) arXiv:2408.15664, 2024.
+[81] John Schulman, et al. ["Proximal Policy Optimization Algorithms"](https://arxiv.org/abs/1707.06347) arXiv:1707.06347, 2017.
 
-[82] Jason Wei, et al. ["Measuring short-form factuality in large language models."](https://arxiv.org/abs/2411.04368) arXiv:2411.04368, 2024.
+[82] Zhihong Shao, et al. ["DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models"](https://arxiv.org/abs/2402.03300) arXiv:2402.03300, 2024.
 
-[83] Mitchell Wortsman, et al. ["Small-scale proxies for large-scale Transformer training instabilities."](https://arxiv.org/abs/2309.14322) arXiv:2309.14322, 2023.
+[83] Noam Shazeer. ["GLU Variants Improve Transformer"](https://arxiv.org/abs/2002.05202) arXiv:2002.05202, 2020.
 
-[84] Zhiheng Xi, et al. ["BAPO: Stabilizing Off-Policy Reinforcement Learning for LLMs via Balanced Policy Optimization with Adaptive Clipping."](https://arxiv.org/abs/2510.18927) arXiv:2510.18927, 2025.
+[84] Idan Shenfeld, et al. ["RL's Razor: Why Online Reinforcement Learning Forgets Less"](https://arxiv.org/abs/2509.04259) arXiv:2509.04259, 2025.
 
-[85] Violet Xiang, et al. ["Just Enough Thinking: Efficient Reasoning with Adaptive Length Penalties Reinforcement Learning."](https://arxiv.org/abs/2506.05256) arXiv:2506.05256, 2025.
+[85] Guangming Sheng, et al. ["HybridFlow: A Flexible and Efficient RLHF Framework"](https://arxiv.org/abs/2409.19256) arXiv:2409.19256, 2024.
 
-[86] Can Xu, et al. ["WizardLM: Empowering large pre-trained language models to follow complex instructions."](https://arxiv.org/abs/2304.12244) arXiv:2304.12244, 2023.
+[86] Avi Singh, et al. ["Beyond Human Data: Scaling Self-Training for Problem-Solving with Language Models"](https://arxiv.org/abs/2312.06585) arXiv:2312.06585, 2023.
 
-[87] An Yang, et al. ["Qwen3 Technical Report."](https://arxiv.org/abs/2505.09388) arXiv:2505.09388, 2025.
+[87] Aaditya Singh, et al. ["OpenAI GPT-5 System Card"](https://arxiv.org/abs/2601.03267) arXiv:2601.03267, 2025.
 
-[88] Jiasheng Ye, et al. ["Data Mixing Laws: Optimizing Data Mixtures by Predicting Language Modeling Performance."](https://arxiv.org/abs/2403.16952) arXiv:2403.16952, 2024.
+[88] Mingyang Song and Mao Zheng. ["A Survey of On-Policy Distillation for Large Language Models"](https://arxiv.org/abs/2604.00626) arXiv:2604.00626, 2026.
 
-[89] Qiying Yu, et al. ["DAPO: An Open-Source LLM Reinforcement Learning System at Scale."](https://arxiv.org/abs/2503.14476) arXiv:2503.14476, 2025.
+[89] Jianlin Su, et al. ["RoFormer: Enhanced Transformer with Rotary Position Embedding"](https://arxiv.org/abs/2104.09864) arXiv:2104.09864, 2021.
 
-[90] Pedram Zamirai, et al. ["Revisiting BFloat16 Training."](https://arxiv.org/abs/2010.06192) arXiv:2010.06192, 2020.
+[90] Xingwu Sun, et al. ["Hunyuan-Large: An Open-Source MoE Model with 52 Billion Activated Parameters by Tencent"](https://arxiv.org/abs/2411.02265) arXiv:2411.02265, 2024.
 
-[91] Eric Zelikman, et al. ["STaR: Bootstrapping Reasoning With Reasoning."](https://arxiv.org/abs/2203.14465) arXiv:2203.14465, 2022.
+[91] Guanglong Sun, et al. ["Safety Alignment as Continual Learning: Mitigating the Alignment Tax via Orthogonal Gradient Projection"](https://arxiv.org/abs/2602.07892) arXiv:2602.07892, 2026.
 
-[92] Yi Zeng, et al. ["How Johnny Can Persuade LLMs to Jailbreak Them: Rethinking Persuasion to Challenge AI Safety by Humanizing LLMs."](https://arxiv.org/abs/2401.06373) arXiv:2401.06373, 2024.
+[92] Team OLMo, et al. ["2 OLMo 2 Furious"](https://arxiv.org/abs/2501.00656) arXiv:2501.00656, 2024.
 
-[93] Yi Zeng, et al. ["AIR-Bench 2024: A Safety Benchmark Based on Risk Categories from Regulations and Policies."](https://arxiv.org/abs/2407.17436) arXiv:2407.17436, 2024.
+[93] Thinking Machines Lab. ["Inkling (Model Card)."](https://thinkingmachines.ai/model-card/inkling/) Thinking Machines, 2026.
 
-[94] Biao Zhang and Rico Sennrich. ["Root Mean Square Layer Normalization."](https://arxiv.org/abs/1910.07467) arXiv:1910.07467, 2019.
+[94] Thinking Machines Lab. ["On-Policy Distillation (blog)."](https://thinkingmachines.ai/blog/on-policy-distillation/) Thinking Machines, 2025.
 
-[95] Yulai Zhao, et al. ["One Token to Fool LLM-as-a-Judge."](https://arxiv.org/abs/2507.08794) arXiv:2507.08794, 2025.
+[95] Kushal Tirumala, et al. ["D4: Improving LLM Pretraining via Document De-Duplication and Diversification"](https://arxiv.org/abs/2308.12284) arXiv:2308.12284, 2023.
 
-[96] Siyan Zhao, et al. ["Self-Distilled Reasoner: On-Policy Self-Distillation for Large Language Models."](https://arxiv.org/abs/2601.18734) arXiv:2601.18734, 2026.
+[96] Kiran Vodrahalli, et al. ["Michelangelo: Long Context Evaluations Beyond Haystacks via Latent Structure Queries"](https://arxiv.org/abs/2409.12640) arXiv:2409.12640, 2024.
 
-[97] Chujie Zheng, et al. ["Group Sequence Policy Optimization."](https://arxiv.org/abs/2507.18071) arXiv:2507.18071, 2025.
+[97] Eric Wallace, et al. ["The Instruction Hierarchy: Training LLMs to Prioritize Privileged Instructions"](https://arxiv.org/abs/2404.13208) arXiv:2404.13208, 2024.
 
-[98] Yuxin Zuo, et al. ["MedXpertQA: Benchmarking Expert-Level Medical Reasoning and Understanding."](https://arxiv.org/abs/2501.18362) arXiv:2501.18362, 2025.
+[98] Shengye Wan, et al. ["CYBERSECEVAL 3: Advancing the Evaluation of Cybersecurity Risks and Capabilities in Large Language Models"](https://arxiv.org/abs/2408.01605) arXiv:2408.01605, 2024.
+
+[99] Peiyi Wang, et al. ["Math-Shepherd: Verify and Reinforce LLMs Step-by-step without Human Annotations"](https://arxiv.org/abs/2312.08935) arXiv:2312.08935, 2023.
+
+[100] Lean Wang, et al. ["Auxiliary-Loss-Free Load Balancing Strategy for Mixture-of-Experts"](https://arxiv.org/abs/2408.15664) arXiv:2408.15664, 2024.
+
+[101] Zengzhi Wang, et al. ["OctoThinker: Mid-training Incentivizes Reinforcement Learning Scaling"](https://arxiv.org/abs/2506.20512) arXiv:2506.20512, 2025.
+
+[102] Jason Wei, et al. ["Measuring short-form factuality in large language models"](https://arxiv.org/abs/2411.04368) arXiv:2411.04368, 2024.
+
+[103] Quan Wei, et al. ["Reinforcing Multi-Turn Reasoning in LLM Agents via Turn-Level Reward Design"](https://arxiv.org/abs/2505.11821) arXiv:2505.11821, 2025.
+
+[104] Mitchell Wortsman, et al. ["Small-scale proxies for large-scale Transformer training instabilities"](https://arxiv.org/abs/2309.14322) arXiv:2309.14322, 2023.
+
+[105] Mitchell Wortsman, et al. ["Model soups: averaging weights of multiple fine-tuned models improves accuracy without increasing inference time"](https://arxiv.org/abs/2203.05482) arXiv:2203.05482, 2022.
+
+[106] xAI (SpaceXAI). ["Grok 4.5 (Model Card)."](https://media.x.ai/v1/website/card-7f81d41b.pdf) xAI, 2026.
+
+[107] Zhiheng Xi, et al. ["BAPO: Stabilizing Off-Policy Reinforcement Learning for LLMs via Balanced Policy Optimization with Adaptive Clipping"](https://arxiv.org/abs/2510.18927) arXiv:2510.18927, 2025.
+
+[108] Zhiheng Xi, et al. ["AgentPRM: Process Reward Models for LLM Agents via Step-Wise Promise and Progress"](https://arxiv.org/abs/2511.08325) arXiv:2511.08325, 2025.
+
+[109] Violet Xiang, et al. ["Just Enough Thinking: Efficient Reasoning with Adaptive Length Penalties Reinforcement Learning"](https://arxiv.org/abs/2506.05256) arXiv:2506.05256, 2025.
+
+[110] Xiaomi LLM-Core Team, et al. ["MiMo-V2-Flash Technical Report"](https://arxiv.org/abs/2601.02780) arXiv:2601.02780, 2026.
+
+[111] Can Xu, et al. ["WizardLM: Empowering large pre-trained language models to follow complex instructions"](https://arxiv.org/abs/2304.12244) arXiv:2304.12244, 2023.
+
+[112] Greg Yang, et al. ["Tensor Programs V: Tuning Large Neural Networks via Zero-Shot Hyperparameter Transfer"](https://arxiv.org/abs/2203.03466) arXiv:2203.03466, 2022.
+
+[113] An Yang, et al. ["Qwen3 Technical Report"](https://arxiv.org/abs/2505.09388) arXiv:2505.09388, 2025.
+
+[114] Zhuolin Yang, et al. ["Nemotron-Cascade 2: Post-Training LLMs with Cascade RL and Multi-Domain On-Policy Distillation"](https://arxiv.org/abs/2603.19220) arXiv:2603.19220, 2026.
+
+[115] Jiasheng Ye, et al. ["Data Mixing Laws: Optimizing Data Mixtures by Predicting Language Modeling Performance"](https://arxiv.org/abs/2403.16952) arXiv:2403.16952, 2024.
+
+[116] Qiying Yu, et al. ["DAPO: An Open-Source LLM Reinforcement Learning System at Scale"](https://arxiv.org/abs/2503.14476) arXiv:2503.14476, 2025.
+
+[117] Pedram Zamirai, et al. ["Revisiting BFloat16 Training"](https://arxiv.org/abs/2010.06192) arXiv:2010.06192, 2020.
+
+[118] Eric Zelikman, et al. ["STaR: Bootstrapping Reasoning With Reasoning"](https://arxiv.org/abs/2203.14465) arXiv:2203.14465, 2022.
+
+[119] Yi Zeng, et al. ["How Johnny Can Persuade LLMs to Jailbreak Them: Rethinking Persuasion to Challenge AI Safety by Humanizing LLMs"](https://arxiv.org/abs/2401.06373) arXiv:2401.06373, 2024.
+
+[120] Yi Zeng, et al. ["AIR-Bench 2024: A Safety Benchmark Based on Risk Categories from Regulations and Policies"](https://arxiv.org/abs/2407.17436) arXiv:2407.17436, 2024.
+
+[121] Biao Zhang and Rico Sennrich. ["Root Mean Square Layer Normalization"](https://arxiv.org/abs/1910.07467) arXiv:1910.07467, 2019.
+
+[122] Chenchen Zhang. ["From Reasoning to Agentic: Credit Assignment in Reinforcement Learning for Large Language Models"](https://arxiv.org/abs/2604.09459) arXiv:2604.09459, 2026.
+
+[123] Guibin Zhang, et al. ["The Landscape of Agentic Reinforcement Learning for LLMs: A Survey"](https://arxiv.org/abs/2509.02547) arXiv:2509.02547, 2025.
+
+[124] Siyan Zhao, et al. ["Self-Distilled Reasoner: On-Policy Self-Distillation for Large Language Models"](https://arxiv.org/abs/2601.18734) arXiv:2601.18734, 2026.
+
+[125] Shiwan Zhao, et al. ["Large Language Model Post-Training: A Unified View of Off-Policy and On-Policy Learning"](https://arxiv.org/abs/2604.07941) arXiv:2604.07941, 2026.
+
+[126] Yulai Zhao, et al. ["One Token to Fool LLM-as-a-Judge"](https://arxiv.org/abs/2507.08794) arXiv:2507.08794, 2025.
+
+[127] Chujie Zheng, et al. ["Group Sequence Policy Optimization"](https://arxiv.org/abs/2507.18071) arXiv:2507.18071, 2025.
+
+[128] Yifei Zhou, et al. ["ArCHer: Training Language Model Agents via Hierarchical Multi-Turn RL"](https://arxiv.org/abs/2402.19446) arXiv:2402.19446, 2024.
+
+[129] Yuxin Zuo, et al. ["MedXpertQA: Benchmarking Expert-Level Medical Reasoning and Understanding"](https://arxiv.org/abs/2501.18362) arXiv:2501.18362, 2025.
