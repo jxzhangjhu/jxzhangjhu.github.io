@@ -9,7 +9,7 @@ categories: research-notes
 giscus_comments: true
 related_posts: false
 ai_assisted: true
-read_time: 110
+read_time: 115
 og_image: https://jxzhangjhu.github.io/assets/img/blog/rl-agentic-rl/fig_llm_rl_stack.png
 ---
 
