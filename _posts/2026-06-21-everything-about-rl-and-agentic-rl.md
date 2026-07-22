@@ -8,6 +8,7 @@ tags: rl rlhf grpo agents post-training
 categories: research-notes
 giscus_comments: true
 related_posts: false
+ai_assisted: true
 og_image: https://jxzhangjhu.github.io/assets/img/blog/rl-agentic-rl/fig_llm_rl_stack.png
 ---
 
@@ -211,25 +212,80 @@ agents.
 
 **Key concepts.**
 
-RL frames learning as an agent acting in a **Markov Decision Process (MDP)**: at state $$s_t$$ it takes
-action $$a_t \sim \pi_\theta(\cdot\mid s_t)$$, receives reward $$r_t$$, and transitions to $$s_{t+1}$$
-([Sutton & Barto, 2018](http://incompleteideas.net/book/the-book-2nd.html)). For LLMs the mapping is:
-the **state** is the prompt plus tokens generated so far, an **action** is the next token, and the
-**policy** is the model. The goal is to maximize expected return $$J(\theta)=\mathbb{E}_{\tau\sim\pi_\theta}[\sum_t \gamma^t r_t]$$.
+RL formalizes "learn by trial and error" as an agent acting in a **Markov Decision Process (MDP)**, the
+tuple $$(\mathcal{S}, \mathcal{A}, P, r, \gamma)$$ ([Sutton & Barto, 2018](http://incompleteideas.net/book/the-book-2nd.html)):
 
-Two value functions summarize the future: $$V^\pi(s)=\mathbb{E}[\,\text{return}\mid s]$$ and
-$$Q^\pi(s,a)=\mathbb{E}[\,\text{return}\mid s,a]$$; their difference is the **advantage**
-$$A^\pi(s,a)=Q^\pi(s,a)-V^\pi(s)$$ — "how much better than average is this action." The **policy-gradient
-theorem** ([Sutton et al., 2000](https://proceedings.neurips.cc/paper/1999/hash/464d828b85b0bed98e80ade0a5c43b0f-Abstract.html))
-gives the gradient we actually use, $$\nabla_\theta J=\mathbb{E}[\nabla_\theta\log\pi_\theta(a\mid s)\,A]$$,
-and **GAE** is how we estimate $$A$$ (derived in §7).
+- $$\mathcal{S}$$ — the set of **states** $$s$$. For an LLM, a state is the whole context so far: the
+  prompt plus every token generated up to now.
+- $$\mathcal{A}$$ — the set of **actions** $$a$$. For an LLM, an action is the next token, so
+  $$\mathcal{A}$$ is the vocabulary (often $$10^5$$ tokens).
+- $$P(s' \mid s, a)$$ — the **transition** dynamics, the probability of the next state. Plain text
+  generation is deterministic (append the token); for agents it also includes the environment's reply
+  to a tool call.
+- $$r(s, a)$$ — the **reward**. In RLHF/RLVR it is usually given only at the *end* of a sequence
+  (terminal and sparse), not per token.
+- $$\gamma \in (0, 1]$$ — the **discount factor**, weighting near-term vs long-term reward.
 
-Three probability tools recur everywhere in RL training:
-- **Cross-entropy, KL, entropy, MLE** — one identity ties them together (Q below).
-- **Monte-Carlo estimation** — approximate an expectation $$\mathbb{E}_{x\sim p}[f(x)]$$ by averaging
-  samples; everything in policy-gradient RL is a Monte-Carlo estimate of a gradient.
-- **Importance sampling** and **rejection sampling** — two ways to handle "I have samples from the
-  wrong distribution" (Q below).
+At step $$t$$ the agent samples an action from its **policy** $$a_t \sim \pi_\theta(\cdot \mid s_t)$$ (the
+LLM with parameters $$\theta$$), gets reward $$r_t$$, and moves to $$s_{t+1}$$. A full episode is a
+**trajectory** $$\tau = (s_0, a_0, r_0, s_1, a_1, r_1, \dots)$$. The **return** from step $$t$$ is the
+discounted sum of future rewards,
+
+$$
+G_t \;=\; \sum_{k=0}^{\infty} \gamma^{k}\, r_{t+k},
+$$
+
+and the training objective is the **expected return** under the policy,
+
+$$
+J(\theta) \;=\; \mathbb{E}_{\tau \sim \pi_\theta}\!\left[\, \sum_{t} \gamma^{t}\, r_t \,\right].
+$$
+
+**Value functions** summarize that expected future. The **state-value** $$V^\pi$$ is the expected return
+from a state; the **action-value** $$Q^\pi$$ is the expected return from taking a specific action in that
+state and following $$\pi$$ afterwards:
+
+$$
+V^\pi(s) \;=\; \mathbb{E}_{\pi}\!\left[\, G_t \mid s_t = s \,\right],
+$$
+
+$$
+Q^\pi(s, a) \;=\; \mathbb{E}_{\pi}\!\left[\, G_t \mid s_t = s,\; a_t = a \,\right].
+$$
+
+Their difference is the **advantage** — how much better an action is than the policy's average behavior
+in that state:
+
+$$
+A^\pi(s, a) \;=\; Q^\pi(s, a) - V^\pi(s).
+$$
+
+**The policy-gradient theorem (a one-line derivation).** We cannot differentiate through the sampled
+reward, but we can differentiate the *probability* of the actions we took. The **log-derivative trick**,
+$$\nabla_\theta \pi_\theta = \pi_\theta\, \nabla_\theta \log \pi_\theta$$, rewrites the gradient of the
+objective as an expectation we can estimate from rollouts
+([Sutton et al., 2000](https://proceedings.neurips.cc/paper/1999/hash/464d828b85b0bed98e80ade0a5c43b0f-Abstract.html)):
+
+$$
+\nabla_\theta J(\theta) \;=\; \mathbb{E}_{\tau \sim \pi_\theta}\!\left[\, \sum_t \nabla_\theta \log \pi_\theta(a_t \mid s_t)\; A^\pi(s_t, a_t) \,\right].
+$$
+
+In words: **raise the log-probability of actions with positive advantage, lower it for actions with
+negative advantage.** This single equation underlies REINFORCE, PPO (§7), and GRPO (§8); those
+algorithms differ mostly in *how they estimate $$A$$* and *how they keep each update stable*. Estimating
+$$A$$ well is the job of **GAE** (§7); replacing the learned value baseline with a group mean is the
+idea of **GRPO** (§8).
+
+**Three probability tools** recur throughout RL training:
+
+- **Cross-entropy / KL / entropy / MLE** — one identity ties them together (next question), and it is the
+  same objective behind pre-training and SFT.
+- **Monte-Carlo estimation** — approximate an expectation by averaging samples,
+  $$\mathbb{E}_{x \sim p}[f(x)] \approx \tfrac{1}{N}\sum_{i} f(x_i)$$. Every policy gradient above is a
+  Monte-Carlo estimate.
+- **Importance sampling / rejection sampling** — two ways to use samples that did *not* come from the
+  distribution you actually care about (next questions). This is the formal basis for reusing off-policy
+  rollouts.
 
 ---
 
@@ -239,10 +295,16 @@ Three probability tools recur everywhere in RL training:
 is the same thing (since $$H(p)$$ is constant in $$q$$); and maximum-likelihood training is exactly
 minimizing $$\mathrm{KL}(p_{\text{data}}\|p_\theta)$$.*
 
-Write them out for distributions $$p$$ (truth) and $$q$$ (model):
+Write them out for distributions $$p$$ (truth) and $$q$$ (model), each a sum over outcomes $$x$$:
+
 $$
-H(p)=-\!\sum_x p\log p,\quad \mathrm{KL}(p\|q)=\sum_x p\log\tfrac{p}{q},\quad \mathrm{CE}(p,q)=-\!\sum_x p\log q.
+\begin{aligned}
+H(p) &= -\sum_x p(x)\,\log p(x) && \text{(entropy of } p\text{)},\\
+\mathrm{KL}(p\,\|\,q) &= \sum_x p(x)\,\log \frac{p(x)}{q(x)} && \text{(extra cost of using } q \text{ for } p\text{)},\\
+\mathrm{CE}(p,q) &= -\sum_x p(x)\,\log q(x) && \text{(cross-entropy)}.
+\end{aligned}
 $$
+
 Adding and subtracting gives $$\mathrm{CE}(p,q)=H(p)+\mathrm{KL}(p\|q)$$. Since $$H(p)$$ does not depend
 on the model $$q$$, minimizing cross-entropy loss **is** minimizing KL to the data. And the
 maximum-likelihood objective $$\max_\theta \mathbb{E}_{x\sim p_{\text{data}}}[\log p_\theta(x)]$$ is, term
@@ -261,22 +323,91 @@ direction you penalize changes behavior (mode-covering vs mode-seeking). The RLH
 reweights off-policy samples by a probability ratio (used to reuse slightly-stale rollouts);
 rejection sampling keeps/drops samples to match a target (used for data filtering / best-of-N).*
 
-**Importance sampling (IS)** estimates $$\mathbb{E}_{x\sim p}[f(x)]$$ using samples from another
-distribution $$q$$: $$\mathbb{E}_{p}[f]=\mathbb{E}_{q}[\tfrac{p(x)}{q(x)}f(x)]$$. The ratio $$w=p/q$$
-reweights each sample. This is exactly the $$r_t(\theta)=\pi_\theta/\pi_{\theta_{\text{old}}}$$ ratio in
-PPO/GRPO and the staleness correction in async RL (§18) — they let us reuse rollouts from a slightly
-older policy. The catch: if $$p$$ and $$q$$ diverge, the ratios explode and the estimator's variance
-blows up — which is *why* we clip (§7) and bound staleness (§18).
+**Importance sampling (IS)** estimates an expectation under $$p$$ using samples drawn from a *different*
+distribution $$q$$, by reweighting each sample with the **importance weight** $$w(x)=p(x)/q(x)$$:
 
-**Rejection sampling** instead generates candidates and *accepts* a subset to match a target — in
-post-training, "sample N responses, keep the ones the reward model likes, fine-tune on them"
-([Touvron et al., 2023](https://arxiv.org/abs/2307.09288)). It is the simplest way to turn a reward into
-training data, and the conceptual seed of §6. Both are Monte-Carlo at heart: estimate/shape a target
-distribution from samples you can actually draw.
+$$
+\mathbb{E}_{x \sim p}\!\left[ f(x) \right] \;=\; \mathbb{E}_{x \sim q}\!\left[ \frac{p(x)}{q(x)}\, f(x) \right] \;=\; \mathbb{E}_{x \sim q}\!\left[ w(x)\, f(x) \right].
+$$
 
-**Takeaway.** RL is Monte-Carlo estimation of a policy gradient. The advantage ($$Q-V$$) is the object
-we estimate, importance sampling lets us reuse off-policy samples (at the cost of variance), and the
-CE/KL/MLE identity is the thread linking pre-training, SFT, and the KL penalties in RL.
+**(a) When to use it.** In RL, $$p = \pi_\theta$$ is the policy we want gradients *for*, and
+$$q = \pi_{\theta_{\text{old}}}$$ is the **behavior policy** that actually generated the rollouts. The
+per-token ratio in PPO/GRPO,
+
+$$
+r_t(\theta) \;=\; \frac{\pi_\theta(a_t \mid s_t)}{\pi_{\theta_{\text{old}}}(a_t \mid s_t)},
+$$
+
+is exactly this weight $$w$$. You reach for IS whenever your data is *slightly off-policy*: reusing one
+batch of rollouts for several gradient steps (PPO epochs > 1), or consuming rollouts produced by a
+policy that lags the trainer in async RL (§18). It is what lets you *not* throw a rollout away the
+instant the policy updates.
+
+**(b) What goes wrong.** IS is unbiased but its **variance grows as $$p$$ and $$q$$ drift apart**: if some
+$$x$$ has $$q(x)\ll p(x)$$, its weight $$w(x)$$ becomes huge, a handful of samples dominate the estimate,
+and the **effective sample size** collapses. In RL this shows up as exploding ratios and unstable
+updates. That is precisely *why* PPO **clips** $$r_t$$ to $$[1-\epsilon,1+\epsilon]$$ (§7) and async
+systems **bound staleness** (§18) — both keep $$q$$ close to $$p$$ so the weights stay near 1.
+
+**(c) On-policy vs off-policy during training.** Two definitions worth keeping straight:
+
+- **On-policy** — the data was generated by the *current* policy, so no reweighting is needed
+  ($$w \equiv 1$$). Vanilla policy gradient / REINFORCE is strictly on-policy.
+- **Off-policy** — the data came from a *different* policy (an older checkpoint, a replay buffer, another
+  model), so a correction (IS) is required, and it degrades if the gap is large.
+
+In practice, "on-policy" RLHF is really *mildly off-policy*: you sample a batch, then take a few gradient
+steps on it, so every step after the first is already off-policy with respect to the freshly-updated
+weights — which is exactly why the ratio $$r_t(\theta)$$ and its clip exist. The operational rule:
+**keep the behavior and target policies close** (few PPO epochs, bounded async staleness) so the IS
+correction stays low-variance.
+
+**Rejection sampling** takes a different route: generate candidates from $$q$$ and *accept* a subset so
+the survivors look like the target — in post-training, "sample $$N$$ responses, keep the ones the reward
+model (or verifier) likes, then fine-tune on them" ([Touvron et al., 2023](https://arxiv.org/abs/2307.09288)).
+It is the simplest way to turn a reward into training data — no ratios, no clipping — and is the
+conceptual seed of §6. Both methods are Monte-Carlo at heart: shape or estimate a target distribution
+using samples you can actually draw.
+
+---
+
+**Question (added):** Online vs offline RL — and how does that map to LLM post-training?
+
+🎯 *Online RL collects fresh data from the current policy during training (PPO, GRPO, RLVR); offline RL
+learns from a fixed, pre-collected dataset with no new interaction (DPO-style preference tuning, offline
+RL algorithms). "On-policy vs off-policy" is a separate axis: whether the data came from the current
+policy or another one.*
+
+These are **two independent axes**, often confused:
+
+- **Online vs offline** asks *do you collect new data during training?* **Online**: yes — the policy
+  acts, you score the results, you update, and repeat (PPO/GRPO/RLVR need a rollout engine, §17).
+  **Offline**: no — you optimize against a dataset gathered ahead of time and never sample during
+  training (DPO on a frozen preference set, §9; classic offline RL such as CQL/IQL).
+- **On-policy vs off-policy** asks *did the current policy generate the data?* **On-policy**: data from
+  $$\pi_\theta$$ as it is now. **Off-policy**: data from an older or different policy (replay buffer,
+  stale async rollouts), which needs the IS correction above.
+
+|  | On-policy | Off-policy |
+|---|---|---|
+| **Online** | PPO / GRPO with fresh rollouts used immediately | async RL with stale rollouts (§18); replay-based value methods |
+| **Offline** | (rare / degenerate) | DPO on a fixed preference set (§9); offline RL (CQL, IQL) |
+
+*Table T0. The two axes are orthogonal; most LLM RL sits in the "online, nearly on-policy" cell.*
+
+For LLM post-training the mapping is clean: **PPO/GRPO/RLVR are online and nearly on-policy** — they
+generate rollouts now and consume them almost immediately, using the IS ratio only to absorb the mild
+off-policyness from PPO epochs and async staleness. **DPO (§9) is offline** — it never samples during
+training, which is why it is cheaper and more stable but is bounded by the preference data it started
+with.
+
+---
+
+**Takeaway.** RL is Monte-Carlo estimation of a policy gradient. The MDP defines the problem
+($$\mathcal{S}, \mathcal{A}, P, r, \gamma$$), the advantage $$A = Q - V$$ is the object we estimate,
+importance sampling lets us reuse off-policy samples at the cost of variance (hence clipping and
+staleness bounds), and the CE/KL/MLE identity is the thread linking pre-training, SFT, and the KL
+penalties in RL.
 
 ---
 
@@ -284,12 +415,69 @@ CE/KL/MLE identity is the thread linking pre-training, SFT, and the KL penalties
 
 **Key concepts.**
 
-Classical RL has three families. **Value-based** methods (Q-learning, DQN) learn $$Q(s,a)$$ and act
-greedily, $$a=\arg\max_a Q(s,a)$$; they never represent a policy explicitly. **Policy-gradient** methods
-parameterize the policy $$\pi_\theta$$ directly and ascend $$\nabla_\theta J$$. **Actor-critic** keeps an
-explicit policy (the *actor*) and also learns a value function (the *critic*) to reduce the variance of
-the policy gradient — the basis of PPO. LLM RL is almost entirely **policy-gradient / actor-critic**,
-for reasons the questions below make concrete.
+Classical RL gives three answers to "how do we improve the policy?", and modern LLM RL is the end of a
+long evolution through them.
+
+**1. Value-based methods (Q-learning, DQN).** Learn the **optimal action-value** $$Q^*(s,a)$$ — the best
+expected return achievable after taking $$a$$ in $$s$$ — and act greedily, $$a = \arg\max_a Q(s,a)$$.
+There is **no explicit policy**: the policy is *implied* by the argmax over the learned values. This is
+elegant for small, discrete action spaces (the next question walks through how it actually works).
+
+**2. Policy-gradient methods (REINFORCE).** Parameterize the policy $$\pi_\theta$$ **directly** and ascend
+the policy gradient $$\nabla_\theta J$$ from §2. No values are learned; you just sample trajectories and
+push up the log-probability of high-return actions. Flexible and able to produce a *stochastic* policy,
+but the raw estimator has high variance.
+
+**3. Actor-critic (A2C, PPO).** Keep an explicit policy (the **actor**) *and* learn a value function (the
+**critic**) whose only job is to provide a low-variance baseline/advantage for the actor's gradient. This
+is the best of both — an explicit, stochastic, sample-able policy with a variance-reducing value
+estimate — and it is the template **PPO** (§7) is built on.
+
+LLM RL lives almost entirely in families **2 and 3** (and GRPO, §8, even drops the critic for a
+Monte-Carlo group baseline). The questions below make concrete *why* a pure value-based approach is a
+poor fit for language, and trace the evolution from Q-learning all the way to GRPO.
+
+---
+
+**Question (added):** How does a *pure* value-based method (Q-learning / DQN) actually work?
+
+🎯 *Learn $$Q(s,a)$$ by bootstrapping toward the Bellman target $$r + \gamma \max_{a'} Q(s',a')$$, and
+act by taking the argmax. The policy is never represented — it falls out of the values. This is great for
+small discrete action spaces, and is exactly what breaks for token-by-token, sequence-level LLM
+generation.*
+
+The foundation is the **Bellman optimality equation**: the value of the best action equals the immediate
+reward plus the discounted value of acting optimally thereafter,
+
+$$
+Q^*(s, a) \;=\; \mathbb{E}_{s'}\!\left[\, r(s, a) + \gamma \max_{a'} Q^*(s', a') \,\right].
+$$
+
+**Tabular Q-learning** turns this fixed-point equation into an update rule. You keep a table of
+$$Q(s,a)$$ values and, after each transition $$(s_t, a_t, r_t, s_{t+1})$$, nudge the entry toward the
+**TD (temporal-difference) target** — the right-hand side estimated from one observed step:
+
+$$
+Q(s_t, a_t) \;\leftarrow\; Q(s_t, a_t) + \alpha \Big[\, \underbrace{r_t + \gamma \max_{a'} Q(s_{t+1}, a')}_{\text{TD target}} \;-\; Q(s_t, a_t) \,\Big],
+$$
+
+where $$\alpha$$ is a learning rate. The crucial word is **bootstrapping**: the target itself contains
+$$Q$$, so the estimate is updated toward another (also-imperfect) estimate. To *act* (and explore), you
+use $$\epsilon$$-greedy — take the argmax with probability $$1-\epsilon$$, a random action otherwise.
+
+**DQN** ([Mnih et al., 2015](https://www.nature.com/articles/nature14236)) scales this to large state
+spaces by replacing the table with a neural network $$Q_\phi(s,a)$$, and adds two tricks to stop the
+bootstrapping from diverging: a **replay buffer** (sample past transitions to break correlation and reuse
+data — inherently *off-policy*) and a **target network** (a slowly-updated copy used to compute the TD
+target, so you are not chasing a moving target). This is what cracked Atari from pixels.
+
+**Why this is a poor fit for LLMs.** Three things break at once: (1) the action space is the whole
+vocabulary, so $$\max_{a'} Q$$ is over $$10^5$$ tokens *at every position* — and the action you really
+care about is the *whole sequence*, an astronomically large space; (2) rewards are terminal and sparse,
+so bootstrapped TD targets must propagate credit across hundreds of steps, which is slow and unstable;
+(3) you want a *stochastic*, sampleable policy (for exploration, diversity, calibrated generation), but
+value-based methods give a *deterministic* argmax policy. Policy-gradient methods sidestep all three by
+representing and sampling $$\pi_\theta$$ directly — which is why LLM RL is policy-gradient/actor-critic.
 
 ---
 
@@ -333,9 +521,30 @@ critic bias.*
   keeping the explicit policy — the practical default — but you now train and store a critic, and a
   biased critic biases the advantage.
 
+> **The evolution from Q-learning to GRPO.** The algorithm you run for LLMs is the latest step in a
+> decades-long line, each entry fixing a weakness of the last:
+>
+> - **Tabular Q-learning** (1989) — bootstrap $$Q$$ in a table; only small discrete worlds.
+> - **DQN** ([2015](https://www.nature.com/articles/nature14236)) — neural $$Q$$ + replay + target net; cracks Atari, but still value-based/deterministic.
+> - **REINFORCE** ([1992](https://link.springer.com/article/10.1007/BF00992696)) — optimize the policy directly; works in any action space but high variance.
+> - **Actor-critic / A2C** — add a learned value baseline to cut that variance.
+> - **TRPO** ([2015](https://arxiv.org/abs/1502.05477)) — constrain each update to a trust region for stability.
+> - **PPO** ([2017](https://arxiv.org/abs/1707.06347)) — approximate the trust region with a cheap clip; becomes the RLHF workhorse (§7).
+> - **GRPO** ([2024](https://arxiv.org/abs/2402.03300)) — drop the critic, use a group-relative baseline; the RLVR/reasoning default (§8).
+
+| Era | Method | Core idea | Why the next step happened |
+|---|---|---|---|
+| value-based | Q-learning → DQN | learn $$Q$$, act by argmax | deterministic, argmax fails on huge/sequence actions |
+| policy-gradient | REINFORCE | optimize $$\pi_\theta$$ directly | unbiased but high variance |
+| actor-critic | A2C → TRPO → PPO | policy + critic baseline + stable step | critic is memory-heavy at LLM scale |
+| group-relative | GRPO | drop critic, group-mean baseline | the modern RLVR default |
+
+*Table T0b. Each family fixes the previous one's binding weakness; LLM RL ends up at PPO/GRPO.*
+
 **Takeaway.** LLM RL lives in the policy-gradient / actor-critic world because language generation is a
-stochastic, sequence-level decision problem with sparse trajectory rewards. Keep the explicit policy;
-treat the critic as a variance-reduction tool — and note that GRPO replaces it with a group baseline (§8).
+stochastic, sequence-level decision problem with sparse trajectory rewards — the exact setting where a
+pure value-based argmax breaks down. Keep the explicit policy; treat the critic as a variance-reduction
+tool — and note that GRPO replaces it with a group baseline (§8).
 
 ---
 
@@ -1331,6 +1540,60 @@ no gradient. The practical consequences:
 > weighting scheme inside a GRPO-style objective ([Xu et al., 2025](https://arxiv.org/abs/2511.06221)).
 > This is also why VibeThinker is a useful small-model case study: it makes *diversity first, signal
 > second* operational rather than just philosophical.
+
+---
+
+**Question (added):** A target task is below ~30% success even for frontier models. How do you pick a base model and cold-start an RL fine-tune?
+
+🎯 *Choose the base by pass@k coverage on your task (not greedy pass@1) — ideally a domain- and
+reasoning-tuned, open, as-small-as-viable model — then manufacture success before RL: harvest
+verifier-passing trajectories with heavy test-time sampling and/or filtered distillation, SFT/OPD on
+them, and build a difficulty curriculum so tasks sit in the learnable band ($$0.2<p<0.8$$) before running
+exploration-preserving GRPO.*
+
+The trap is §14's core point: if $$p\approx0$$ for every candidate model, the reward variance
+$$p(1-p)\approx0$$ and RL has no gradient. Everything below serves one goal — **create non-zero,
+verified success signal before RL starts.**
+
+**Picking the base model.**
+- **Select by pass@k (large $$k$$), not pass@1.** RLVR mostly concentrates probability onto solutions the
+  base can *already* occasionally reach (§10), so the real question is whether a correct solution exists
+  *anywhere* in its distribution. A model with pass@1 = 2% but pass@256 = 40% is a great substrate; one
+  with pass@1 = 5% but pass@256 = 6% (mode-collapsed) is a poor one. Measure coverage and solution
+  diversity, not greedy accuracy.
+- **Prefer a domain- and reasoning-tuned base** (math/code specialist, long-CoT / R1-style) over the
+  largest general model — it explores longer chains and hits correct trajectories more often on hard
+  problems.
+- **Smallest viable + trainable.** RL is rollout-bound (§17), so prototype the recipe on the smallest
+  model with adequate coverage and scale up only if coverage is insufficient. You also need open weights
+  (ideally logits, for OPD); MoE adds train–inference and systems cost (§11, §18).
+
+**Cold-starting when even the teacher is weak.**
+- **Harvest successes with test-time scaling first.** Even at low pass@1, spend inference compute —
+  high-temperature large-$$N$$ sampling, longer CoT, self-consistency, tools, verifier-guided search — and
+  keep only *verifier-passing* trajectories. Any correct ones become SFT data. This is expert-iteration /
+  STaR / rejection-sampling fine-tuning (§6); the verifier guarantees quality even from a weak generator.
+- **Filtered distillation, not raw distillation.** A sub-30% frontier teacher still yields many correct
+  chains-of-thought — SFT on its *verified-correct* traces, or use on-policy distillation (§6) for a
+  denser signal on the student's own rollouts. Distill reasoning *behavior* (long CoT, self-correction,
+  tool use) even when final answers are wrong. Caveat: distillation's ceiling ≈ the teacher's, so it is a
+  warm-start, not the finish.
+- **Curriculum + denser reward is the real lever.** If the end task sits at $$p\approx0$$, RL cannot
+  start, so train on easier sub-problems / instances where $$p$$ is in the learnable band and ratchet
+  difficulty up as the model improves (self-evolving environments, companion post). Decompose the task
+  with intermediate verifiers / partial-credit shaping, or use a backward curriculum (start near a known
+  solution and remove the scaffolding) to manufacture early success.
+- **Then run exploration-preserving, prolonged RL** (§11, ProRL): entropy control, dynamic sampling (drop
+  all-pass/all-fail prompts, §8), high rollout temperature, and KL/reference resets — this is what pushes
+  past "sharpen only" toward actually solving the hard task. Track pass@1 *and* pass@k to confirm real
+  capability gain rather than verifier overfit (§12).
+
+**If asked in an interview:** "Pick the base by pass@k coverage, not greedy accuracy; then manufacture
+verified success (TTS harvesting + filtered distillation → SFT/OPD), put tasks in the learnable band with
+a curriculum, and only then run exploration-preserving GRPO — because at $$p\approx0$$ there is no
+gradient to optimize."
+
+---
 
 **A task can be learnable but still unsafe or invalid.** A learnable task is not automatically a good
 training environment; the verifier and reset mechanics have to be trustworthy too.

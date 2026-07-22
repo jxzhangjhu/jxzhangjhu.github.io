@@ -151,14 +151,55 @@ RL 之前 SFT 的目的是 **bootstrapping**，不是追求完美。它应教会
 
 **Key concepts.**
 
-RL 把学习建模成 agent 在 **马尔可夫决策过程 (MDP)** 中行动：在状态 $$s_t$$ 采取动作 $$a_t \sim \pi_\theta(\cdot\mid s_t)$$，得到 reward $$r_t$$，并转移到 $$s_{t+1}$$（[Sutton & Barto, 2018](http://incompleteideas.net/book/the-book-2nd.html)）。对 LLM 而言：**state** 是 prompt 加上已生成的 tokens，**action** 是下一个 token，**policy** 就是模型。目标是最大化期望 return $$J(\theta)=\mathbb{E}_{\tau\sim\pi_\theta}[\sum_t \gamma^t r_t]$$。
+RL 把“试错学习”形式化为一个 agent 在 **马尔可夫决策过程 (MDP)** 中行动，即元组 $$(\mathcal{S}, \mathcal{A}, P, r, \gamma)$$（[Sutton & Barto, 2018](http://incompleteideas.net/book/the-book-2nd.html)）：
 
-两个 value function 概括未来：$$V^\pi(s)=\mathbb{E}[\,\text{return}\mid s]$$ 和 $$Q^\pi(s,a)=\mathbb{E}[\,\text{return}\mid s,a]$$；它们之差是 **advantage** $$A^\pi(s,a)=Q^\pi(s,a)-V^\pi(s)$$——“这个动作比平均好多少”。**policy-gradient theorem**（[Sutton et al., 2000](https://proceedings.neurips.cc/paper/1999/hash/464d828b85b0bed98e80ade0a5c43b0f-Abstract.html)）给出我们真正使用的梯度 $$\nabla_\theta J=\mathbb{E}[\nabla_\theta\log\pi_\theta(a\mid s)\,A]$$，而 **GAE** 是我们估计 $$A$$ 的方式（§7 推导）。
+- $$\mathcal{S}$$ —— **状态**集合 $$s$$。对 LLM，一个状态是目前为止的全部上下文：prompt 加上已生成的每个 token。
+- $$\mathcal{A}$$ —— **动作**集合 $$a$$。对 LLM，一个动作是下一个 token，所以 $$\mathcal{A}$$ 是词表（常有 $$10^5$$ 个 token）。
+- $$P(s' \mid s, a)$$ —— **转移**动态，即下一个状态的概率。纯文本生成是确定的（追加 token）；对 agent 还包含环境对 tool call 的回应。
+- $$r(s, a)$$ —— **reward**。在 RLHF/RLVR 里通常只在序列*结尾*给出（terminal 且 sparse），而非逐 token。
+- $$\gamma \in (0, 1]$$ —— **折扣因子**，权衡近期与长期 reward。
 
-有三个概率工具在 RL 训练里反复出现：
-- **Cross-entropy、KL、entropy、MLE** —— 一个恒等式把它们串起来（见下题）。
-- **Monte-Carlo estimation** —— 用平均样本来近似期望 $$\mathbb{E}_{x\sim p}[f(x)]$$；policy-gradient RL 里一切都是对梯度的 Monte-Carlo 估计。
-- **Importance sampling** 和 **rejection sampling** —— 两种处理“我手上的样本来自错误分布”的方法（见下题）。
+在第 $$t$$ 步，agent 从 **policy** $$a_t \sim \pi_\theta(\cdot \mid s_t)$$（参数为 $$\theta$$ 的 LLM）采样动作，得到 reward $$r_t$$，并转移到 $$s_{t+1}$$。一整段是一条 **trajectory** $$\tau = (s_0, a_0, r_0, s_1, a_1, r_1, \dots)$$。从第 $$t$$ 步起的 **return** 是未来 reward 的折扣和，
+
+$$
+G_t \;=\; \sum_{k=0}^{\infty} \gamma^{k}\, r_{t+k},
+$$
+
+训练目标是 policy 下的**期望 return**，
+
+$$
+J(\theta) \;=\; \mathbb{E}_{\tau \sim \pi_\theta}\!\left[\, \sum_{t} \gamma^{t}\, r_t \,\right].
+$$
+
+**Value function** 概括这个期望的未来。**state-value** $$V^\pi$$ 是从一个状态出发的期望 return；**action-value** $$Q^\pi$$ 是在该状态采取某个具体动作、之后按 $$\pi$$ 行动的期望 return：
+
+$$
+V^\pi(s) \;=\; \mathbb{E}_{\pi}\!\left[\, G_t \mid s_t = s \,\right],
+$$
+
+$$
+Q^\pi(s, a) \;=\; \mathbb{E}_{\pi}\!\left[\, G_t \mid s_t = s,\; a_t = a \,\right].
+$$
+
+它们之差是 **advantage**——一个动作比 policy 在该状态的平均行为好多少：
+
+$$
+A^\pi(s, a) \;=\; Q^\pi(s, a) - V^\pi(s).
+$$
+
+**policy-gradient theorem（一行推导）。** 我们无法对采样到的 reward 求导，但可以对我们采取的动作的*概率*求导。**log-derivative trick**，$$\nabla_\theta \pi_\theta = \pi_\theta\, \nabla_\theta \log \pi_\theta$$，把目标的梯度改写成一个可以从 rollout 估计的期望（[Sutton et al., 2000](https://proceedings.neurips.cc/paper/1999/hash/464d828b85b0bed98e80ade0a5c43b0f-Abstract.html)）：
+
+$$
+\nabla_\theta J(\theta) \;=\; \mathbb{E}_{\tau \sim \pi_\theta}\!\left[\, \sum_t \nabla_\theta \log \pi_\theta(a_t \mid s_t)\; A^\pi(s_t, a_t) \,\right].
+$$
+
+一句话：**把正 advantage 动作的 log-probability 抬高、负 advantage 的压低。** 这一个式子支撑了 REINFORCE、PPO（§7）、GRPO（§8）；这些算法的区别主要在于*如何估计 $$A$$* 与*如何让每次更新稳定*。把 $$A$$ 估好是 **GAE**（§7）的活；用 group mean 替代 learned value baseline 是 **GRPO**（§8）的思路。
+
+**三个概率工具**在 RL 训练里反复出现：
+
+- **Cross-entropy / KL / entropy / MLE** —— 一个恒等式把它们串起来（见下题），而且这正是 pre-training 与 SFT 背后的同一个目标。
+- **Monte-Carlo estimation** —— 用平均样本近似期望 $$\mathbb{E}_{x \sim p}[f(x)] \approx \tfrac{1}{N}\sum_{i} f(x_i)$$。上面每一个 policy gradient 都是 Monte-Carlo 估计。
+- **Importance sampling / rejection sampling** —— 两种利用*并非*来自你真正关心分布的样本的方法（见下题）。这正是重用 off-policy rollout 的形式化基础。
 
 ---
 
@@ -166,10 +207,16 @@ RL 把学习建模成 agent 在 **马尔可夫决策过程 (MDP)** 中行动：�
 
 🎯 *一个恒等式：$$\mathrm{CE}(p,q)=H(p)+\mathrm{KL}(p\|q)$$。对 $$q$$ 最小化 cross-entropy 或 KL 是同一件事（因为 $$H(p)$$ 与 $$q$$ 无关）；而 maximum-likelihood 训练恰好是最小化 $$\mathrm{KL}(p_{\text{data}}\|p_\theta)$$。*
 
-对真分布 $$p$$ 与模型 $$q$$ 写出来：
+对真分布 $$p$$ 与模型 $$q$$ 写出来（都是对所有取值 $$x$$ 求和）：
+
 $$
-H(p)=-\!\sum_x p\log p,\quad \mathrm{KL}(p\|q)=\sum_x p\log\tfrac{p}{q},\quad \mathrm{CE}(p,q)=-\!\sum_x p\log q.
+\begin{aligned}
+H(p) &= -\sum_x p(x)\,\log p(x) && \text{（} p \text{ 的熵）},\\
+\mathrm{KL}(p\,\|\,q) &= \sum_x p(x)\,\log \frac{p(x)}{q(x)} && \text{（用 } q \text{ 表示 } p \text{ 的额外代价）},\\
+\mathrm{CE}(p,q) &= -\sum_x p(x)\,\log q(x) && \text{（cross-entropy）}.
+\end{aligned}
 $$
+
 加减一下就得到 $$\mathrm{CE}(p,q)=H(p)+\mathrm{KL}(p\|q)$$。由于 $$H(p)$$ 不依赖模型 $$q$$，最小化 cross-entropy loss **就是**最小化到数据的 KL。而 maximum-likelihood 目标 $$\max_\theta \mathbb{E}_{x\sim p_{\text{data}}}[\log p_\theta(x)]$$ 逐项就是 $$\min_\theta \mathrm{KL}(p_{\text{data}}\|p_\theta)$$。所以 next-token pre-training、SFT loss、以及“最小化到数据的 KL”是同一个目标的三种说法。
 
 **为什么对 RL 重要。** KL 是*非对称*的——$$\mathrm{KL}(p\|q)\neq\mathrm{KL}(q\|p)$$——你惩罚哪个方向会改变行为（mode-covering vs mode-seeking）。RLHF 的 KL-to-reference 项（§7）及其 k3 estimator（§8）都是这个工具箱的直接产物。
@@ -180,11 +227,54 @@ $$
 
 🎯 *两者都是处理“样本来自错误分布”的 Monte-Carlo 技术。Importance sampling 用概率比重加权 off-policy 样本（用来重用稍旧的 rollout）；rejection sampling 通过保留/丢弃样本来匹配目标（用于数据过滤 / best-of-N）。*
 
-**Importance sampling (IS)** 用来自另一分布 $$q$$ 的样本估计 $$\mathbb{E}_{x\sim p}[f(x)]$$：$$\mathbb{E}_{p}[f]=\mathbb{E}_{q}[\tfrac{p(x)}{q(x)}f(x)]$$。比值 $$w=p/q$$ 给每个样本重加权。这正是 PPO/GRPO 里的 $$r_t(\theta)=\pi_\theta/\pi_{\theta_{\text{old}}}$$，以及 async RL（§18）里的 staleness 修正——它们让我们重用稍旧 policy 的 rollout。代价是：如果 $$p$$ 和 $$q$$ 差太远，比值会爆炸、估计方差暴涨——这正是我们要 clip（§7）和约束 staleness（§18）的原因。
+**Importance sampling (IS)** 用来自*另一个*分布 $$q$$ 的样本来估计 $$p$$ 下的期望，办法是给每个样本乘上 **importance weight** $$w(x)=p(x)/q(x)$$：
 
-**Rejection sampling** 则是生成候选并*接受*其中一部分以匹配目标——在 post-training 里就是“采样 N 个回答，保留 reward model 喜欢的那些，再微调”（[Touvron et al., 2023](https://arxiv.org/abs/2307.09288)）。它是把 reward 变成训练数据的最简单方式，也是 §6 的概念雏形。两者本质都是 Monte-Carlo：用你能采到的样本去估计/塑造目标分布。
+$$
+\mathbb{E}_{x \sim p}\!\left[ f(x) \right] \;=\; \mathbb{E}_{x \sim q}\!\left[ \frac{p(x)}{q(x)}\, f(x) \right] \;=\; \mathbb{E}_{x \sim q}\!\left[ w(x)\, f(x) \right].
+$$
 
-**Takeaway.** RL 是对 policy gradient 的 Monte-Carlo 估计。advantage（$$Q-V$$）是我们要估计的对象，importance sampling 让我们以方差为代价重用 off-policy 样本，而 CE/KL/MLE 恒等式是串起 pre-training、SFT 与 RL 中 KL penalty 的那条线。
+**(a) 什么时候用。** 在 RL 里，$$p = \pi_\theta$$ 是我们想*为之求梯度*的 policy，$$q = \pi_{\theta_{\text{old}}}$$ 是实际生成 rollout 的 **behavior policy**。PPO/GRPO 里的 per-token 比值
+
+$$
+r_t(\theta) \;=\; \frac{\pi_\theta(a_t \mid s_t)}{\pi_{\theta_{\text{old}}}(a_t \mid s_t)}
+$$
+
+正是这个 $$w$$。凡是数据*略微 off-policy* 时就用它：把一批 rollout 复用于多次梯度更新（PPO epochs > 1），或在 async RL（§18）里消费落后 trainer 的 policy 产生的 rollout。它让你不必一更新 policy 就把 rollout 丢掉。
+
+**(b) 会带来什么问题。** IS 无偏，但**方差随 $$p$$ 与 $$q$$ 拉开而增大**：若某个 $$x$$ 有 $$q(x)\ll p(x)$$，它的 weight $$w(x)$$ 就会巨大，少数样本主导整个估计，**有效样本数 (effective sample size)** 坍缩。在 RL 里表现为比值爆炸、更新失稳。这正是 PPO 要把 $$r_t$$ **clip** 到 $$[1-\epsilon,1+\epsilon]$$（§7）、async 系统要**约束 staleness**（§18）的原因——都是让 $$q$$ 贴近 $$p$$、把 weight 保持在 1 附近。
+
+**(c) 训练中的 on-policy vs off-policy。** 两个要分清的定义：
+
+- **On-policy** —— 数据由*当前* policy 生成，无需重加权（$$w \equiv 1$$）。vanilla policy gradient / REINFORCE 严格 on-policy。
+- **Off-policy** —— 数据来自*另一个* policy（旧 checkpoint、replay buffer、别的模型），需要 IS 修正，且差距大就退化。
+
+实践中，“on-policy” 的 RLHF 其实是*轻度 off-policy*：你采一批样本，然后在它上面做几次梯度更新，所以第一次之后的每一步相对刚更新过的权重都已经 off-policy 了——这正是比值 $$r_t(\theta)$$ 及其 clip 存在的原因。操作准则：**让 behavior 与 target policy 保持接近**（少 PPO epoch、限 async staleness），使 IS 修正保持低方差。
+
+**Rejection sampling** 走另一条路：从 $$q$$ 生成候选并*接受*一个子集，使幸存者看起来像目标分布——在 post-training 里就是“采样 $$N$$ 个回答，保留 reward model（或 verifier）喜欢的那些，再微调”（[Touvron et al., 2023](https://arxiv.org/abs/2307.09288)）。它是把 reward 变成训练数据的最简单方式——无比值、无 clip——也是 §6 的概念雏形。两者本质都是 Monte-Carlo：用你能真正采到的样本去塑造/估计目标分布。
+
+---
+
+**Question (added):** Online vs Offline RL——它们如何映射到 LLM post-training？
+
+🎯 *Online RL 在训练中从当前 policy 收集新数据（PPO、GRPO、RLVR）；offline RL 从一个预先收集好的固定数据集学习、训练中不再交互（DPO 式偏好调优、offline RL 算法）。“on-policy vs off-policy” 是另一条轴：数据是否来自当前 policy。*
+
+这是**两条相互独立的轴**，常被混为一谈：
+
+- **Online vs offline** 问的是*训练中是否收集新数据？* **Online**：是——policy 行动、你打分、你更新、再重复（PPO/GRPO/RLVR 需要 rollout engine，§17）。**Offline**：否——你针对一个提前收集好的数据集优化、训练中从不采样（DPO 用固定 preference 集，§9；经典 offline RL 如 CQL/IQL）。
+- **On-policy vs off-policy** 问的是*数据是否由当前 policy 生成？* **On-policy**：来自此刻的 $$\pi_\theta$$。**Off-policy**：来自更旧或别的 policy（replay buffer、stale async rollout），需要上面的 IS 修正。
+
+|  | On-policy | Off-policy |
+|---|---|---|
+| **Online** | PPO / GRPO，新鲜 rollout 立即使用 | async RL 带 stale rollout（§18）；基于 replay 的 value 方法 |
+| **Offline** | （罕见 / 退化） | DPO 用固定 preference 集（§9）；offline RL（CQL、IQL） |
+
+*Table T0. 这两条轴是正交的；大多数 LLM RL 落在“online、近 on-policy”这一格。*
+
+对 LLM post-training，映射很干净：**PPO/GRPO/RLVR 是 online、近 on-policy**——现采 rollout、几乎立即消费，只用 IS 比值来吸收 PPO epoch 和 async staleness 带来的轻度 off-policyness。**DPO（§9）是 offline**——训练中从不采样，因此更便宜更稳定，但被它起步的 preference 数据所限。
+
+---
+
+**Takeaway.** RL 是对 policy gradient 的 Monte-Carlo 估计。MDP 定义了问题（$$\mathcal{S}, \mathcal{A}, P, r, \gamma$$），advantage $$A = Q - V$$ 是我们要估计的对象，importance sampling 让我们以方差为代价重用 off-policy 样本（因此才有 clip 和 staleness 约束），而 CE/KL/MLE 恒等式是串起 pre-training、SFT 与 RL 中 KL penalty 的那条线。
 
 ---
 
@@ -193,7 +283,39 @@ $$
 
 **Key concepts.**
 
-Classical RL 有三个家族。**Value-based** 方法（Q-learning、DQN）学 $$Q(s,a)$$ 并贪心行动 $$a=\arg\max_a Q(s,a)$$；它们从不显式表示 policy。**Policy-gradient** 方法直接参数化 policy $$\pi_\theta$$ 并上升 $$\nabla_\theta J$$。**Actor-critic** 保留一个显式 policy（*actor*），同时学一个 value function（*critic*）来降低 policy gradient 的方差——这是 PPO 的基础。LLM RL 几乎全在 **policy-gradient / actor-critic** 世界里，原因见下题。
+Classical RL 对“如何改进 policy？”给出三种回答，而现代 LLM RL 正是沿着它们一路演化到今天的终点。
+
+**1. Value-based 方法（Q-learning、DQN）。** 学**最优 action-value** $$Q^*(s,a)$$——在 $$s$$ 采取 $$a$$ 之后能达到的最优期望 return——然后贪心行动 $$a = \arg\max_a Q(s,a)$$。这里**没有显式 policy**：policy 由 values 上的 argmax *隐含*给出。对小的离散动作空间很优雅（下一题细讲它到底怎么运作）。
+
+**2. Policy-gradient 方法（REINFORCE）。** **直接**参数化 policy $$\pi_\theta$$ 并上升 §2 的 policy gradient $$\nabla_\theta J$$。不学任何 value；就是采样 trajectory、把高 return 动作的 log-probability 抬高。灵活、能给出*随机* policy，但原始估计方差高。
+
+**3. Actor-critic（A2C、PPO）。** 保留一个显式 policy（**actor**），*同时*学一个 value function（**critic**），critic 唯一的活就是为 actor 的梯度提供低方差的 baseline/advantage。这兼两者之长——一个显式、随机、可采样的 policy 加一个降方差的 value 估计——正是 **PPO**（§7）所基于的模板。
+
+LLM RL 几乎全在**家族 2 和 3**里（GRPO，§8，甚至把 critic 也去掉、换成 Monte-Carlo group baseline）。下面的问题会讲清楚*为什么*纯 value-based 不适合语言，并梳理从 Q-learning 一路到 GRPO 的演化。
+
+---
+
+**Question (added):** *纯* value-based 方法（Q-learning / DQN）到底怎么运作？
+
+🎯 *通过朝 Bellman target $$r + \gamma \max_{a'} Q(s',a')$$ bootstrap 来学 $$Q(s,a)$$，靠取 argmax 来行动。policy 从不被显式表示——它从 values 里“掉”出来。这对小的离散动作空间很好，而这恰恰就是它在逐 token、sequence-level 的 LLM 生成上失效的地方。*
+
+基础是 **Bellman 最优方程**：最优动作的价值等于即时 reward 加上其后按最优行动的折扣价值，
+
+$$
+Q^*(s, a) \;=\; \mathbb{E}_{s'}\!\left[\, r(s, a) + \gamma \max_{a'} Q^*(s', a') \,\right].
+$$
+
+**Tabular Q-learning** 把这个不动点方程变成更新规则。你维护一张 $$Q(s,a)$$ 值表，每次转移 $$(s_t, a_t, r_t, s_{t+1})$$ 后，把该条目朝 **TD（时序差分）target**——即用观察到的一步估计的右端——微调：
+
+$$
+Q(s_t, a_t) \;\leftarrow\; Q(s_t, a_t) + \alpha \Big[\, \underbrace{r_t + \gamma \max_{a'} Q(s_{t+1}, a')}_{\text{TD target}} \;-\; Q(s_t, a_t) \,\Big],
+$$
+
+其中 $$\alpha$$ 是学习率。关键词是 **bootstrapping**：target 里本身含 $$Q$$，所以估计是朝另一个（同样不完美的）估计更新。要*行动*（并探索），用 $$\epsilon$$-greedy——以概率 $$1-\epsilon$$ 取 argmax，否则随机动作。
+
+**DQN**（[Mnih et al., 2015](https://www.nature.com/articles/nature14236)）把这套扩展到大状态空间：用神经网络 $$Q_\phi(s,a)$$ 替换表，并加两个技巧防止 bootstrapping 发散——**replay buffer**（采样过去的转移以打散相关性、复用数据——本质 *off-policy*）和 **target network**（一个缓慢更新的副本用来算 TD target，这样你不是在追一个移动的目标）。这就是从像素破解 Atari 的方案。
+
+**为什么不适合 LLM。** 三件事同时崩：(1) 动作空间是整个词表，$$\max_{a'} Q$$ 要在*每个位置*对 $$10^5$$ 个 token 取 max——而你真正在意的动作是*整段序列*，一个天文数字的空间；(2) reward terminal 且稀疏，bootstrapped TD target 要把 credit 沿几百步传播，既慢又不稳；(3) 你想要一个*随机*、可采样的 policy（为了 exploration、多样性、校准生成），而 value-based 方法给的是*确定性* argmax policy。Policy-gradient 方法通过直接表示并采样 $$\pi_\theta$$ 一次绕开三者——这就是为什么 LLM RL 是 policy-gradient/actor-critic。
 
 ---
 
@@ -215,7 +337,26 @@ value-based 方法必须学 $$Q(s,a)$$，再通过 Bellman backup 做 bootstrap�
 - **Policy-gradient**（REINFORCE）：能处理任意动作空间、给出随机 policy，但原始估计方差高、样本饥渴。
 - **Actor-critic**（PPO）：critic 的 value 估计提供 baseline 大幅降方差，同时保留显式 policy——实践默认——但你现在要训练并存储一个 critic，有偏 critic 会带偏 advantage。
 
-**Takeaway.** LLM RL 处在 policy-gradient / actor-critic 世界里，因为语言生成是一个随机、sequence-level、terminal reward 稀疏的决策问题。保留显式 policy；把 critic 当作降方差工具——并注意 GRPO 用 group baseline 替代了它（§8）。
+> **从 Q-learning 到 GRPO 的演化。** 你为 LLM 跑的算法是一条几十年长线里的最新一步，每一步都在修上一步的弱点：
+>
+> - **Tabular Q-learning**（1989）—— 用表 bootstrap $$Q$$；只适合小的离散世界。
+> - **DQN**（[2015](https://www.nature.com/articles/nature14236)）—— 神经网络 $$Q$$ + replay + target net；破解 Atari，但仍是 value-based/确定性。
+> - **REINFORCE**（[1992](https://link.springer.com/article/10.1007/BF00992696)）—— 直接优化 policy；任意动作空间可用，但方差高。
+> - **Actor-critic / A2C** —— 加一个 learned value baseline 来降那个方差。
+> - **TRPO**（[2015](https://arxiv.org/abs/1502.05477)）—— 用 trust region 约束每次更新以求稳定。
+> - **PPO**（[2017](https://arxiv.org/abs/1707.06347)）—— 用便宜的 clip 近似 trust region；成为 RLHF 主力（§7）。
+> - **GRPO**（[2024](https://arxiv.org/abs/2402.03300)）—— 去掉 critic，用 group-relative baseline；RLVR/reasoning 默认（§8）。
+
+| 时代 | 方法 | 核心思想 | 为何走向下一步 |
+|---|---|---|---|
+| value-based | Q-learning → DQN | 学 $$Q$$，靠 argmax 行动 | 确定性；argmax 在巨大/序列动作上失效 |
+| policy-gradient | REINFORCE | 直接优化 $$\pi_\theta$$ | 无偏但方差高 |
+| actor-critic | A2C → TRPO → PPO | policy + critic baseline + 稳定步长 | critic 在 LLM 规模很吃显存 |
+| group-relative | GRPO | 去 critic，group-mean baseline | 现代 RLVR 默认 |
+
+*Table T0b. 每个家族都修掉上一个的约束性弱点；LLM RL 最终落在 PPO/GRPO。*
+
+**Takeaway.** LLM RL 处在 policy-gradient / actor-critic 世界里，因为语言生成是一个随机、sequence-level、terminal reward 稀疏的决策问题——正是纯 value-based 的 argmax 崩掉的场景。保留显式 policy；把 critic 当作降方差工具——并注意 GRPO 用 group baseline 替代了它（§8）。
 
 ---
 ## Part II — Reward 与 Preference
@@ -798,6 +939,29 @@ single-turn 情形很简单：reward 附在那一个 response 上。在一条只
 > **Insight box — “按学习信号过滤，而非按原始难度。”** 最有用的任务是模型大约对一半的那个——而不是最难的那个。
 
 > **Case study — MGPO.** VibeThinker 的 **MaxEnt-Guided Policy Optimization (MGPO)** 是这条原则的一个具体版本。对每个 prompt，它采样一组 rollout，估计经验正确率 $$p(q)$$，并上调最接近最大不确定性（$$p(q)\approx0.5$$）的 prompt 的权重，同时下调 all-pass 或 all-fail 的 prompt。换句话说，它把 learnability band 变成了一个 GRPO 式目标内部的 prompt-level 加权方案（[Xu et al., 2025](https://arxiv.org/abs/2511.06221)）。这也是为什么 VibeThinker 是一个有用的小模型案例：它把 *diversity first, signal second* 从哲学变成了可操作的东西。*
+
+---
+
+**Question (added):** 目标任务连 frontier model 都 <30% 成功率时，怎么选 base model 并冷启动一次 RL fine-tune？
+
+🎯 *按你这题上的 pass@k 覆盖率（而非 greedy pass@1）选底座——理想是领域+reasoning 调过、可训、尽量小的模型——然后在 RL 之前先*造出*成功轨迹：用重度 test-time 采样和/或过滤式蒸馏收集被 verifier 判对的轨迹，在其上做 SFT/OPD，再用课程把任务拉进 learnable band（$$0.2<p<0.8$$），最后跑 exploration-preserving 的 GRPO。*
+
+陷阱就是 §14 的核心点：若每个候选模型都 $$p\approx0$$，reward 方差 $$p(1-p)\approx0$$，RL 没有梯度。下面所有做法都服务于一个目标——**在 RL 开始前造出非零的、被验证过的成功信号。**
+
+**选 base model。**
+- **按 pass@k（大 $$k$$）选，而非 pass@1。** RLVR 主要把概率集中到 base *本来就偶尔能采到*的解上（§10），所以真正的问题是正确解是否*存在于*它的分布中。一个 pass@1 = 2% 但 pass@256 = 40% 的模型是极好的底座；一个 pass@1 = 5% 但 pass@256 = 6%（已 mode-collapse）的则很差。要测覆盖率与解的多样性，而非 greedy 准确率。
+- **优先领域+reasoning 调过的底座**（math/code 专项、long-CoT / R1 式），而非最大的通用模型——它会展开更长的链、在硬题上更常撞中正确轨迹。
+- **最小可训。** RL 是 rollout-bound 的（§17），先在覆盖率够用的最小模型上把 recipe 跑通，覆盖率不够再往上换。你还需要 open weights（做 OPD 理想还要 logits）；MoE 会带来训推不一致与系统成本（§11、§18）。
+
+**当连 teacher 都弱时的冷启动。**
+- **先用 test-time scaling“捞”成功样本。** 即便 pass@1 很低，也砸推理算力——高温大 $$N$$ 采样、更长 CoT、self-consistency、工具、verifier 引导搜索——只保留*被 verifier 判对*的轨迹。任何正确的都成为 SFT 数据。这就是 expert-iteration / STaR / rejection-sampling 微调（§6）；verifier 保证了即便生成器很弱、筛出来的也是对的。
+- **过滤式蒸馏，而非全量蒸馏。** 一个 <30% 的 frontier teacher 仍能产出大量正确 CoT——在它*被验证正确*的轨迹上做 SFT，或用 on-policy distillation（§6）在学生自己的 rollout 上拿更 dense 的信号。即便最终答案错，也可蒸馏其推理*行为*（long CoT、self-correction、tool use）。注意：蒸馏的天花板 ≈ teacher 的天花板，所以它是 warm-start，不是终点。
+- **课程 + 更 dense 的 reward 才是真正的杠杆。** 若最终任务就卡在 $$p\approx0$$，RL 无法起步，那就先在 $$p$$ 落在 learnable band 的更易子问题/实例上训，并随模型变强逐步抬难度（self-evolving environments，见姊妹篇）。用带中间 verifier 的问题分解 / 部分分 shaping，或用反向课程（从接近解的状态起步、逐步撤脚手架）来造出早期成功。
+- **然后跑 exploration-preserving 的长训练 RL**（§11，ProRL）：entropy 控制、dynamic sampling（丢全对/全错的 prompt，§8）、高 rollout 温度、KL/reference reset——这才是把“只 sharpen”顶破、朝真正解决硬题推进的动力。同时盯 pass@1 *和* pass@k，确认是真能力提升而非 verifier 过拟合（§12）。
+
+**If asked in an interview:** “按 pass@k 覆盖率（不是 greedy 准确率）选底座；然后造出被验证的成功（TTS 捞样本 + 过滤式蒸馏 → SFT/OPD），用课程把任务放进 learnable band，最后才跑 exploration-preserving 的 GRPO——因为 $$p\approx0$$ 时根本没有梯度可优化。”
+
+---
 
 **一个任务可以 learnable 但仍不安全或无效。** learnable 的任务不自动是好的训练环境；verifier 和 reset 机制也必须可信。
 
