@@ -38,7 +38,7 @@ ICML 2026 上 OpenAI 最有意思的动作不是 keynote，而是一张折叠桌
 
 这三句话出自标题不同的三场 Q&A。但它们其实是同一个答案。
 
-Booth 的议程本身有据可查。一张现场 schedule 的照片（[Wu, 2026](https://www.linkedin.com/posts/wendy-y-wu_were-at-icml-well-have-qa-sessions-activity-7480070091989147648-5Hw6)）加上主办方自己的帖子，可以还原出三天四场：
+Booth 的议程本身有据可查。一张现场 schedule 的照片（[Wu, 2026](https://www.linkedin.com/posts/wendy-y-wu_were-at-icml-well-have-qa-sessions-activity-7480070091989147648-5Hw6)）可以还原出三天四场：
 
 | 时间（KST） | 场次 | 参与者 |
 | --- | --- | --- |
@@ -46,6 +46,8 @@ Booth 的议程本身有据可查。一张现场 schedule 的照片（[Wu, 2026]
 | 7 月 8 日周三 9:30–10:30 AM | Safety | Dylan Scandinaro、Josh Vendrow、Katherine Lee |
 | 7 月 8 日周三 3:00–4:00 PM | Leadership | Mark Chen（Chief Research Officer） |
 | 7 月 9 日周四 3:00–4:00 PM | Agents | Allison Tam、Kevin Liu |
+
+这部分是 primary evidence：四场里有三场是 speaker 自己在当天发帖预告的（[Brown, 2026](https://x.com/polynoamial/status/2074259788188541207)；[Lee, 2026](https://x.com/katherine1ee/status/2073950231025361242)；[Chen, 2026](https://x.com/markchen90/status/2074724183347732499)）。
 
 缺的是逐字稿能给的一切：没有公开录像，没有观众实际提问的完整序列，也没有任何可以明确归到 Safety 场次的实质内容。留下来的只有一份信息密度很高的参会笔记（[Hu, 2026](https://www.linkedin.com/posts/christine-x-hu_ai-icml2026-openai-activity-7482543633741545474-Agmy)）、一篇来自现场的中文随笔（[孟醒, 2026](https://www.x-techcon.com/article/164490.html)），以及 *The Information* 的一篇付费报道。所以本文做的是**从答案反推问题**，再拿公开技术材料逐条检验。
 
@@ -159,7 +161,7 @@ Dense reward 看起来是显然的解法：给 plan、每次 tool call、每个�
 <a id="safety-monitor-the-thoughts-govern-the-actions"></a>
 ## Safety：监控 thoughts，治理 actions
 
-Safety 场次的名单是确定的，内容不是——我没有找到任何能归到这一场的公开笔记。下面重建的这个想法，Hu 把它归给 Noam Brown，而 Brown 出现在 Reasoning 而非 Safety 的名单上。所以把它当成"那一周的一个想法"，不是某一场的记录。
+Safety 场次的名单是确定的，它*为什么而开*也是确定的：Katherine Lee 邀请大家来聊"safety research at OAI generally or pretraining safety research"（[Lee, 2026](https://x.com/katherine1ee/status/2073950231025361242)）。真正说了什么则没有留下来——我没有找到任何能归到那一小时的公开笔记。所以下面重建的这个想法，是 Hu 归给 Noam Brown 的，而 Brown 出现在 Reasoning 而非 Safety 的名单上；本节再拿 OpenAI 已发表的工作去检验它。把它当成"那一周的一个想法"，不是某一场的记录。
 
 **Question:** 训练时应该因为一个 unsafe thought 去惩罚 agent 吗？
 
@@ -305,32 +307,38 @@ E2 正是这个问题咬人的地方。[PaperBench](https://openai.com/index/pap
 
 [1] Bowen Baker, Joost Huizinga, et al. ["Monitoring Reasoning Models for Misbehavior and the Risks of Promoting Obfuscation."](https://arxiv.org/abs/2503.11926) arXiv:2503.11926, 2025.
 
-[2] Noam Brown. ["Scaling Test-Time Compute to Multi-Agent Civilizations."](https://www.latent.space/p/noam-brown) *Latent Space*, 2026.
+[2] Noam Brown. ["I'm at ICML this week and I'll be doing Q&A today (Tuesday) from 3–4pm at the OpenAI booth."](https://x.com/polynoamial/status/2074259788188541207) X, July 2026.
 
-[3] Noam Brown. ["Why Traditional Benchmarks Fail Modern AI Models."](https://podscripts.co/podcasts/no-priors-artificial-intelligence-technology-startups/why-traditional-benchmarks-fail-modern-ai-models-with-openai-research-scientist-noam-brown) *No Priors*, June 2026.
+[3] Noam Brown. ["Scaling Test-Time Compute to Multi-Agent Civilizations."](https://www.latent.space/p/noam-brown) *Latent Space*, 2026.
 
-[4] Xinyu (Christine) Hu. ["Takeaways from OpenAI's Q&A Sessions at ICML 2026."](https://www.linkedin.com/posts/christine-x-hu_ai-icml2026-openai-activity-7482543633741545474-Agmy) LinkedIn, July 2026.
+[4] Noam Brown. ["Why Traditional Benchmarks Fail Modern AI Models."](https://podscripts.co/podcasts/no-priors-artificial-intelligence-technology-startups/why-traditional-benchmarks-fail-modern-ai-models-with-openai-research-scientist-noam-brown) *No Priors*, June 2026.
 
-[5] ICML. ["The Forty-Third International Conference on Machine Learning."](https://icml.cc/Conferences/2026/index.html) Seoul, July 2026.
+[5] Mark Chen. ["I'll be doing a Q+A at ICML today (Wednesday) at 3–4pm as well."](https://x.com/markchen90/status/2074724183347732499) X, July 2026.
 
-[6] Michelle Kim. ["We're at ICML in Seoul This Week."](https://www.linkedin.com/posts/michellekimsf_icml-activity-7480077822364065792-EDbV) LinkedIn, July 2026.
+[6] Xinyu (Christine) Hu. ["Takeaways from OpenAI's Q&A Sessions at ICML 2026."](https://www.linkedin.com/posts/christine-x-hu_ai-icml2026-openai-activity-7482543633741545474-Agmy) LinkedIn, July 2026.
 
-[7] 孟醒. ["首尔 ICML 四天：模型吃掉一切的速度，快过所有人找身位的速度."](https://www.x-techcon.com/article/164490.html) 2026 年 7 月.
+[7] ICML. ["The Forty-Third International Conference on Machine Learning."](https://icml.cc/Conferences/2026/index.html) Seoul, July 2026.
 
-[8] OpenAI. ["How Agents Are Transforming Work."](https://openai.com/index/how-agents-are-transforming-work/) 2026.
+[8] Michelle Kim. ["We're at ICML in Seoul This Week."](https://www.linkedin.com/posts/michellekimsf_icml-activity-7480077822364065792-EDbV) LinkedIn, July 2026.
 
-[9] OpenAI. ["How We Monitor Internal Coding Agents for Misalignment."](https://openai.com/index/how-we-monitor-internal-coding-agents-misalignment/) March 2026.
+[9] Katherine Lee. ["You can find me hosting a Q&A at our booth Wednesday morning at 9:30am."](https://x.com/katherine1ee/status/2073950231025361242) X, July 2026.
 
-[10] OpenAI. ["PaperBench: Evaluating AI's Ability to Replicate AI Research."](https://openai.com/index/paperbench/) April 2025.
+[10] Meng Xing (孟醒). ["Four Days at ICML Seoul: Models Are Eating Everything Faster Than Anyone Can Find Their Footing."](https://www.x-techcon.com/article/164490.html) July 2026.
 
-[11] OpenAI. ["Safety and Alignment in an Era of Long-Horizon Models."](https://openai.com/index/safety-alignment-long-horizon-models/) July 2026.
+[11] OpenAI. ["How Agents Are Transforming Work."](https://openai.com/index/how-agents-are-transforming-work/) 2026.
 
-[12] OpenAI Forum. ["Event Replay: Terence Tao and Mark Chen on AI and Mathematical Discovery."](https://forum.openai.com/public/videos/event-replay-terence-tao-and-mark-chen-on-ai-and-mathematical-discovery-2026-03-11) March 2026.
+[12] OpenAI. ["How We Monitor Internal Coding Agents for Misalignment."](https://openai.com/index/how-we-monitor-internal-coding-agents-misalignment/) March 2026.
 
-[13] Stephanie Palazzolo. ["OpenAI Researcher Says GPT-5.6 Is Better at AI Research Than Most Human Interns."](https://www.theinformation.com/newsletters/ai-agenda/openai-researcher-says-gpt-5-6-better-ai-research-human-interns) *The Information*, July 2026.
+[13] OpenAI. ["PaperBench: Evaluating AI's Ability to Replicate AI Research."](https://openai.com/index/paperbench/) April 2025.
 
-[14] Selina Ta'amilo. ["Day 1 of ICML: Live Reasoning Q&A at the OpenAI Booth."](https://www.linkedin.com/posts/staamilo_icml2026-openai-activity-7480041293516132352-Yli8) LinkedIn, July 2026.
+[14] OpenAI. ["Safety and Alignment in an Era of Long-Horizon Models."](https://openai.com/index/safety-alignment-long-horizon-models/) July 2026.
 
-[15] Selina Ta'amilo. ["OpenAI Will Be at ICML in Seoul."](https://www.linkedin.com/posts/staamilo_icml2026-activity-7479714861552435200-U_Ez) LinkedIn, July 2026.
+[15] OpenAI Forum. ["Event Replay: Terence Tao and Mark Chen on AI and Mathematical Discovery."](https://forum.openai.com/public/videos/event-replay-terence-tao-and-mark-chen-on-ai-and-mathematical-discovery-2026-03-11) March 2026.
 
-[16] Wendy Wu. ["We're at ICML — We'll Have Q&A Sessions."](https://www.linkedin.com/posts/wendy-y-wu_were-at-icml-well-have-qa-sessions-activity-7480070091989147648-5Hw6) LinkedIn, July 2026.
+[16] Stephanie Palazzolo. ["OpenAI Researcher Says GPT-5.6 Is Better at AI Research Than Most Human Interns."](https://www.theinformation.com/newsletters/ai-agenda/openai-researcher-says-gpt-5-6-better-ai-research-human-interns) *The Information*, July 2026.
+
+[17] Selina Ta'amilo. ["Day 1 of ICML: Live Reasoning Q&A at the OpenAI Booth."](https://www.linkedin.com/posts/staamilo_icml2026-openai-activity-7480041293516132352-Yli8) LinkedIn, July 2026.
+
+[18] Selina Ta'amilo. ["OpenAI Will Be at ICML in Seoul."](https://www.linkedin.com/posts/staamilo_icml2026-activity-7479714861552435200-U_Ez) LinkedIn, July 2026.
+
+[19] Wendy Wu. ["We're at ICML — We'll Have Q&A Sessions."](https://www.linkedin.com/posts/wendy-y-wu_were-at-icml-well-have-qa-sessions-activity-7480070091989147648-5Hw6) LinkedIn, July 2026.
