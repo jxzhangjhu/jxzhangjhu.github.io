@@ -509,11 +509,41 @@ the steps small until the estimate stabilises. Typically 1–2% of total steps.
 **Cosine decay.** Big steps early to get through bad regions fast, small steps late to converge.
 Cosine rather than linear or stepwise is mostly an empirical finding.
 
-> **A constraint that bites.** Cosine is defined **against a fixed total step count**. If you decide
-> halfway through that you want to train longer, you cannot simply extend it — the learning rate has
-> already decayed. This is exactly why **WSD** (warmup-stable-decay) became popular: you can branch a
-> decay phase off the constant segment at any point, which turns midtraining and continued pretraining
-> into repeatable operations rather than decisions welded shut before the run starts.
+> **A constraint that bites.** Cosine is defined against a fixed total step count, so step 0 welds
+> the whole curve in place. Decide halfway through that you want to train longer and you cannot simply
+> extend it — the rate has already decayed. Fitting a scaling law means retraining once per compute point.
+
+**WSD (warmup-stable-decay).** The alternative that became popular for exactly that reason, in three
+phases:
+
+| Phase | Learning rate | Share of steps |
+|---|---|---|
+| Warmup | Linear ramp to peak | 1–2% |
+| Stable | **Held at peak** | 60–80% |
+| Decay (cooldown) | Annealed to zero or near it | 10–25% |
+
+**Its loss curve has a distinctive shape worth recognising:** during the stable phase the loss sits
+**higher** than a cosine run at the same step, which looks like it is training worse; then it drops
+sharply during cooldown, ending comparable to or slightly better than cosine. People seeing it for the
+first time regularly think something is broken.
+
+**The property that actually makes it valuable is branching.** Every checkpoint on the stable phase is
+in the same optimisation regime, so you can launch **several independent decay phases** from one
+checkpoint — anneal one on maths, one on code, one on long context — and get a specialised model from
+each without retraining the trunk. MiniCPM named this property; Llama 3.1 used it for its long-context
+variant. That is what turns midtraining from a decision welded in at step 0 into a repeatable operation.
+
+**State the cost too:** if you commit to a single decay at a fixed compute budget, WSD's final loss is
+usually a little worse than cosine's. You are trading that for the right to specialise cheaply at the end.
+
+> **Do not overstate it.** WSD has *not* replaced cosine — cosine remains one of the most commonly
+> used schedules, and Llama 3 used it. The accurate claim is that WSD is a popular alternative, clearly
+> better when you need branching, open-ended training length, or scaling-law fits from a single run.
+> MiniCPM used that last property to measure a compute-optimal data-to-parameter ratio far above
+> Chinchilla's from one training run.
+>
+> References: MiniCPM ([arXiv:2404.06395](https://arxiv.org/abs/2404.06395)) introduced and named it;
+> Hägele et al. ([arXiv:2405.18392](https://arxiv.org/abs/2405.18392)) benchmarked it against cosine.
 
 #### Self-test · A1.6
 
@@ -527,11 +557,15 @@ gradients get rescaled every layer and deep models need careful warmup). But the
 argument still stands, so runs still use warmup.
 
 
-**Q A1.6.2** — Why has WSD become popular over cosine?
+**Q A1.6.2** — What does WSD solve that cosine does not, and what does it cost?
 
-Cosine is defined against a fixed total step count, so the schedule commits you at step 0. WSD keeps
-a constant "stable" phase from which you can branch a decay at any point — which makes midtraining,
-continued pretraining, and "train longer if it is still improving" all practical.
+Cosine is defined against a fixed total step count, so the schedule commits you at step 0. WSD keeps a
+constant stable phase from which you can branch a decay at any point, which makes "train longer",
+"branch a maths model and a code model off the same checkpoint", and "fit several compute points from
+one run" all practical.
+
+The cost: at a fixed budget with a single decay, the final loss is usually slightly worse than
+cosine's. And note that WSD has **not** replaced cosine, which is still widely used.
 
 > **Follow-ups**
 > - *Why does the decay phase matter so much?* → Data seen during the final decay has outsized
@@ -3963,9 +3997,10 @@ reweighted, higher-quality mixture**, usually paired with a learning-rate decay.
 data — there is not enough of it. Second, **the learning-rate schedule makes ordering matter**: data
 seen during the final decay has outsized influence, so you want your best data last.
 
-**The link to the LR schedule.** This is why WSD (warmup-stable-decay) displaced cosine: with a
-constant stable phase you can branch off a decay at any point, which turns midtraining into a
-repeatable operation instead of a one-shot decision baked in at step 0.
+**The link to the LR schedule.** This is why **WSD** (warmup-stable-decay) became a popular
+alternative to cosine: with a constant stable phase you can branch off a decay at any point, which
+turns midtraining into a repeatable operation instead of a one-shot decision baked in at step 0
+(details in A1.6). It has not displaced cosine, which is still widely used.
 
 #### Self-test · A9.3
 
@@ -3977,8 +4012,9 @@ Two reasons, and the second is the interesting one.
 
 **Ordering**: the learning-rate schedule makes position in the run matter. Data seen during the final
 decay phase has outsized influence on the final weights, so you want your best data last. That is
-also why WSD schedules displaced cosine — a constant stable phase lets you branch a decay at any
-point, turning midtraining into a repeatable operation instead of a decision baked in at step 0.
+also why WSD schedules became popular alongside cosine — a constant stable phase lets you branch a
+decay at any point, turning midtraining into a repeatable operation instead of a decision baked in at
+step 0.
 
 > **Follow-ups**
 > - *How do you know it worked?* → Held-out loss on the target domain plus targeted benchmarks, and
