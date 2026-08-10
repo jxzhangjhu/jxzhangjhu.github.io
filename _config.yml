@@ -198,6 +198,7 @@ exclude:
   - backup
   - blog2026                          # working drafts, notes, third-party paper PDFs — never publish
   - cv2026                            # CV draft PDFs — never publish
+  - interview-practice                # companion code for the coding post: read on GitHub, not served
   - "RL-Agentic-RL-中文完整版.pdf"   # stray draft PDF at repo root
 keep_files:
   - CNAME

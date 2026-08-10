@@ -9,12 +9,18 @@ _site
 Gemfile.lock
 vendor
 
-# Working drafts / private content — never commit or publish
+# Working drafts / private content — never commit or publish.
+# (The interview practice harness used to live under blog2026; it is tracked at
+# /interview-practice because the coding post links readers straight at it.)
 /blog2026/
 /cv2026/
 /*.pdf
 
+# Your own timing log, not part of the harness
+/interview-practice/attempts.local.json
+
 # Python caches (from skill scripts)
 __pycache__/
 *.pyc
+.pytest_cache/
 
