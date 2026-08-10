@@ -577,11 +577,48 @@ cosine's. And note that WSD has **not** replaced cosine, which is still widely u
 <a id="a1-7"></a>
 ### A1.7 Normalisation
 
-**Why not BatchNorm** (three reasons — give more than one in an interview):
+**Start from the structural difference; all three reasons follow from it.** Both subtract a mean and
+divide by a standard deviation. The only question is **which axis you reduce over**:
 
-1. sequence lengths vary, so batch statistics are computed over a ragged set of positions;
-2. batch statistics **couple the examples in a batch**, which breaks batch-1 autoregressive generation;
-3. under distributed training every forward pass needs a cross-device synchronisation.
+- **BatchNorm**: per feature channel, across the **batch (and sequence positions)**. One token's
+  normalised value depends on the other examples in the batch.
+- **LayerNorm**: per token, across **its own feature dimension**. Independent of who else is in the batch.
+
+**Reason one: sequence length varies, and the statistics shift systematically with position.**
+Batch statistics for a feature are computed over a ragged set of positions, and padding either
+pollutes them or has to be masked carefully. Worse, the activation distribution at position 1 differs
+systematically from position 500 — position 1 can only attend to itself — yet BatchNorm keeps **one**
+running estimate per feature, so it is wrong for most positions.
+
+**Reason two: training and inference compute different functions, and NLP batch statistics move
+violently.** The coupling is often remembered as "BatchNorm breaks batch-1 generation". **That
+version is wrong** — at inference BatchNorm uses running statistics and batch 1 works fine. The real problem is that training
+normalises with batch statistics while inference uses running ones, so they are two different
+functions; and how badly they diverge depends on how much the batch statistics move. PowerNorm
+measured that **NLP batch statistics have orders of magnitude more variance than vision data**, so the
+running estimate is persistently off.
+
+As for the coupling itself: during training, example $$i$$'s output depends on example $$j$$ in the
+same batch. That is philosophically odd, and practically it means **results depend on batch
+composition**, which makes reproduction and debugging harder.
+
+**Reason three: distributed training forces a choice between wrong statistics and extra
+communication.** Plain `nn.BatchNorm` under DDP does **not** synchronise — each device normalises with
+its local batch, which for a large model may be 1–4 sequences. `SyncBatchNorm` fixes that but adds an
+all-reduce per normalisation layer per forward pass, and a transformer block has two. LayerNorm needs
+neither.
+
+> **Turn it around: is BatchNorm bad, then?** No — it works well in vision, where inputs are
+> fixed-size, per-channel statistics over (batch, H, W) are stable, and the batch dimension is
+> genuinely exchangeable. This is a **domain mismatch**, not a bad method, and saying so is stronger
+> than reciting three reasons.
+>
+> **An honest addition: the literature does not agree on which mechanism dominates.** PowerNorm
+> ([arXiv:2003.07845](https://arxiv.org/abs/2003.07845)) blames training instability from fluctuating
+> batch statistics; *Understanding the Failure of Batch Normalization for Transformers in NLP*
+> (NeurIPS 2022) observes that BatchNorm **trains** about as well as LayerNorm and argues the
+> train/inference inconsistency is what matters. Both point at the batch statistics, but blame
+> different consequences.
 
 **LayerNorm** normalises inside a single token's feature vector, independent of batch composition:
 
@@ -605,13 +642,35 @@ grows in magnitude with depth, so you need a final norm before the output head.
 
 #### Self-test · A1.7
 
-**Q A1.7.1** — Give three reasons transformers use LayerNorm rather than BatchNorm.
+**Q A1.7.1** — Why do transformers use LayerNorm rather than BatchNorm?
 
-Variable sequence length; coupling of examples in a batch (breaks batch-1 generation); and
-cross-device synchronisation in distributed training. See above for the full form.
+Start with the structural difference: BatchNorm reduces along the batch axis, LayerNorm along a
+single token's feature axis. All three reasons follow from it.
 
+**One: sequence length varies and the statistics shift with position.** Batch statistics are computed
+over a ragged set of positions, and position 1 does not have the same distribution as position 500 —
+but BatchNorm keeps one running estimate per feature, so it is wrong for most positions.
+
+**Two: training and inference compute different functions.** Training uses batch statistics,
+inference uses running ones, and NLP batch statistics fluctuate orders of magnitude more than vision
+data does, so the two keep diverging.
+
+**Three: distributed training forces a choice between noise and communication.** Without
+synchronisation each device has only 1–4 sequences of statistics; with `SyncBatchNorm` you add an
+all-reduce per layer per forward pass.
+
+LayerNorm has none of these: its reduction is inside one token, so it is independent of batch
+composition, identical in train and eval, needs no running statistics, and needs no communication.
+
+> **Follow-ups**
+> - *So is BatchNorm bad?* → No, it works well in vision: fixed-size inputs, stable per-channel
+>   statistics, a genuinely exchangeable batch dimension. It is a domain mismatch.
+> - *Is it true that BatchNorm breaks batch-1 inference?* → **No.** Inference uses running statistics,
+>   so batch 1 runs fine. The problem is train/inference inconsistency, not that it cannot run.
+>
 > **Traps**
-> - Giving only one reason. Give three.
+> - Giving only one reason. Give three, and say they all follow from the choice of reduction axis.
+> - Claiming BatchNorm makes batch-1 inference impossible.
 
 
 **Q A1.7.2** — Under bf16, what part of RMSNorm must stay in fp32, and why?
