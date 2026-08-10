@@ -38,7 +38,7 @@ math is Part II; system-design conversation and behavioural rounds are Part III.
 
 ### Table of contents
 
-- **[A1 · ML / DL foundations](#section-a1)** — 25 questions
+- **[A1 · ML / DL foundations](#section-a1)** — 26 questions
   - [A1.1 Linear layers and matrix form](#a1-1)
   - [A1.2 Activation functions](#a1-2)
   - [A1.3 Gradients, Jacobians, Hessians](#a1-3)
@@ -858,18 +858,97 @@ H(p)=-\sum_x p(x)\log p(x)$$
 
 $$\operatorname{CE}(p,q)=\operatorname{KL}(p\,\|\,q)+H(p)$$
 
-**What this means for LM training.** The target is one-hot, so $$H(p)=0$$ and cross-entropy **is**
-the KL divergence; it also reduces to the negative log-likelihood of the next token:
+**First, what $$H$$ is**, because everything below rests on it. $$H(p)$$ is the **entropy** of $$p$$ —
+how uncertain the distribution is, in nats. Closer to uniform means higher entropy; more concentrated
+means lower.
+
+**Why a one-hot distribution has entropy zero.** Substitute into the definition: the term with
+probability 1 contributes $$-1\cdot\log 1 = 0$$, and every other term has probability 0, where the
+convention (from the limit) is $$0\cdot\log 0 = 0$$. The sum is zero. The intuition is simpler:
+entropy is uncertainty, and a one-hot target has none — you know exactly which token it is.
+
+So for LM training: the target is one-hot ⇒ $$H(p)=0$$ ⇒ **cross entropy is the KL divergence**, and
+it reduces to the next-token negative log-likelihood:
 
 $$\mathcal L=-\sum_{t=1}^{T}\log p(x_t\mid x_{<t})$$
 
-**forward vs reverse KL** — the single most classic question here, and the difference is entirely
-about **which side the infinite penalty sits on**:
+> **An apparent contradiction worth resolving.** A1.8.3 says the loss can never reach zero; here we
+> say $$H(p)=0$$. The difference is which $$p$$ we mean.
+>
+> - Here $$p$$ is the **one-hot label of a single example**, whose entropy really is zero, so per
+>   example CE = KL.
+> - The floor on the loss is the entropy of the **true conditional distribution**
+>   $$H(x_t\mid x_{<t})$$, which is not zero, because the next word genuinely is not determined. The
+>   one-hot label is a **sample drawn from** that distribution, not the distribution itself.
+>
+> In one line: **per example CE = KL, but the minimum of the average over data is the true entropy,
+> not zero.**
 
-| | Weighted by | Behaviour | Where it is used |
+---
+
+**Forward vs reverse KL: start with where the asymmetry lives.** Ask when a term of
+$$\sum_x p(x)\log\frac{p(x)}{q(x)}$$ blows up to infinity.
+
+- **Forward $$\operatorname{KL}(p\|q)$$** diverges when $$p(x)>0$$ and $$q(x)\to 0$$, so $$q$$ dare
+  not leave a gap where $$p$$ has mass: it must cover the whole support. **Mass-covering /
+  zero-avoiding.**
+- **Reverse $$\operatorname{KL}(q\|p)$$** diverges when $$q(x)>0$$ and $$p(x)\to 0$$, so $$q$$ dare
+  not go where $$p$$ never goes — but dropping one of $$p$$'s modes costs nothing. **Mode-seeking /
+  zero-forcing.**
+
+**For a student that cannot match the teacher this decides everything.** Forward KL forces it to
+cover modes it cannot represent, so the mass lands *between* them, where $$p$$ has none, and
+generation becomes incoherent (mode averaging). Reverse KL lets it pick one mode and do that well.
+
+**The most useful layer: the direction decides whose samples you need.** This is what makes "forward
+versus reverse" and "off-policy versus on-policy" the same question:
+
+| | Expectation over | Needs samples from | Therefore |
 |---|---|---|---|
-| Forward $$\operatorname{KL}(p\|q)$$ | $$p$$ | **mean-covering**: $$q$$ must cover all of $$p$$'s support, smearing across modes | Maximum likelihood |
-| Reverse $$\operatorname{KL}(q\|p)$$ | $$q$$ | **mode-seeking**: ignoring a mode is unpunished, so it collapses onto one | Variational inference, the KL penalty in RLHF |
+| Forward $$\operatorname{KL}(p\|q)$$ | $$x\sim p$$ (teacher/data) | **the teacher** | inherently **off-policy** |
+| Reverse $$\operatorname{KL}(q\|p)$$ | $$x\sim q$$ (student) | **the student** | inherently **on-policy** |
+
+That also explains why reverse KL is harder to implement: the sampling distribution depends on the
+parameters, so you need a REINFORCE-style estimator (reparameterisation is unavailable for discrete
+distributions — A1.13). It is policy gradient in disguise.
+
+> **This is exactly the policy-distillation argument.** Hinton distillation
+> ([arXiv:1503.02531](https://arxiv.org/abs/1503.02531)) is forward KL against the teacher's soft
+> targets. MiniLLM ([arXiv:2306.08543](https://arxiv.org/abs/2306.08543) — titled *On-Policy
+> Distillation*) switched to reverse KL for the reason above. GKD
+> ([arXiv:2306.13649](https://arxiv.org/abs/2306.13649)) emphasises sampling from the student, which
+> addresses exposure bias: off-policy distillation only ever shows the student teacher-quality
+> prefixes.
+>
+> **Selection rule:** student close to the teacher and you want the whole distribution → forward;
+> student clearly weaker and you care about generation quality → reverse; you care about error
+> recovery → sample from the student.
+
+---
+
+**What CE and KL are at each LLM stage.**
+
+| Stage | Objective | Which KL | Sampled from |
+|---|---|---|---|
+| Pretraining | CE against one-hot | Forward KL to the data | Data (off-policy) |
+| Midtraining | Same, different mixture | Forward | Data |
+| SFT | CE against demonstrations | Forward KL to the demos | Demos → **this is where exposure bias comes from** |
+| Logit distillation | CE against teacher soft targets | Forward | Teacher |
+| MiniLLM / GKD | Reverse KL / on-policy | Reverse | **Student** |
+| RLHF · PPO | KL subtracted from the reward | $$\operatorname{KL}(\pi_\theta\|\pi_\text{ref})$$ | The policy |
+| GRPO | Per-token k3 term in the loss | Same | The policy |
+| DPO | Implicit KL via the reference | Same | Preference data |
+
+**Two consequences worth stating unprompted. One: SFT's exposure bias is a direct consequence of
+forward KL on an off-policy distribution** — the model only ever sees gold prefixes, so it never
+learns what to do after its own mistake. That is what the objective specifies, not an implementation
+gap, and it is why RL and on-policy distillation exist (A6.10).
+
+**Two: the RLHF KL penalty runs in the reverse direction, so it is mode-seeking — part of why RLHF
+reduces output diversity.** $$\operatorname{KL}(\pi_\theta\|\pi_\text{ref})$$ takes its
+expectation under the current policy: it stops the policy going where the reference never went, but
+does not stop it collapsing onto one of the reference's modes. Diversity collapse and the calibration
+damage in A13.4 both trace back to this.
 
 #### Self-test · A1.9
 
@@ -897,6 +976,33 @@ $$\approx 0$$ to the sum). It therefore collapses onto one mode and does it well
 >   afterwards — and she had handled it in two of her own papers.
 >   **Rehearse the things you already know.**
 
+
+**Q A1.9.3** — In policy distillation, how do you choose between forward and reverse KL?
+
+Answer first, then the reason: **student clearly weaker than the teacher and you care about
+generation quality → reverse; student close in capacity and you want the full distribution reproduced
+→ forward.**
+
+The reason is the asymmetry. Forward KL punishes "$$p$$ has mass where $$q$$ does not", forcing the
+student to cover every mode; when it cannot represent them all, the mass lands between modes and
+generation becomes incoherent. Reverse KL punishes "$$q$$ has mass where $$p$$ does not", which lets
+the student abandon some modes and do the rest well.
+
+**Then add the line that earns credit: the direction also decides whose samples you need.** Forward
+KL takes its expectation under the teacher, so it is off-policy and needs teacher-generated data.
+Reverse KL takes it under the student, so it is on-policy, needs the student's own rollouts, and —
+because the sampling distribution depends on the parameters — needs a REINFORCE-style estimator.
+MiniLLM's title is literally *On-Policy Distillation*.
+
+> **Follow-ups**
+> - *What does on-policy actually fix?* → Exposure bias. Off-policy distillation only ever shows the
+>   student teacher-quality prefixes, so it never learns to recover from its own errors; sampling from
+>   the student puts its own error distribution into training.
+> - *What does it cost?* → Generation inside the training loop, which is far more expensive, and
+>   higher-variance gradients from the reverse-KL estimator.
+>
+> **Traps**
+> - Saying "reverse is mode-seeking" without explaining why that is an **advantage** for a weak student.
 
 ---
 

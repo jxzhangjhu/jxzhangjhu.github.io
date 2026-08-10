@@ -34,7 +34,7 @@ A9、A12、A13 压缩自我自己写过的长文：数据管线、环境扩展�
 
 ### 目录
 
-- **[A1 · ML / DL 基础](#section-a1)** — 25 题
+- **[A1 · ML / DL 基础](#section-a1)** — 26 题
   - [A1.1 线性层与矩阵形式](#a1-1)
   - [A1.2 激活函数](#a1-2)
   - [A1.3 梯度、Jacobian、Hessian](#a1-3)
@@ -792,17 +792,94 @@ H(p)=-\sum_x p(x)\log p(x)$$
 
 $$\operatorname{CE}(p,q)=\operatorname{KL}(p\,\|\,q)+H(p)$$
 
-**对 LM 训练的意义。**目标是 one-hot，所以 $$H(p)=0$$，交叉熵**就是** KL 散度；而且它退化成
-下一个 token 的负对数似然：
+**先说 $$H$$ 是什么**，因为后面全靠它。$$H(p)$$ 是分布 $$p$$ 的**熵**——它度量的是
+「这个分布有多不确定」，单位是 nat。$$p$$ 越接近均匀，熵越大；越集中，熵越小。
+
+**为什么 one-hot 的熵是 0。**直接代进定义 $$H(p)=-\sum_x p(x)\log p(x)$$：
+概率为 1 的那一项贡献 $$-1\cdot\log 1 = 0$$，其余项概率为 0，
+按约定（取极限）$$0\cdot\log 0 = 0$$。所以整个和是 0。
+直觉上更简单：熵是不确定性，而 one-hot 没有任何不确定性——你确切知道是哪个 token。
+
+于是对 LM 训练：目标是 one-hot ⇒ $$H(p)=0$$ ⇒ **交叉熵就是 KL 散度**，
+而且它退化成下一个 token 的负对数似然：
 
 $$\mathcal L=-\sum_{t=1}^{T}\log p(x_t\mid x_{<t})$$
 
-**forward vs reverse KL** —— 这是最经典的一道题，区别在于**无穷惩罚坐在哪一边**：
+> **一个必须澄清的矛盾。**A1.8.3 里说 loss 永远到不了 0，这里又说 $$H(p)=0$$，看着像打架。
+> 区别在于 $$p$$ 指的是谁：
+>
+> - 这里的 $$p$$ 是**单条样本的 one-hot 标签**，它的熵确实是 0，所以逐样本看 CE = KL。
+> - 而 loss 的下界是**真实条件分布**的熵 $$H(x_t\mid x_{<t})$$——那个不是 0，因为下一个词
+>   本来就不确定。one-hot 标签只是从那个分布里**采出来的一个样本**，不是分布本身。
+>
+> 一句话：**逐样本 CE = KL，但在数据上取平均后的最小值是真实熵，不是零。**
 
-| | 权重 | 行为 | 用在哪 |
+---
+
+**forward vs reverse KL：先说清不对称性坐在哪。**
+
+$$\operatorname{KL}(p\,\|\,q)=\sum_x p(x)\log\frac{p(x)}{q(x)}$$
+
+看这个式子里**什么时候会炸成无穷**：
+
+- **Forward $$\operatorname{KL}(p\|q)$$**：$$p(x)>0$$ 而 $$q(x)\to 0$$ 时该项 $$\to\infty$$。
+  所以 $$q$$ **不敢在 $$p$$ 有质量的地方留空**——它必须覆盖 $$p$$ 的整个支撑集。
+  叫 **mass-covering / zero-avoiding**。
+- **Reverse $$\operatorname{KL}(q\|p)$$**：$$q(x)>0$$ 而 $$p(x)\to 0$$ 时炸。
+  所以 $$q$$ **不敢跑到 $$p$$ 没去过的地方**，但**漏掉 $$p$$ 的某个模态不受惩罚**。
+  叫 **mode-seeking / zero-forcing**。
+
+**对能力不足的学生模型，这个区别是致命的。**如果 $$q$$ 表达不了 $$p$$ 的全部模态：
+forward KL 逼它去覆盖所有模态，结果是把质量摊在**模态之间**——那些地方 $$p$$ 其实没有质量，
+生成出来就是不连贯的文本（mode averaging）。reverse KL 允许它挑一个模态做好。
+
+**最实用的一层：KL 的方向决定了你从谁那里采样。**这一点把「forward/reverse」
+和「off-policy / on-policy」连成了同一件事：
+
+| | 期望在谁上取 | 需要谁的样本 | 于是 |
 |---|---|---|---|
-| Forward $$\operatorname{KL}(p\|q)$$ | 按 $$p$$ | **mean-covering**：$$q$$ 必须覆盖 $$p$$ 的全部支撑集，在多模态间摊开 | 极大似然 |
-| Reverse $$\operatorname{KL}(q\|p)$$ | 按 $$q$$ | **mode-seeking**：忽略某个模态不受惩罚，塌到一个模态 | 变分推断、RLHF 的 KL 惩罚 |
+| Forward $$\operatorname{KL}(p\|q)$$ | $$x\sim p$$（老师/数据） | **老师的样本** | 天然 **off-policy** |
+| Reverse $$\operatorname{KL}(q\|p)$$ | $$x\sim q$$（学生） | **学生的样本** | 天然 **on-policy** |
+
+这也解释了为什么 reverse KL 更难实现：采样分布本身依赖参数，你不能直接反向传播，
+需要 REINFORCE 式的估计（离散分布下没法重参数化，见 A1.13）——本质上就是 policy gradient。
+
+> **这正是 policy distillation 那场讨论的核心。**Hinton 那套经典蒸馏
+> （[arXiv:1503.02531](https://arxiv.org/abs/1503.02531)）用的是 forward KL：
+> 拿老师的软标签当目标。MiniLLM（[arXiv:2306.08543](https://arxiv.org/abs/2306.08543)，
+> 标题就叫 *On-Policy Distillation*）改用 reverse KL，理由正是上面那条——
+> 小学生用 forward KL 会 mode averaging。GKD
+> （[arXiv:2306.13649](https://arxiv.org/abs/2306.13649)）则把重点放在「从学生自己的输出采样」，
+> 治的是曝光偏差：off-policy 蒸馏下学生永远只见过老师质量的前缀，学不会从自己的错误里恢复。
+>
+> **一句话选择指南：**学生容量接近老师、你要它复现整个分布 → forward；
+> 学生明显更弱、你更在乎生成质量 → reverse；在乎错误恢复 → 从学生采样（on-policy）。
+
+---
+
+**在 LLM 各阶段，CE 和 KL 分别是什么。**这张表把上面所有东西接到实际训练上：
+
+| 阶段 | 目标函数 | 等价于哪个 KL | 从谁采样 |
+|---|---|---|---|
+| 预训练 | CE 对 one-hot | forward KL 到数据分布 | 数据（off-policy） |
+| Midtrain | 同上，换配比 | forward | 数据 |
+| SFT | CE 对示范 | forward KL 到示范分布 | 示范（off-policy）→ **曝光偏差从这来** |
+| Logit 蒸馏 | CE 对老师软标签 | forward | 老师 |
+| MiniLLM / GKD | reverse KL / on-policy | reverse | **学生** |
+| RLHF · PPO | reward 里减去 KL 惩罚 | $$\operatorname{KL}(\pi_\theta\|\pi_\text{ref})$$ | 策略自己 |
+| GRPO | loss 里的 per-token k3 项 | 同上 | 策略自己 |
+| DPO | 隐式 KL（经 reference） | 同上 | 偏好数据 |
+
+**两个值得主动说出来的推论：**
+
+**一、SFT 的曝光偏差是 forward KL / off-policy 的直接后果。**你在示范分布上做极大似然，
+模型只见过金标准前缀，从没见过「自己犯错之后该怎么办」。这不是实现问题，是目标函数决定的。
+RL 和 on-policy 蒸馏补的就是这个缺口（见 A6.10）。
+
+**二、RLHF 的 KL 惩罚是 reverse 方向的，所以它是 mode-seeking——这正是 RLHF 降低输出多样性的
+原因之一。**惩罚项 $$\operatorname{KL}(\pi_\theta\|\pi_\text{ref})$$ 的期望取在**当前策略**上，
+它阻止策略跑到 reference 没去过的地方，但**不阻止它塌到 reference 的一个模态里**。
+多样性坍塌和校准变差（见 A13.4）都和这个方向有关。
 
 #### 自测 · A1.9
 
@@ -829,6 +906,28 @@ Reverse KL 按 $$q$$ 加权，所以 $$q$$ 会因为把质量放到 $$p$$ 没有
 > - 答反。这是 Sapora 说自己答错、事后哭了一场的那道题——而她在两篇论文里都处理过它。
 >   **已经会的东西也要排练。**
 
+
+**Q A1.9.3** — 做 policy distillation 时，forward KL 和 reverse KL 怎么选？
+
+先说结论再说理由：**学生明显弱于老师、你在乎生成质量 → reverse；学生容量接近、你要它复现
+整个分布 → forward。**
+
+理由是不对称性：forward KL 惩罚「$$p$$ 有而 $$q$$ 没有」，逼学生覆盖所有模态；
+学生表达不了时，质量会被摊到模态之间，生成不连贯。reverse KL 惩罚「$$q$$ 有而 $$p$$ 没有」，
+允许学生放弃一些模态、把留下的做好。
+
+**然后加上那句会加分的：方向同时决定了你从谁采样。**forward KL 的期望取在老师上，
+所以是 off-policy，需要老师生成数据；reverse KL 取在学生上，所以是 on-policy，
+需要学生自己的 rollout，而且因为采样分布依赖参数，实现上要用 REINFORCE 式估计。
+MiniLLM 的标题干脆就叫 On-Policy Distillation。
+
+> **追问**
+> - *on-policy 到底解决了什么？* → 曝光偏差。off-policy 蒸馏下学生只见过老师质量的前缀，
+>   学不会从自己的错误中恢复；从学生采样才会把它自己的错误分布纳入训练。
+> - *代价是什么？* → 训练循环里要生成，贵得多；而且 reverse KL 的梯度方差更大。
+>
+> **陷阱**
+> - 只说「reverse 是 mode-seeking」而说不出为什么这对弱学生是**优点**。
 
 ---
 
