@@ -53,7 +53,7 @@ math is Part II; system-design conversation and behavioural rounds are Part III.
   - [A1.12 Basic statistics](#a1-12)
   - [A1.13 Gradient flow through sampling](#a1-13)
   - [A1.14 The bits of theoretical CS that come up](#a1-14)
-- **[A2 · Transformer architecture and implementation](#section-a2)** — 18 questions
+- **[A2 · Transformer architecture and implementation](#section-a2)** — 19 questions
   - [A2.1 The three architectural paradigms](#a2-1)
   - [A2.2 Anatomy of a block: the residual stream](#a2-2)
   - [A2.3 Self-attention and $$\sqrt{d_k}$$](#a2-3)
@@ -1299,12 +1299,55 @@ frame of reference.
 | Decoder-only (GPT) | Causal | Next-token | Generation, plus everything else reachable by prompting |
 | Encoder-decoder (T5) | Enc bidirectional, Dec causal + cross | Seq2seq | Translation, genuine sequence-to-sequence |
 
+**First, what MLM actually is**, since the efficiency argument rests entirely on it.
+
+**MLM = Masked Language Modeling**, BERT's pretraining objective:
+
+1. take a sentence and **select about 15% of its tokens at random**;
+2. of those, **80% are replaced with `[MASK]`**, **10% with a random token**, **10% left unchanged**;
+3. the model uses **bidirectional** context to recover what those positions originally were;
+4. **the loss is computed only at those 15% of positions** — the other 85% supervise nothing.
+
+> **What is the 80/10/10 for?** `[MASK]` never appears during fine-tuning or inference, so there is a
+> train/use mismatch. Mixing in 10% random replacements and 10% unchanged tokens forces the model to
+> build a representation for **every** position, since it cannot know which one is being tested.
+
+**Why 15%?** A trade-off: mask too little and each sequence yields too few supervised predictions;
+mask too much and you destroy the context that makes the task solvable. It was BERT's empirical
+choice, and *Should You Mask 15% in Masked Language Modeling?*
+([arXiv:2202.08005](https://arxiv.org/abs/2202.08005)) later found rates up to 40% work well for
+larger models — an inherited default, not a theoretical optimum.
+
+---
+
 **Three reasons decoder-only won:**
 
-1. **Training efficiency.** Every position is one supervised prediction. MLM masks only ~15%, so for
-   the same amount of data you get roughly 6× less signal.
-2. **Architectural simplicity.** One stack, no cross-attention, easier to scale and to shard.
-3. **In-context learning.** Prompting turns almost every task into generation, so no task-specific heads.
+**1. Training efficiency — where the "6×" comes from.** Next-token prediction supervises **every
+position** ($$T-1$$ predictions for a length-$$T$$ sequence); MLM supervises 15% of them. The ratio of
+predictions per unit of data is $$1/0.15 \approx 6.7$$.
+
+> **Say it precisely or the follow-up will catch you: the 6× counts predictions, not information.**
+> Every MLM prediction is conditioned on **bidirectional** context, which is richer than a causal LM's
+> — whose early positions have almost none (position 1 sees one token). So per prediction, MLM's is
+> worth more. The accurate claim: **MLM gets about 6× fewer supervised predictions per unit of data,
+> but each is more strongly conditioned**, and the net effect is empirical rather than derivable from
+> 6.7.
+>
+> **The direction does hold, and there is direct evidence: ELECTRA**
+> ([arXiv:2003.10555](https://arxiv.org/abs/2003.10555)) attacked exactly this waste by asking, for
+> every token, whether it had been replaced — so **every position supervises** — and beat BERT
+> substantially at matched compute. Someone changed the objective specifically to fix the 15% problem
+> and it worked.
+
+**2. Architectural simplicity.** One stack, no cross-attention, easier to scale and to shard.
+
+**3. In-context learning.** Prompting turns almost every task into generation, so no task-specific heads.
+
+> **A fourth reason, more fundamental than those three: whether training matches use.** MLM trains you
+> to fill in blanks while what you want is generation, and `[MASK]` does not exist at inference at
+> all. A causal LM's training operation and serving operation are **identical** — keep writing. The
+> field then found that almost every task can be prompted into generation, which left the
+> classification-head paradigm with nothing to do.
 
 > **Bidirectional attention still owns a domain:** embeddings and retrieval. There you encode a fixed
 > input and want every token to see the whole text. Modern embedding models often start from a
@@ -1328,6 +1371,31 @@ source once and cross-attend to it repeatedly.
 >
 > **Traps**
 > - Answering only "decoder-only is simpler." The training-signal-density argument is far stronger.
+
+**Q A2.1.2** — What is MLM, and why 15% and 80/10/10?
+
+**MLM** is BERT's pretraining objective: mask about 15% of tokens at random, recover them from
+**bidirectional** context, and **compute the loss only at those positions**.
+
+**15% is a trade-off.** Too little and each sequence yields too few supervised predictions; too much
+and the remaining context cannot support the task. It is BERT's empirical choice rather than a
+theoretical optimum — later work found up to 40% workable for larger models.
+
+**80/10/10 fixes a train/use mismatch.** `[MASK]` never appears downstream, so replacing 100% of the
+selected tokens with it would teach the model to represent only "inputs containing `[MASK]`". Mixing
+in 10% random and 10% unchanged means the model cannot tell which position is being tested, so it must
+represent all of them.
+
+> **Follow-ups**
+> - *Where does "6× less signal" come from?* → $$1/0.15 \approx 6.7$$, counting **predictions per unit
+>   of data**. Add the qualifier: each MLM prediction uses bidirectional context and is worth more, so
+>   this is not a net efficiency ratio.
+> - *Did anyone fix the waste?* → ELECTRA, which scores every token by asking whether it was replaced,
+>   and beats BERT at matched compute.
+>
+> **Traps**
+> - Saying the 15% are all replaced with `[MASK]`. It is 80/10/10.
+> - Presenting the 6× as a ratio of information. It is a ratio of prediction counts.
 
 ---
 
