@@ -189,7 +189,14 @@ $$H=f(XW+\mathbf b),\qquad X\in\mathbb R^{m\times n_\text{in}},\ W\in\mathbb R^{
 > **行主序下每个输出单元的权重是连续的**，符合 GEMM 的访存模式；另一半是历史包袱，
 > 从 Torch7 的 `nn.Linear` 继承下来。
 
-**反向传播。**对 $$Z=XW+b$$：
+**先约定记号，因为反向传播引入了两个新符号。**记 $$Z = XW + \mathbf b$$ 为**激活前**的输出，
+于是这一层就是 $$H = f(Z)$$。而 $$L$$ 是最终的**标量损失**——整个 batch 算出来的一个数，
+来自网络最末端的损失函数。
+
+反向传播要算的是 $$L$$ 对每个张量的偏导，而**每个梯度的形状永远等于它所对应张量的形状**。
+这正是这些公式可以自检的原因：能把手头的算子收缩成正确形状的方式，通常只有一种。
+
+**反向传播。**对 $$Z=XW+\mathbf b$$：
 
 $$\frac{\partial L}{\partial X}=\frac{\partial L}{\partial Z}W^\top,\qquad
 \frac{\partial L}{\partial W}=X^\top\frac{\partial L}{\partial Z},\qquad

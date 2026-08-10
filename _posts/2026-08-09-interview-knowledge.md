@@ -197,7 +197,15 @@ where $$\mathbf b$$ is broadcast to $$m\times n_\text{out}$$.
 > output unit are contiguous**, which matches how GEMM wants to read memory; the other half is
 > historical baggage inherited from Torch7's `nn.Linear`.
 
-**Backprop.** For $$Z=XW+b$$:
+**Notation, since backprop introduces two new symbols.** Write $$Z = XW + \mathbf b$$ for the
+**pre-activation** output, so the layer is $$H = f(Z)$$. And $$L$$ is the final **scalar loss** —
+one number for the whole batch, after the loss function at the very end of the network.
+
+Backprop computes $$\partial L/\partial(\cdot)$$ for every tensor, and **each of those gradients
+has exactly the shape of the tensor it belongs to**. That is what makes the formulas checkable:
+there is usually only one way to contract the available operands into the right shape.
+
+**Backprop.** For $$Z=XW+\mathbf b$$:
 
 $$\frac{\partial L}{\partial X}=\frac{\partial L}{\partial Z}W^\top,\qquad
 \frac{\partial L}{\partial W}=X^\top\frac{\partial L}{\partial Z},\qquad
