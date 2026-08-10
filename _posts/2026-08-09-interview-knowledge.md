@@ -38,7 +38,7 @@ math is Part II; system-design conversation and behavioural rounds are Part III.
 
 ### Table of contents
 
-- **[A1 · ML / DL foundations](#section-a1)** — 24 questions
+- **[A1 · ML / DL foundations](#section-a1)** — 25 questions
   - [A1.1 Linear layers and matrix form](#a1-1)
   - [A1.2 Activation functions](#a1-2)
   - [A1.3 Gradients, Jacobians, Hessians](#a1-3)
@@ -708,8 +708,76 @@ The honest statement is that the decomposition is still **correct** but no longe
 because the implicit regularisation coming from SGD and the architecture is doing work the framework
 never modelled.
 
-**The regularisation that actually operates in LLM pretraining** is mostly data scale and weight
-decay. Dropout has essentially disappeared from pretraining (it hurts when data is plentiful).
+---
+
+**Why pretraining barely overfits — the real reason is sharper than "lots of data".**
+
+The key is that **pretraining is close to single-epoch**: every gradient step uses data the model has
+**never seen**. So the training loss is computed on unseen data — **it is a held-out loss**.
+Overfitting in the classical sense (memorise the training set, degrade on new data) requires
+*revisiting* data, and a single pass structurally has no opportunity to do that. The train/test gap is
+near zero **by construction**.
+
+That is more precise than "the corpus is too big to memorise". The capacity argument is also true —
+70B parameters against 15T tokens is roughly 200 tokens per parameter, far more information than the
+weights can hold — but it is the second-order reason.
+
+**Two things to add immediately, or you will be caught by the follow-up:**
+
+- **LLMs do memorise.** Verbatim extraction of training data is well documented. Memorisation and
+  generalisation are not mutually exclusive — a model can memorise rare strings while generalising
+  well overall. "Does not overfit" is a statement about the loss curve, not about the absence of
+  memorisation.
+- **Repeated data does overfit.** Up to roughly four epochs, repetition is about as good as fresh
+  data; past that, returns collapse. So "does not overfit" is conditional on having enough data, and
+  the moment you are data-constrained it comes back.
+
+---
+
+**Stage by stage: what overfitting looks like at each point.** This is where the concept actually
+connects to LLMs.
+
+| Stage | Risk | The form it takes | What you watch |
+|---|---|---|---|
+| Pretraining | Low | Only when data is repeated | Held-out loss diverging from training loss |
+| Midtraining | **Medium-high** | Multiple passes over a small curated set; forgetting | General benchmarks must **not** regress |
+| SFT | **Highest** | Memorising demonstrations, diversity collapse | Stop at 1–3 epochs; watch for verbatim outputs |
+| RL | Different form | Over-optimising a learned reward | The KL curve plus an independent held-out eval |
+
+**Midtraining's risk is underrated.** You are training on a **much smaller** curated mixture, often
+for multiple passes, and the final decay phase has outsized influence. Its failure mode is usually
+called **catastrophic forgetting** rather than overfitting — but those are two sides of one thing: you
+fit the new mixture too well at the cost of old capability. So the mandatory check at this stage is
+whether *general* capability regressed, not just whether the target-domain loss fell.
+
+**SFT is the highest-risk stage.** The dataset is small (thousands to millions) and you stop at 1–3
+epochs. Past that the model starts reproducing demonstrations verbatim: generation diversity
+collapses, it becomes brittle on unseen instructions, and calibration degrades. Half the reason the
+LIMA result ("a thousand curated examples is enough") holds is that **more does not help and starts to
+hurt**.
+
+**In RL, the thing being overfitted is not a dataset — it is the reward model.** Optimise a learned
+proxy and true quality rises and then falls. That is reward-model over-optimisation, structurally
+identical to overfitting with the target swapped from data to a proxy metric. The KL penalty is the
+regulariser (see A6.9).
+
+---
+
+**Do the classical regularisers apply at each stage?**
+
+| Method | Pretraining | SFT / small-data fine-tuning | Note |
+|---|---|---|---|
+| Dropout | **Essentially unused** ($$p=0$$) | Sometimes | With plentiful data there is no overfitting to prevent, and it costs capacity and throughput |
+| Weight decay | Used (~0.1) | Used | Though the modern view treats it more as an optimisation/conditioning tool than a classical regulariser |
+| Early stopping | **Not for overfitting** — you stop when compute runs out | **The main lever** (1–3 epochs) | Its role is completely different in the two stages |
+| Dedup / mixture | **This is the real one** | Quality and diversity filtering | The pretraining-scale equivalent of regularisation |
+| LoRA | — | Regularises as a side effect | A low-rank constraint bounds how far you can move, so forgetting is limited structurally |
+
+> **The more common problem is the opposite: underfitting.** Chinchilla's central finding was that
+> models of the day were *undertrained*. Pretraining loss never converges — you stop because the
+> budget ran out, not because you finished fitting. At pretraining scale, "train longer" is almost
+> always the right answer, which is why Llama 3 could push an 8B model to 90× its Chinchilla point and
+> still see loss falling (A3.2).
 
 #### Self-test · A1.8
 
@@ -720,8 +788,50 @@ interpolation threshold, test error falls again. The decomposition is still corr
 predictive, because implicit regularisation from SGD and architecture is doing unmodelled work.
 
 > **Follow-ups**
-> - *Do LLMs overfit at all?* → Yes, on repeated data. The reason pretraining rarely overfits is that
->   it is close to single-epoch on a corpus larger than the model can memorise.
+> - *Do LLMs overfit at all?* → Yes. Pretraining rarely does because it is close to single-epoch, so
+>   the training loss is already computed on unseen data. But repeating past roughly four epochs
+>   overfits, and SFT is a high-risk stage.
+> - *What about memorisation?* → It is real (verbatim extraction is documented), but it is not
+>   incompatible with generalisation. "Does not overfit" is about the loss curve, not about memorising
+>   nothing.
+
+
+**Q A1.8.3** — Your loss went to zero during training. Explain it. What if **both** training and test
+loss went to zero? (asked at Datadog)
+
+**Lead with this: next-token prediction on real text has irreducible entropy, so a loss of zero should
+be mathematically impossible.** The next token genuinely is not determined — even a perfect model
+cannot reach zero loss. So "loss went to zero" almost never means "learned too well". It means **there
+is a bug**.
+
+**Both training and test hitting zero actually makes the diagnosis easier**: overfitting is defined by
+training loss falling while test loss *rises*. Both collapsing together says the problem is not in the
+data split but in the **loss computation itself** — one bug shared by both paths.
+
+**Check in this order:**
+
+1. **Off-by-one in the label shift.** Suspect number one. Without the shift, the model predicts token
+   $$t$$ from token $$t$$ — an identity map — so the loss goes to zero, identically on train and test.
+2. **A broken loss mask.** If nearly everything is masked out and only padding is scored, and padding
+   is one repeated token, the model learns it instantly and the loss goes to zero.
+3. **The wrong denominator.** Averaging over all positions instead of the kept ones after masking
+   scales the loss down systematically.
+4. **Degenerate data.** The loader is cycling a handful of examples, which get memorised.
+
+**One check that localises it immediately: compare the loss to the entropy of your data.** If your
+loss is far below the corpus's unigram entropy, let alone near zero, the task got easier, not the
+model better.
+
+**When is zero legitimate?** Only when the task really is deterministic — a copying task, or the
+**deliberate ten-example overfitting smoke test** (A1.11), which is designed to reach zero.
+
+> **Follow-ups**
+> - *What if only training loss falls and test loss rises?* → That is genuine overfitting. In an LLM it
+>   means repeated data (pretraining) or too many epochs (SFT).
+> - *Is the answer the same at pretraining, midtraining and post-training?* → No. At pretraining a zero
+>   loss is almost certainly a bug. During SFT on a small set the training loss legitimately can get
+>   very low after a few epochs — there the question is whether held-out instruction following has
+>   degraded.
 
 
 **Q A1.8.2** — Why has dropout largely disappeared from LLM pretraining?
