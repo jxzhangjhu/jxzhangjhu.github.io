@@ -191,6 +191,7 @@ often. Practise in that order rather than in mine. A blank means the question is
 but not specifically attributed, not that it is unimportant.
 
 <!-- TABLE -->
+
 | | Problem | Budget | Cold | Reported in |
 |---|---|---|---|---|
 | **B1 · NumPy and PyTorch** | | | | |
@@ -242,6 +243,7 @@ but not specifically attributed, not that it is unimportant.
 | d06 | softmax_overflow | 3 min | exp without subtracting the row max |  |
 | d07 | wrong_scale | 3 min | dividing by sqrt(d_model) instead of sqrt(d_head) |  |
 | d08 | prompt_not_masked | 4 min | loss computed over prompt tokens as well |  |
+
 <!-- TABLE -->
 
 **A four-week rotation that fits around a job.** Week one, the two flagship drills
