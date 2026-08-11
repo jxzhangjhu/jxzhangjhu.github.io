@@ -2907,17 +2907,87 @@ $$\text{memory} = \underbrace{P}_{\text{params}} + \underbrace{P}_{\text{grads}}
 
 **The standard mixed-precision + AdamW accounting** (bytes per parameter):
 
-| Item | Precision | Bytes/param |
-|---|---|---|
-| bf16 weights | bf16 | 2 |
-| bf16 gradients | bf16 | 2 |
-| fp32 master weights | fp32 | 4 |
-| Adam first moment | fp32 | 4 |
-| Adam second moment | fp32 | 4 |
-| **Total** | | **16** |
+| Item | Precision | Bytes/param | What it is for |
+|---|---|---|---|
+| bf16 weights | bf16 | 2 | The copy the forward and backward **actually use** |
+| bf16 gradients | bf16 | 2 | What the backward pass produces |
+| fp32 master weights | fp32 | 4 | The **authoritative copy**; the optimizer updates this one |
+| Adam first moment $$m$$ | fp32 | 4 | Moving average of the gradient (momentum) |
+| Adam second moment $$v$$ | fp32 | 4 | Moving average of the squared gradient (adaptive step) |
+| **Total** | | **16** | |
 
-So a 70B model is **1,120 GB** in state alone, before a single activation. This is why training a large model
-on one card was never on the table.
+So a 70B model is **1,120 GB** in state alone, before a single activation. This is why training a
+large model on one card was never on the table.
+
+---
+
+**Why keep two copies of the weights?** The least intuitive row in that table, and the one worth
+understanding properly.
+
+**Because computing and accumulating have completely different precision requirements.**
+
+What a step actually does:
+
+1. cast the fp32 master **down to bf16** →
+2. run forward and backward in bf16 (the matmuls run on tensor cores, which want low precision) →
+3. get bf16 gradients and **cast them back up to fp32** →
+4. the optimizer applies the update **to the fp32 master** →
+5. back to step 1.
+
+A single matmul in low precision is fine — errors cancel across the sum. **But accumulating hundreds
+of thousands of tiny updates in low precision loses them outright.**
+
+**Concretely:** bf16 has 7 mantissa bits (8 significand bits with the implicit one), so the gap
+between representable numbers near $$w$$ is about $$w\times 2^{-8}$$ — a relative precision of roughly
+**0.4%**. Later in training the updates are often $$|\Delta w|/|w| \sim 10^{-4}$$ or smaller, and **an
+addition smaller than the gap rounds straight back to the original value: the update simply
+vanishes.**
+
+fp32 has 24 significand bits, a relative precision around $$6\times10^{-8}$$, which is enough to
+accumulate those increments.
+
+> **What makes this failure mode nasty is that nothing raises.** The model does not crash and the loss
+> curve still looks plausible; it just **silently stops learning**. Those 4 bytes are not redundancy,
+> they are what makes the training numerically valid.
+>
+> **One frontier alternative:** some setups drop the master copy and use **stochastic rounding** —
+> round up or down with a probability that makes the result unbiased in expectation, so tiny updates
+> survive statistically. Saves 4 bytes at the cost of implementation complexity.
+
+---
+
+**What Adam's $$m$$ and $$v$$ actually are.** Together they are 8 bytes, the largest block in the table.
+
+$$m_t = \beta_1 m_{t-1} + (1-\beta_1)g_t,\qquad
+v_t = \beta_2 v_{t-1} + (1-\beta_2)g_t^2$$
+
+$$w \leftarrow w - \text{lr}\cdot\frac{\hat m_t}{\sqrt{\hat v_t}+\epsilon}$$
+
+- $$m$$ is a moving average **of the gradient**, acting as momentum — smoothing noise and
+  accelerating along consistent directions.
+- $$v$$ is a moving average **of the squared gradient**, giving each parameter **its own** step size:
+  parameters with persistently large gradients take smaller steps, and vice versa. That is what
+  "adaptive" means.
+- Both are **per parameter**, hence 4 bytes each.
+
+> **This is also why Adam costs twice what SGD with momentum costs in optimizer memory** — momentum
+> keeps one buffer and has no $$v$$. LLMs use Adam anyway, because gradient scales differ enormously
+> across a transformer's parameters and that per-parameter scaling matters.
+
+---
+
+**Once you know what each term is, you know how each can be reduced:**
+
+| Item | Bytes | How to reduce it |
+|---|---|---|
+| bf16 weights | 2 | Cannot remove — compute needs them. FP8 training halves it (DeepSeek-V3) |
+| bf16 gradients | 2 | Freeable after the optimizer step; **ZeRO-2** shards them |
+| fp32 master | 4 | **ZeRO-1** shards it; or drop it with stochastic rounding |
+| Adam $$m,v$$ | 8 | **ZeRO-1** shards them; 8-bit Adam compresses to 2 bytes; Adafactor factorises $$v$$ |
+
+**So the ZeRO stages shard exactly the rows of this table** (A5.2): ZeRO-1 takes the 12 bytes of
+optimizer state (master + $$m$$ + $$v$$) — **the largest block, which is why it is nearly free** —
+ZeRO-2 adds the gradients, and ZeRO-3 adds the parameters themselves.
 
 **Activations are the other half of the story**, and they grow with $$B\times S$$, which makes them the dominant
 term in long-context training. Gradient checkpointing buys most of that memory back for about 30% extra compute.
