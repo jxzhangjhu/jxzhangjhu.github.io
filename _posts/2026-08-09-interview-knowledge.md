@@ -2989,8 +2989,74 @@ $$w \leftarrow w - \text{lr}\cdot\frac{\hat m_t}{\sqrt{\hat v_t}+\epsilon}$$
 optimizer state (master + $$m$$ + $$v$$) — **the largest block, which is why it is nearly free** —
 ZeRO-2 adds the gradients, and ZeRO-3 adds the parameters themselves.
 
-**Activations are the other half of the story**, and they grow with $$B\times S$$, which makes them the dominant
-term in long-context training. Gradient checkpointing buys most of that memory back for about 30% extra compute.
+---
+
+**Are activations the bottleneck?** "It depends on the regime" — but that is not a dodge, because the
+regime is something you can compute.
+
+**The structural difference: model state is fixed, activations scale with $$B\times S$$.** Those 16
+bytes per parameter are **independent** of batch size and sequence length, while activations per layer
+are about $$14BSD + BNS^2$$ elements (derived in A10-03).
+
+Run the numbers on the Llama-3-70B configuration ($$L=80, D=8192, N=64$$, bf16) against its
+**1,052 GiB** of state:
+
+| | Naive | + FlashAttention | + full recompute |
+|---|---|---|---|
+| $$B=1, S=2\text{k}$$ | 75 GiB | 35 GiB | 2 GiB |
+| $$B=1, S=8\text{k}$$ | 780 GiB | 140 GiB | 10 GiB |
+| $$B=8, S=8\text{k}$$ | 6,240 GiB | **1,120 GiB** | 80 GiB |
+| $$B=8, S=32\text{k}$$ | 86,400 GiB | 4,480 GiB | 320 GiB |
+
+**Two conclusions from that table.**
+
+**One: naively, activations become absurd fast.** The $$S^2$$ term takes over past
+$$S > 14D/N = 1792$$, and by 32k context it alone is in the tens of terabytes — not "room for
+optimisation" but **cannot run at all**. Removing that term is why FlashAttention is a precondition
+for long-context training rather than an optimisation of it.
+
+**Two: even with FlashAttention, activations can exceed state.** At $$B=8, S=8\text{k}$$ they are
+1,120 GiB against 1,052 GiB of model state. The intuition that "state is the big one" holds only at
+small batch and short sequences.
+
+---
+
+**But what actually decides which one binds is a structural asymmetry, and it matters more than the
+numbers above.**
+
+**Data parallelism shards state; it does not reduce activations.** ZeRO spreads the 16 bytes per
+parameter across $$N_\text{dp}$$ devices, so per-GPU state is $$16P/N_\text{dp}$$ — but each device
+processes **its own** micro-batch, and its activations are undiminished.
+
+So: **every data-parallel replica you add lowers per-GPU state and leaves per-GPU activations exactly
+where they were.** The larger the run, the more activations are the thing binding you.
+
+What does shard activations is the other axes: **TP** splits them within a layer,
+**sequence/context parallelism** splits along $$S$$, and **PP** leaves each stage holding only its own
+layers' activations (at the cost of budgeting for in-flight micro-batches). That is why long-context
+training always reaches for TP or CP — ZeRO alone cannot get there.
+
+---
+
+**One more layer, the one most often missed: activation memory does not only decide whether you OOM,
+it decides your throughput.**
+
+Activation memory caps your **micro-batch size**, and a micro-batch that is too small means skinny
+matmuls, an underfed GPU, and MFU on the floor (A5.4). So activations constrain **both** "can it run"
+and "how fast".
+
+**And that is the deepest difference from state:**
+
+- **Sharding state is nearly free.** ZeRO-1's communication volume is comparable to DDP's (all-reduce
+  is reduce-scatter plus all-gather anyway) and the mathematics is unchanged.
+- **Reducing activations always costs something.** Recomputation costs about 30% more compute; a
+  smaller micro-batch costs MFU; TP or CP costs communication. There is no free tier.
+
+> **So the practical order is: turn ZeRO up until state stops being the problem** — that part is close
+> to free — **and what remains is the activation problem.** A workable sequence: FlashAttention
+> (always, and it does not change the mathematics) → selective recomputation (recompute only the cheap
+> layers, usually a better trade than full recompute) → sequence/context parallelism → and only then a
+> smaller batch, because that one hits MFU directly.
 
 #### Self-test · A5.1
 
