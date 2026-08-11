@@ -3324,9 +3324,76 @@ From SFT to RLHF to RLVR. Alisa spends 185 lines on policy gradient with the pro
 
 > **SFT teaches the model what a good answer looks like; RL teaches it which of its own answers are better.**
 
-This explains why RL keeps working after SFT saturates — SFT can only push toward demonstrations, while RL can
-rank the model's **own** samples and push into territory nobody demonstrated. It also explains why RL cannot
-install new knowledge: it only reweights what the base model can already produce.
+This explains why RL keeps working after SFT saturates — SFT can only push toward demonstrations,
+while RL can rank the model's **own** samples and push into territory nobody demonstrated.
+
+---
+
+**"RL cannot install knowledge, it only reweights" — how to understand that claim.**
+
+**Start with the mechanism, which is the hardest part of the argument.** A policy-gradient update is
+$$\nabla\log\pi_\theta(a\mid s)$$ **times the advantage**. Therefore:
+
+- a trajectory can only produce gradient if it **gets sampled in the first place**;
+- anything the policy cannot produce has (numerically) zero probability and never appears in any batch
+  of rollouts;
+- and in the extreme, if **every** rollout for a prompt fails, all rewards in the group are equal, so
+  **the advantage is identically zero and that group contributes no gradient at all** (A9.5).
+
+So RL can **move probability mass around inside the policy's existing support**, not add anything
+outside it. A problem the model genuinely cannot do never gets sampled, gets zero advantage, and is
+never learned.
+
+---
+
+**This is not only theory — there is a direct measurement: the pass@k crossover.**
+
+Yue et al. ([arXiv:2504.13837](https://arxiv.org/abs/2504.13837), NeurIPS 2025) compared RLVR-trained
+models against their own base models at different $$k$$:
+
+- **at small $$k$$ (pass@1) the RL model is clearly better** — which is what we wanted;
+- **at large $$k$$ (pass@256) the base model is better.**
+
+That crossover is the argument. If RL had learned something new it should not lose at any $$k$$.
+Losing means **the base model could already solve those problems** given enough samples, and RL
+concentrated mass onto a few paths: **sampling efficiency up, coverage down.** Their coverage and
+perplexity analysis confirms it — the reasoning paths an RLVR model produces were already inside the
+base model's sampling distribution.
+
+**The mirror-image finding matters as much: distillation does expand the boundary.** The same paper
+observes that distillation **introduces reasoning patterns from the teacher**. That is why
+distil-then-RL beats RL alone on a small model (A7.2) — **distillation moves capability in, RL makes
+it reliable.**
+
+---
+
+**Be honest that this is contested; stating it too absolutely invites a rebuttal.** Another line of
+work attributes the observed shrinkage to **stopping RL too early**, showing that **prolonged
+training** does explore and populate new regions. One reconciling account is a **two-stage dynamic**
+([arXiv:2510.04028](https://arxiv.org/abs/2510.04028)): early training favours exploitation and
+narrows the boundary, while sufficiently long training shifts toward exploration and can expand it.
+
+**The narrowing mechanism has a name: entropy collapse.** RL concentrates mass, the policy becomes
+more deterministic, and exploration degrades — the same phenomenon as A1.9's point that the RLHF KL
+penalty runs in the reverse, mode-seeking direction. DAPO's Clip-Higher exists to prevent it (A6.7).
+
+---
+
+**RL cannot install knowledge, but it genuinely does reshape behaviour.** Facts the base model lacks
+will not appear. But **when to check the work, when to backtrack, how long to think** are
+**trajectory-level policies** rather than facts, and reward does provide signal for those. R1-Zero's
+emergent self-checking is this class: the base model could already emit those tokens, and RL made
+them **systematic**.
+
+> **The one-line version for an interview:**
+>
+> **Capability comes in through pretraining, midtraining, SFT and distillation. RL turns "can
+> sometimes do it" into "does it reliably", and reshapes trajectory-level behaviour. It moves
+> probability mass; it does not extend the support.**
+
+Two practical consequences follow: prompts must sit near a 50% success rate, because both extremes
+give zero gradient (A9.5); and on a small model you distil first, or RL has no signal because the
+success rate is on the floor.
 
 #### Self-test · A6.1
 
@@ -3345,8 +3412,17 @@ produce.
 >   R1-Zero showed pure RL from base *can* work with verifiable rewards, but the released R1 still
 >   uses a cold-start SFT stage for readability.
 >
+> - *Is there evidence?* → The pass@k crossover: RL models win at pass@1, base models win at
+>   pass@256, so those solutions were already in the base distribution (Yue et al. 2025).
+> - *Does R1-Zero's emergent self-checking count as new capability?* → As new **behaviour**, not new
+>   knowledge. The base model could already emit those tokens; RL made them systematic.
+> - *Is this contested?* → Yes. Another line argues the shrinkage is an artefact of terminating RL
+>   early. "Current RLVR mostly improves sampling efficiency" is the safer formulation.
+>
 > **Traps**
-> - Saying RL can "teach the model new knowledge." It can only reweight capability that is already there.
+> - Saying RL can "teach the model new knowledge." It moves probability mass; it does not extend the
+>   support.
+> - Overcorrecting into "RL is useless". It raises pass@1, and **pass@1 is what a product ships**.
 
 ---
 
