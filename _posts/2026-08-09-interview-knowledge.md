@@ -2334,14 +2334,90 @@ minimising CE is exactly minimising the KL to the data distribution (see A1.9).
 3. **Training and usage are the same operation.** No task head is needed; prompting turns almost every task into generation.
 
 **A variant: multi-token prediction (MTP).** Each position additionally predicts several future
-tokens. Keep the two designs apart: Gloeckle et al. (2024) use 4 **independent parallel heads**;
-DeepSeek-V3 uses a **sequential** module of depth $$D=1$$, so it predicts only 1 extra token, and it
-**shares the embedding and output head** with the main model while preserving the causal chain.
-Both densify the signal, and both **hand you a draft model for free** for speculative decoding.
+tokens. There are two designs, and the difference is not cosmetic — it decides which distribution you
+are approximating.
 
-> **A limitation worth raising unprompted.** Next-token prediction is **behavioural cloning**: it
-> learns what human-written text looks like, not what is correct. Recovering from its own errors and
-> expressing uncertainty are both outside this objective — which is exactly why post-training exists.
+**Design one: parallel independent heads (Gloeckle et al., 2024).** The trunk is unchanged; $$n$$
+**independent** output heads sit on top, and head $$k$$ predicts the token at $$t+k$$ from the
+**same** hidden state $$h_t$$:
+
+$$p(x_{t+1},\dots,x_{t+n}\mid h_t)\;\approx\;\prod_{k=1}^{n} p_k(x_{t+k}\mid h_t)$$
+
+That product **assumes conditional independence** — head 2 predicts $$t+2$$ without knowing what
+$$t+1$$ turned out to be.
+
+**Design two: sequential modules (DeepSeek-V3).** The modules are chained: module $$k$$ takes both the
+representation from module $$k-1$$ **and the embedding of the real token at $$t+k$$**. So the
+prediction of $$t+2$$ **does** see $$t+1$$, **the full causal chain is preserved**, and you approximate
+the true joint rather than a product of marginals. Each module is one transformer block plus a
+projection, and **the embedding and output head are shared with the main model**. V3 uses $$D=1$$ —
+one extra token — for roughly 2% additional parameters.
+
+---
+
+**What "a draft model for free" actually means.** This is the part worth unpacking.
+
+Speculative decoding needs a **draft model** to propose $$k$$ tokens that the large model verifies in
+one parallel forward pass (A8.6). The usual approach is to **train a separate small model** as the
+drafter: another training run, another set of weights to host, and a speedup that depends entirely on
+how well the small model's distribution matches the large one — **acceptance rate is everything**.
+
+**MTP removes all three costs at once**, because the extra module is already predicting $$t+2$$:
+
+- at decode step $$t$$, one forward gives you **both** the main head's $$t+1$$ **and** the MTP module's
+  proposal for $$t+2$$;
+- the next step verifies it — feed $$t+1$$ back in and check whether the main head agrees with the
+  proposal;
+- when it does, **one forward pass produced two tokens**.
+
+**Its acceptance rate is high by construction** because the drafter **shares the trunk, the embedding
+and the output head** with the target. It is not a separate model approximating the target; it is the
+same model with an extra arm. V3 measured an **85–90% acceptance rate on the second token**, worth
+roughly **1.8× tokens per second**.
+
+> **A framing difference that is easy to miss.** The V3 report is explicit that **MTP is first of all
+> a training objective** — it densifies the signal and lets the model pre-plan its representations —
+> and that at inference **you can simply discard the MTP modules** and the main model works normally.
+> Speculative decoding is a repurposing: the modules are there, so you may as well use them. That is
+> the opposite orientation from EAGLE-style work, whose **primary** goal is speculative decoding.
+> Naming that distinction shows you read the report rather than a summary.
+
+---
+
+**What the objective cannot teach — and one widespread misconception.**
+
+Next-token prediction is **behavioural cloning**: it fits what human-written text looks like, not what
+is correct. A confidently wrong sentence is learned exactly as readily as a true one. Three concrete
+gaps follow.
+
+**One: no error recovery.** In training the model only ever sees gold prefixes (teacher forcing); it
+never sees "I just wrote something wrong, now what". Not an implementation gap — a direct consequence
+of the objective, and the same forward-KL/off-policy problem as A1.9. RL and on-policy distillation
+exist to close it.
+
+**Two: no "I don't know" option.** In the corpus a question is almost always followed by *an answer*,
+rarely by an admission of ignorance, so MLE learns "produce something plausible" as the default. That
+is where hallucination comes from at the level of the objective, rather than the model being
+insufficiently clever.
+
+**Three: on confidence — and this splits into two layers that must not be conflated.**
+
+> **The common wrong claim is that "calibration can only come from post-training". The opposite is
+> closer to the truth: base models are usually well calibrated at the token level, and post-training
+> is what breaks it.**
+>
+> - **Token-level calibration comes from pretraining, as a direct consequence of the objective.** Cross
+>   entropy is a **proper scoring rule**, so minimising it drives $$q$$ toward the true conditional
+>   distribution $$p$$ — and "predicted probability matches empirical frequency" is the definition of
+>   calibration. Base models are typically well calibrated on multiple choice.
+> - **Verbalised confidence genuinely cannot be learned this way.** Nothing in the corpus links "the
+>   model says it is 80% sure" to "the model is right 80% of the time". The humans in the corpus are
+>   expressing *their* confidence about *their* knowledge, which says nothing about this model's
+>   knowledge boundary. What is learned is the **style** of hedging, not an **introspective report**.
+>
+> The accurate statement: **pretraining gives you calibrated probabilities but not a calibrated
+> self-report; post-training damages the former and is the only route to the latter** (A13.3, A13.4).
+> That split is itself a strong answer — most candidates only say "RLHF makes models overconfident".
 
 #### Self-test · A4.1
 
