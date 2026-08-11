@@ -73,7 +73,7 @@ math is Part II; system-design conversation and behavioural rounds are Part III.
   - [A3.3 DeepSeek-V3 / R1: three choices worth learning from](#a3-3)
   - [A3.4 Qwen3 and hybrid thinking](#a3-4)
   - [A3.5 Mixtral and the mainstreaming of MoE](#a3-5)
-- **[A4 · Pretraining](#section-a4)** — 9 questions
+- **[A4 · Pretraining](#section-a4)** — 10 questions
   - [A4.1 The training objective: why next-token prediction](#a4-1)
   - [A4.2 The order of operations for training a model from scratch](#a4-2)
   - [A4.3 Choosing the architecture and hyperparameters](#a4-3)
@@ -2366,8 +2366,8 @@ how well the small model's distribution matches the large one — **acceptance r
 
 - at decode step $$t$$, one forward gives you **both** the main head's $$t+1$$ **and** the MTP module's
   proposal for $$t+2$$;
-- the next step verifies it — feed $$t+1$$ back in and check whether the main head agrees with the
-  proposal;
+- the next step verifies it — feed $$t+1$$ back in and check whether the main head's own view of
+  $$t+2$$ agrees with the proposal you already have;
 - when it does, **one forward pass produced two tokens**.
 
 **Its acceptance rate is high by construction** because the drafter **shares the trunk, the embedding
@@ -2461,6 +2461,26 @@ scratch," go in this order.
 
 1. **Fix the budget.** How many GPUs, how many days → total FLOPs $$C$$. Everything downstream follows from this.
 2. **Fix the model and data sizes.** Back out $$N$$ and $$D$$ from $$C$$ and Chinchilla (or from your own inference-cost reasoning).
+
+> **Two terms that keep coming back, defined properly first.**
+>
+> **Chinchilla** refers to Hoffmann et al. (2022), *Training Compute-Optimal Large Language Models*.
+> The question it asks: for a fixed compute budget $$C$$, how should you divide it between parameters
+> $$N$$ and training tokens $$D$$ to reach the lowest loss? The answer is to **scale both roughly in
+> proportion**, $$N\propto C^{0.5}$$ and $$D\propto C^{0.5}$$, which in practical form is
+> **$$D \approx 20N$$ — about 20 tokens per parameter**. The name comes from the 70B model they
+> trained on 1.4T tokens, which beat the 280B Gopher (300B tokens) at equal compute. The
+> "Chinchilla-optimal point" is a point on that frontier, and "training past Chinchilla" means going
+> well beyond 20 tokens per parameter (see A11.1 for the full discussion).
+>
+> **MFU (model FLOPs utilisation)** measures what percentage of the hardware's peak throughput you
+> actually consume:
+>
+> $$\text{MFU} = \frac{6N\cdot(\text{tokens/s})}{\text{GPUs}\times\text{peak FLOP/s}}$$
+>
+> The numerator counts the FLOPs the **model** requires ($$6N$$ per token), excluding recomputation
+> and communication. A healthy range for training at scale is **35–50%**, which is why the worked
+> example below takes 0.40 (see A5.4 for the full discussion).
 3. **Train the tokenizer.** Train BPE on the target data distribution and fix the vocabulary size
    (larger for multilingual). **Once this is locked in, it is extremely hard to change.**
 4. **Build the data pipeline.** Collect → extract → filter → deduplicate → decontaminate → mix (see A9).
@@ -2479,18 +2499,43 @@ scratch," go in this order.
 
 **Q A4.2.1** — You have 512 H100s for one month. Walk me through planning the run.
 
-**Compute budget first.** $$512 \times 9.89\times10^{14} \times 0.40 \times 30\times86400
-\approx 5.2\times10^{23}$$ FLOPs at 40% MFU.
+**Step one: work out the compute budget.** An H100 peaks at $$9.89\times10^{14}$$ FLOP/s in dense
+bf16; take 40% MFU:
 
-**Then size the model.** With $$C = 6ND$$ and Chinchilla's $$D \approx 20N$$:
-$$C = 120N^2 \Rightarrow N = \sqrt{C/120} \approx 6.6\times10^{10}$$ — about a 66B model on 1.3T
-tokens.
+$$C = 512 \times 9.89\times10^{14} \times 0.40 \times 30\times86400 \approx 5.2\times10^{23}\ \text{FLOPs}$$
 
-**Then reality-check that against serving.** If this model will be served heavily, Chinchilla-optimal
-is the wrong target — train something smaller for longer. A 20B model on 4T tokens uses the same
-compute and is 3× cheaper to serve.
+**Step two: discount the month.** This is the step people miss. You do not get 30 clean days of
+training — failures and restarts, checkpoint writes, the short validation run and the evaluations
+along the way all take wall-clock out of you. At 85–90% effective utilisation you really have about
+$$4.5\times10^{23}$$. **Volunteering that discount in an interview says far more about having run the
+real thing than any amount of arithmetic precision does.**
 
-**Then the rest of the checklist**: tokenizer, data pipeline, architecture, small-proxy hyperparameter
+**Step three: size the model and the data.** With $$C = 6ND$$ and $$D \approx 20N$$:
+
+$$C = 120N^2 \;\Rightarrow\; N = \sqrt{C/120} \approx 6.1\times10^{10}$$
+
+So roughly 61B parameters on 1.2T tokens (the undiscounted $$5.2\times10^{23}$$ gives 66B on 1.3T —
+the same ballpark).
+
+**Step four: go back and sanity-check that against serving cost.** If this model will be served
+heavily, Chinchilla-optimal is the wrong target — train something smaller for longer. A 20B model on
+4T tokens spends the same compute and is 3× cheaper to serve (see A3.2).
+
+**Step five: check it fits.** Training state for a 61B model is $$61\times10^9 \times 16 = 976$$ GB.
+The 512 cards hold 40 TiB between them, so the total is nowhere near binding — the problem is the
+**distribution**: TP=8 inside a node over NVLink, PP across nodes, DP for whatever is left, with ZeRO
+sharding the optimizer states (see A5.2).
+
+**Step six: check the step count and the global batch.** At a 4M-token global batch the run is
+$$1.2\times10^{12}/4\times10^6 = 3\times10^5\ \text{steps}$$ — reasonable. If the number comes out at
+30k steps or 3M steps, the batch size is wrong.
+
+**Step seven: ask the question that is not about compute — do you actually have 1.2T tokens of
+usable data?** That is frequently the real constraint. Too little and you have to repeat, and returns
+collapse past roughly 4 epochs (see A9.2); at that point the right response is to shrink the model,
+not to repeat the data more times.
+
+**The rest follows the checklist**: tokenizer, data pipeline, architecture, small-proxy hyperparameter
 sweep, short validation run, launch.
 
 > **Follow-ups**
@@ -2502,6 +2547,44 @@ sweep, short validation run, launch.
 >
 > **Traps**
 > - Skipping the step-7 short validation run and going straight to the full run. A few hundred steps catch nine configuration errors out of ten, at one ten-thousandth of the cost.
+
+**Q A4.2.2** — You cannot sweep hyperparameters at 66B. How do you pin them down with small models?
+
+**The main instrument is muP (maximal update parameterisation).** Under standard parameterisation the
+optimal learning rate **moves with width**, so the value you sweep out on a small model is the wrong
+one for the large model. muP rescales the initialisation variance and the per-layer learning rates so
+that the size of the update *relative to the weight* is width-invariant, which makes the **optimal
+hyperparameters width-invariant too** and lets them transfer directly (the recipe is called
+μTransfer, see A11.2).
+
+**Concretely, four steps:**
+
+1. **Build a width ladder** — a few small models at, say, $$D$$ = 256 / 512 / 1024, with everything
+   else matching the target configuration.
+2. **Sweep LR at each width** (and init scale, and so on), plotting LR against final loss.
+3. **Confirm the optimum does not move with width.** This step is how you **verify muP is actually
+   working**; without it you do not know whether anything transfers. If the optimum is still
+   drifting, the parameterisation is not set up right.
+4. **Take that LR to the target width**, then run a few hundred steps to confirm loss is falling and
+   MFU is where it should be.
+
+**Without muP, the fallback is to fit a scaling law for the hyperparameter itself.** Train a ladder of
+small models (50M/100M/300M/1B), run a narrow LR sweep at each, fit
+$$\text{LR}_\text{opt}(C) = \beta C^{-\alpha}$$ and extrapolate. More expensive than muP, but it does
+not require changing the parameterisation.
+
+> **WSD makes this much cheaper.** With cosine you retrain from scratch for every compute point; WSD
+> has a constant stable phase, so one run can branch off a decay at several points and hand you the
+> loss at each of them (see A1.6). That is exactly how MiniCPM measured a scaling law out of a single
+> training run.
+>
+> **Follow-ups**
+> - *What transfers and what does not?* → The original results are mainly about **width**. Depth does
+>   not transfer cleanly, and batch size and data mixture do not transfer through muP at all — those
+>   have to be set separately.
+> - *What can a small proxy never show you?* → Instabilities that only appear at scale (loss spikes,
+>   growing attention logits), and MFU problems caused by the parallelism strategy. Those only come
+>   out of a short validation run at the target size.
 
 ---
 
@@ -2584,7 +2667,37 @@ practical way to tune a run you can afford once.
 | Loss | Smooth power law | Spikes → see A5.5 |
 | **Gradient norm (pre-clip)** | Steady, occasional small peaks | Rising persistently → instability is brewing |
 | MFU | Constant | Falling → communication or data-pipeline problem |
-| Loss agreement across ranks | Consistent | One rank drifting → hardware problem |
+| Agreement across ranks | See below | Weights disagreeing → the collective is broken |
+
+**What "agreement across ranks" actually means — and there is a crucial distinction here.** Under
+data parallelism every card processes a **different** micro-batch, so **the per-rank losses differ by
+construction**. That is ordinary data noise, not a problem.
+
+There are two things genuinely worth watching:
+
+- **The weights must be bit-identical.** After every all-reduce, the weights on all DP ranks should
+  agree **exactly**. Hash them periodically and compare — **if the weights have drifted, gradient
+  synchronisation is broken**, and you are in fact training $$N$$ different models and averaging
+  them, which is worse than any loss spike.
+- **The distribution of the loss**, rather than any single value. A rank whose loss runs
+  **systematically** high, or drifts further out over time, or goes NaN/Inf — that is the signal.
+
+**When one rank does deviate, it is usually one of three causes:**
+
+1. **A bad data shard** — that rank's shard is corrupt, or its language/domain mix differs from the
+   others. This is both the most common cause and the easiest to check: decode a few of that rank's
+   batches and read them.
+2. **Hardware.** At scale, hardware faults are the dominant source of interruption. The nastiest kind
+   is **silent data corruption (SDC)** — the card raises no error, it simply computes the wrong
+   answer. Nothing crashes; the model just quietly gets worse. How to check: run a
+   collective-communication benchmark, read the ECC counters, and swap the suspect card out and rerun
+   the same data to see whether the result reproduces.
+3. **Inconsistent random state.** Dropout seeds or data-order seeds that differ somewhere they were
+   supposed to match.
+
+> **A cheap check worth leaving on permanently:** every $$N$$ steps, have every rank compute the loss
+> on **one fixed batch**. That removes data as a variable, so any difference left points straight at
+> hardware or synchronisation.
 
 **The gradient norm is the earliest warning**, and it is only useful if you log the **pre-clip**
 value. Plenty of people log only the post-clip norm, which is flat by construction and shows nothing.
@@ -2598,17 +2711,39 @@ value. Plenty of people log only the post-clip norm, which is flat by constructi
 
 **Q A4.4.1** — Your loss curve has a long flat plateau at the start before dropping. What is happening?
 
-Almost always the learning rate is too low, or warmup is too long. The model is stuck near the
-unigram solution — it has learned token frequencies and nothing else.
+**First, what the "unigram solution" is.** It means a model that **ignores context entirely**:
+whatever came before, it emits the **marginal frequencies** of tokens in the corpus. That is the
+easiest thing any language model can learn, so loss naturally drops onto that shelf first.
 
-Diagnostic: check whether the loss value matches the entropy of the unigram distribution over your
-corpus. If it does, the model is producing a frequency-matched distribution and no context is being
-used. Then print the **actual** LR after warmup (not the config value) — an off-by-one in the
-scheduler is a common cause.
+**Memorise the height of three milestones and the diagnosis becomes mechanical:**
+
+| Stage | Loss is about | What it means |
+|---|---|---|
+| Random initialisation | $$\ln V$$ (≈ 11.8 for a 128k vocabulary) | Uniform distribution, knows nothing |
+| Token frequencies learned | the **unigram entropy** $$H_\text{uni}$$ | Knows only which tokens are common |
+| Context being used | persistently below $$H_\text{uni}$$ | Actually learning language |
+
+**So the action is concrete: count token frequencies over your own corpus and compute
+$$H_\text{uni}$$** (one pass over the data, very cheap), then hold it against the current loss.
+**Stuck at $$H_\text{uni}$$ and not moving means the frequencies have been learned and the context
+pathway is not learning at all.**
+
+**Three reasons it gets stuck there:**
+
+- **The effective learning rate is too small.** Note *effective* — print the LR that is **actually in
+  force** after warmup rather than reading the peak out of the config. A scheduler off by one, or a
+  warmup length accidentally written at the scale of the total step count, will hold the LR near zero
+  for a long time.
+- **Warmup is too long**, which amounts to the same thing.
+- **The context pathway is genuinely not connected.** A fully blocking mask, an attention output
+  projection initialised to zero with no gradient reaching it, positional information never added at
+  all (which leaves the model permutation-equivariant, see A2.1) — any of these force the model down
+  to unigram and hold it there.
 
 > **Follow-ups**
-> - *What if loss drops fast then plateaus high?* → Possible label/shift bug, or a data pipeline
->   returning something degenerate. Overfit ten examples to isolate.
+> - *What if loss drops fast and then plateaus high?* → That is not the unigram plateau; more likely a
+>   label-shift bug, or a data pipeline returning something degenerate. Isolate it with an overfit
+>   smoke test on ten examples (see A1.11).
 >
 > **Traps**
 > - Watching loss only. Gradient norm, MFU and cross-rank agreement have to be read together — and the gradient norm has to be the pre-clip one.
@@ -2678,8 +2813,39 @@ wait on provisioning.
 <a id="a4-6"></a>
 ### A4.6 Evaluation during pretraining
 
-**The primary metric is held-out loss**, not benchmarks. The reasons: it is smooth, comparable,
-low-variance, and computable at every step, whereas benchmarks are discrete, noisy, and can be contaminated.
+**The primary metric is held-out loss**, not benchmarks. The reasoning is worth taking apart, because
+the most common version of it is only half right.
+
+**It is not that "benchmarks test new tasks and are therefore the wrong instrument".** The real
+reasons are statistical and economic:
+
+1. **Continuous versus thresholded.** Loss is a continuous quantity; benchmark accuracy is a threshold
+   function over exact matches. A model can get substantially better without the benchmark budging,
+   and can move several points on noise alone.
+2. **An order of magnitude more statistical power.** Held-out loss averages over millions of tokens,
+   so the error bars are tiny; a 1000-item benchmark carries error bars of roughly ±3% (see C6.3).
+   The same real improvement is measurable in loss and invisible in the benchmark.
+3. **Cost.** Loss is one forward pass over a fixed batch and can be run every $$N$$ steps; generative
+   benchmarks are far slower and introduce sampling parameters as another variable.
+4. **Comparability.** Within one run and one tokenizer, loss is comparable checkpoint to checkpoint;
+   benchmarks carry contamination risk and are sensitive to prompt format.
+
+**And the intuition you started from is really a weakness of loss, not a strength.** Held-out loss
+does measure "how well does this fit the training distribution" — and precisely because it measures
+the training objective itself, it **cannot** tell you about downstream capability. The benchmark is
+what measures the thing you actually care about.
+
+> **So the correct division of labour is: loss answers "is training healthy, is it still improving",
+> and benchmarks answer, at milestones, "continue, change the mix, or stop".** The first every few
+> hundred steps, the second once a day or only when you reach a milestone.
+>
+> **Three traps you have to remember:**
+> - **Not comparable across tokenizers.** If you must compare, use bits-per-byte.
+> - **After post-training, loss stops tracking usefulness.** RLHF makes perplexity on general corpora
+>   **worse** while making the model more useful (see A11.4).
+> - **A single aggregate loss hides trade-offs.** Read it per domain — keep a separate held-out set
+>   for code, maths and multilingual, otherwise code improving while multilingual regresses just
+>   averages out to nothing.
 
 **But loss alone is not enough.** Pair it with:
 
