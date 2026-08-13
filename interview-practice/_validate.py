@@ -4,8 +4,8 @@ A test that no correct implementation can pass is worse than no test: you would 
 your practice time debugging the harness. This swaps a reference-backed adapter in for
 each stub, runs the suite, then puts the stubs back.
 
-    python _validate.py            # stub tests against the reference
-    python _validate.py --drills   # drill tests against the fixed drill
+    python _validate.py            # manifest + stub tests against the reference
+    python _validate.py --drills   # manifest + drill tests against the fixed drill
 
 Drill tests are excluded from the default run: they are supposed to fail while the
 planted bugs are still there.
@@ -18,6 +18,8 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 STUBS = HERE / "stubs"
+sys.path.insert(0, str(HERE))
+from problems import PROBLEMS, DRILLS  # noqa: E402
 
 # Reference code sometimes exposes a different (older) API than the stub asks for, so a
 # few problems need a thin adapter rather than a straight re-export.
@@ -47,15 +49,7 @@ class CachedAttention(GroupedQueryAttention):
 "p10_training_loop": "from reference import overfit_tiny  # noqa: F401\n",
 "p14_sampling": "from reference import sample_next  # noqa: F401\n",
 
-"p18_lora": '''
-import torch  # noqa: F401
-from reference import LoRALinear as _Ref
-
-
-class LoRALinear(_Ref):
-    def merged_weight(self):
-        return self.base.weight + (self.B @ self.A) * self.scaling
-''',
+"p18_lora": "from reference import LoRALinear  # noqa: F401\n",
 
 "p22_bpe": "from reference import bpe_train, bpe_encode  # noqa: F401\n",
 
@@ -70,6 +64,51 @@ def grpo_loss(logp, logp_old, logp_ref, rewards, mask, group_size,
                 clip_eps=clip_eps, beta=beta, group_size=group_size)
 ''',
 }
+
+
+def validate_manifest():
+    """Every metadata row must have a runnable stub, reset copy, test, and three hints."""
+    errors = []
+    for p in PROBLEMS:
+        stem = f"{p.id}_{p.name}"
+        expected = [
+            STUBS / f"{stem}.py",
+            STUBS / ".pristine" / f"{stem}.py",
+            HERE / "tests" / f"test_{stem}.py",
+            HERE / "hints" / f"{stem}.md",
+        ]
+        errors.extend(str(path.relative_to(HERE)) for path in expected if not path.exists())
+        hint = expected[-1]
+        if hint.exists():
+            text = hint.read_text(encoding="utf-8")
+            levels = [text.count(f"## Level {i}") for i in range(1, 4)]
+            if levels != [1, 1, 1]:
+                errors.append(f"{hint.relative_to(HERE)}: expected exactly Levels 1, 2, 3")
+
+    for d in DRILLS:
+        stem = f"{d.id}_{d.name}"
+        expected = [
+            HERE / "drills" / f"{stem}.py",
+            HERE / "drills" / ".pristine" / f"{stem}.py",
+            HERE / "drills" / ".solutions" / f"{stem}.py",
+            HERE / "tests" / f"test_{stem}.py",
+            HERE / "hints" / f"{stem}.md",
+        ]
+        errors.extend(str(path.relative_to(HERE)) for path in expected if not path.exists())
+        hint = expected[-1]
+        if hint.exists():
+            text = hint.read_text(encoding="utf-8")
+            levels = [text.count(f"## Level {i}") for i in range(1, 4)]
+            if levels != [1, 1, 1]:
+                errors.append(f"{hint.relative_to(HERE)}: expected exactly Levels 1, 2, 3")
+
+    if errors:
+        print("manifest errors:")
+        for error in errors:
+            print(f"  - {error}")
+        return 1
+    print(f"manifest: {len(PROBLEMS)} problems and {len(DRILLS)} drills are complete")
+    return 0
 
 
 def validate_drills():
@@ -98,20 +137,28 @@ def validate_drills():
 # above need an adapter because their stub API differs from the older reference API.
 for _pid, _sym in {
     "p03_gqa": "GroupedQueryAttention", "p06_swiglu": "SwiGLU",
-    "p07_transformer_block": "Block", "p09_loss_masking": "build_sft_labels",
+    "p28_mla": "MultiHeadLatentAttention",
+    "p07_transformer_block": "Block",
+    "p09_loss_masking": "build_sft_labels, build_packed_sft_labels, build_packed_attention",
     "p11_autograd": "Value", "p12_attention_backward": "attention_backward",
     "p13_mlp_backward": "mlp_backward", "p15_speculative": "speculative_accept",
     "p16_online_softmax": "online_softmax_weighted_sum",
     "p17_flash_attention": "flash_attention_forward", "p20_dpo_loss": "dpo_loss",
-    "p21_gae": "compute_gae", "p23_moe_routing": "top1_route",
+    "p21_gae": "compute_gae",
     "p24_nn_vectorized": "nearest_neighbour", "p25_batchnorm": "BatchNorm1dScratch",
     "p26_data_filtering": "filter_annotations",
     "p27_cauchy_simulation": "light_source_samples, cauchy_pdf",
 }.items():
     ADAPTERS.setdefault(_pid, f"from reference import {_sym}  # noqa: F401\n")
+ADAPTERS["p23_moe_routing"] = (
+    "from reference import top1_route, load_balancing_loss  # noqa: F401\n"
+)
 
 
 def main():
+    manifest_rc = validate_manifest()
+    if manifest_rc:
+        return manifest_rc
     if "--drills" in sys.argv:
         return validate_drills()
     backup = HERE / ".stubs_backup"

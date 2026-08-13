@@ -1,9 +1,11 @@
-"""Tests for p27 · Spinning light source -> Cauchy. Run: python run.py p27"""
+"""Tests for p27 · Spinning light source → Cauchy. Run: python run.py p27"""
 
+import math
 import sys
 from pathlib import Path
 
 import numpy as np
+import pytest
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -30,9 +32,10 @@ def test_histogram_matches_pdf_after_truncation_correction():
         "untruncated PDF — density=True normalises over the plotted range only")
 
 
-def test_median_converges_but_mean_does_not():
+def test_median_is_stable_while_fixed_mean_diagnostics_are_not():
     x = stub.light_source_samples(400_000)
     assert abs(np.median(x)) < 0.02, "the median should estimate the location parameter"
     means = [abs(stub.light_source_samples(n, seed=s).mean())
              for s, n in enumerate([10_000, 100_000, 400_000])]
-    assert min(means) > 0.5, f"sample means {means} are converging; Cauchy has no mean"
+    assert min(means) > 0.5, (
+        f"sample means {means} were unexpectedly small for this fixed diagnostic")

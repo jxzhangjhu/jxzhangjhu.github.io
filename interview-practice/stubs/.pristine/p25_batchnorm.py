@@ -1,4 +1,4 @@
-"""p25 · BatchNorm forward, backward, eval mode   —   budget 20 min  [reported: Datadog]
+"""p25 · BatchNorm forward, gradients, and eval mode   —   budget 20 min  [reported: Personal anecdotal report: Datadog]
 
 BatchNorm1d from scratch: forward, running statistics, and eval mode.
 

@@ -1,6 +1,6 @@
 """p17 · Tiled FlashAttention forward   —   budget 25 min
 
-Tiled FlashAttention forward pass.
+Implement tiled exact attention with the online-softmax recurrence.
 
 Fill in the body. Run:  python run.py p17
 Stuck? hints/p17_flash_attention.md has three levels.
@@ -13,6 +13,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-def flash_attention_forward(*args, **kwargs):
-    """Signature matches reference.flash_attention_forward."""
+def flash_attention_forward(q, k, v, block_q=16, block_kv=16, causal=True):
+    """q,k,v: (B,H,T,D). Return (output, row_logsumexp)."""
     raise NotImplementedError

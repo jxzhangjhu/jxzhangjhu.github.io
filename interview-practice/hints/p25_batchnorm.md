@@ -1,4 +1,4 @@
-# Hints · p25 BatchNorm forward, backward, eval mode
+# Hints · p25 BatchNorm forward, gradients, and eval mode
 
 Read one at a time.
 
@@ -12,4 +12,4 @@ register_buffer, not nn.Parameter — they move with .to(device) and are saved, 
 
 ## Level 3
 
-PyTorch normalises with the biased variance (/n) but accumulates the unbiased one (/(n-1)). Mismatch this and only eval mode diverges.
+PyTorch normalises with the biased variance (/n) but accumulates the unbiased one (/(n-1)). Reject n < 2 in training instead of dividing by zero.

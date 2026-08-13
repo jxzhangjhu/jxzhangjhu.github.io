@@ -1,8 +1,9 @@
-"""d06 · softmax without the max subtraction   —   budget 3 min
+"""d06 · Softmax stability failure   —   budget 3 min
 
-Works on toy logits, overflows to inf on the logit magnitudes a real model produces.
+Symptom: large finite logits produce non-finite probabilities
 
 One line in this file is wrong. Run:  python -m pytest tests/test_d06_softmax_overflow.py -q
+Stuck? Read hints/d06_softmax_overflow.md one level at a time.
 """
 
 import math

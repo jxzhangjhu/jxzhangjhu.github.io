@@ -1,4 +1,4 @@
-# Hints · p27 Spinning light source -> Cauchy
+# Hints · p27 Spinning light source → Cauchy
 
 Read one at a time.
 

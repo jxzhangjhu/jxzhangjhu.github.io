@@ -1,4 +1,4 @@
-"""p19 · GRPO objective   —   budget 20 min  [cold-start set]  [reported: OpenAI + Anthropic 4+]
+"""p19 · GRPO objective   —   budget 20 min  [cold-start set]
 
 The GRPO objective: group-relative advantage, clipped ratio, per-token k3 KL.
 

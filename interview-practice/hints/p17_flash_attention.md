@@ -4,12 +4,12 @@ Read one at a time.
 
 ## Level 1
 
-It is the online softmax from p16, with V inside the loop and tiling over both axes.
+Outer-loop over query tiles, inner-loop over KV tiles; keep `m`, `l`, and `acc` per query row.
 
 ## Level 2
 
-Keep per-query-block running statistics; iterate over key/value blocks.
+Use the recurrence from p16 and place V in the numerator update. For fp16/bf16 inputs, compute block scores and keep `m`, `l`, and `acc` in float32.
 
 ## Level 3
 
-With a causal mask, skip whole tiles above the diagonal and only mask elementwise on the diagonal tiles.
+For causality, skip tiles wholly above the diagonal and element-mask overlapping tiles; guard the `-inf - -inf` fully-masked case, then cast the output back to the input dtype.

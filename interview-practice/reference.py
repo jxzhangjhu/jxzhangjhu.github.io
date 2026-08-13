@@ -1,16 +1,9 @@
-"""Reference solutions. The tests compare your stub against these and against PyTorch.
+"""Reference solutions used by the blog and the practice tests.
 
-Do not read this file while practising — that is what hints/ is for.
+Do not read this file while practising — that is what hints/ is for. Implementations are
+checked against PyTorch or an independent behavioural oracle where one exists.
 
-Originally from the ML-coding section of the frontier-lab-interview post; every
-implementation here is validated against a PyTorch ground truth.
-
-OLD DOCSTRING:
-
-Every snippet that appears in the blog post is defined here and validated against a
-PyTorch ground truth where one exists. If a test fails, the post is wrong.
-
-Run: python ml_coding_answers.py
+Run: python reference.py
 """
 
 import math
@@ -33,7 +26,7 @@ def check(name):
 
 
 # --------------------------------------------------------------------------------------
-# 1. Causal multi-head attention (the baseline question at every lab)
+# 1. Causal multi-head attention
 # --------------------------------------------------------------------------------------
 class CausalSelfAttention(nn.Module):
     def __init__(self, d_model, n_heads, max_len=512, dropout=0.0):
@@ -47,12 +40,17 @@ class CausalSelfAttention(nn.Module):
         self.resid_drop = nn.Dropout(dropout)
         # buffer, not parameter: saved with the module but gets no gradient
         self.register_buffer(
-            "mask", torch.tril(torch.ones(max_len, max_len)).view(1, 1, max_len, max_len)
+            "mask",
+            torch.tril(torch.ones(max_len, max_len, dtype=torch.bool)).view(
+                1, 1, max_len, max_len
+            ),
         )
 
     def forward(self, x):
         B, T, C = x.shape
-        # one fused matmul for q, k, v is cheaper than three
+        if T > self.mask.shape[-1]:
+            raise ValueError(f"sequence length {T} exceeds max_len {self.mask.shape[-1]}")
+        # one fused qkv projection is typically more efficient than three small projections
         q, k, v = self.qkv(x).split(C, dim=2)
         # (B, T, C) -> (B, n_heads, T, d_head)
         q = q.view(B, T, self.n_heads, self.d_head).transpose(1, 2)
@@ -60,7 +58,7 @@ class CausalSelfAttention(nn.Module):
         v = v.view(B, T, self.n_heads, self.d_head).transpose(1, 2)
 
         att = (q @ k.transpose(-2, -1)) / math.sqrt(self.d_head)
-        att = att.masked_fill(self.mask[:, :, :T, :T] == 0, float("-inf"))
+        att = att.masked_fill(~self.mask[:, :, :T, :T], float("-inf"))
         att = self.attn_drop(F.softmax(att, dim=-1))
 
         y = att @ v  # (B, n_heads, T, d_head)
@@ -161,11 +159,110 @@ def _t_kv_cache():
     assert torch.allclose(full, step, atol=1e-5), (full - step).abs().max()
 
 
-@check("GQA with n_kv_heads == n_heads reduces to MHA shapes")
-def _t_gqa_degenerate():
-    m = GroupedQueryAttention(32, n_heads=4, n_kv_heads=4).eval()
-    assert m.n_rep == 1
-    assert m(torch.randn(2, 5, 32)).shape == (2, 5, 32)
+@check("GQA matches expanded scaled-dot-product attention")
+def _t_gqa():
+    B, T, D, H, Hkv = 2, 5, 32, 4, 2
+    m = GroupedQueryAttention(D, n_heads=H, n_kv_heads=Hkv).eval()
+    x = torch.randn(B, T, D)
+    q = m.wq(x).view(B, T, H, D // H).transpose(1, 2)
+    k = m.wk(x).view(B, T, Hkv, D // H).transpose(1, 2)
+    v = m.wv(x).view(B, T, Hkv, D // H).transpose(1, 2)
+    k = k.repeat_interleave(H // Hkv, dim=1)
+    v = v.repeat_interleave(H // Hkv, dim=1)
+    want = F.scaled_dot_product_attention(q, k, v, is_causal=True)
+    want = m.wo(want.transpose(1, 2).contiguous().view(B, T, D))
+    assert torch.allclose(m(x), want, atol=1e-5)
+
+    degenerate = GroupedQueryAttention(D, n_heads=H, n_kv_heads=H).eval()
+    assert degenerate.n_rep == 1 and degenerate(x).shape == x.shape
+
+
+# --------------------------------------------------------------------------------------
+# 2b. Multi-head latent attention: cache a low-rank latent, not expanded K and V
+# --------------------------------------------------------------------------------------
+class MultiHeadLatentAttention(nn.Module):
+    """Interview-sized MLA with a compressed KV cache and decoupled RoPE.
+
+    This keeps the defining MLA mechanism from DeepSeek-V2: content keys and values are
+    reconstructed from one low-rank latent, while a small shared positional key is cached
+    separately. Production MLA additionally absorbs projection matrices into the query
+    path during decode; this readable version optimises cache size, not kernel launches.
+    """
+
+    def __init__(self, d_model, n_heads, kv_rank, rope_dim):
+        super().__init__()
+        assert d_model % n_heads == 0
+        self.n_heads = n_heads
+        self.d_head = d_model // n_heads
+        self.rope_dim = rope_dim
+        self.nope_dim = self.d_head - rope_dim
+        assert self.nope_dim > 0 and rope_dim % 2 == 0
+
+        self.wq = nn.Linear(d_model, n_heads * self.d_head, bias=False)
+        self.w_down = nn.Linear(d_model, kv_rank, bias=False)
+        self.wk_up = nn.Linear(kv_rank, n_heads * self.nope_dim, bias=False)
+        self.wv_up = nn.Linear(kv_rank, n_heads * self.d_head, bias=False)
+        self.wk_rope = nn.Linear(d_model, rope_dim, bias=False)
+        self.wo = nn.Linear(n_heads * self.d_head, d_model, bias=False)
+
+    def forward(self, x, cache=None):
+        """x: (B,T,D); cache is a mutable dict containing compressed ``c`` and ``k_rope``."""
+        B, T, _ = x.shape
+        past = 0 if cache is None or "c" not in cache else cache["c"].shape[1]
+
+        q = self.wq(x).view(B, T, self.n_heads, self.d_head).transpose(1, 2)
+        q_nope, q_rope = q.split([self.nope_dim, self.rope_dim], dim=-1)
+        c_new = self.w_down(x)                              # (B,T,kv_rank)
+        k_rope_new = self.wk_rope(x).view(B, T, 1, self.rope_dim).transpose(1, 2)
+
+        cos, sin = rope_cache(past + T, self.rope_dim)
+        cos = cos[past:past + T].to(device=x.device, dtype=q.dtype)
+        sin = sin[past:past + T].to(device=x.device, dtype=q.dtype)
+        q_rope = apply_rope(q_rope, cos, sin)
+        k_rope_new = apply_rope(k_rope_new, cos, sin)
+
+        if cache is not None and "c" in cache:
+            c_all = torch.cat([cache["c"], c_new], dim=1)
+            k_rope_all = torch.cat([cache["k_rope"], k_rope_new], dim=2)
+        else:
+            c_all, k_rope_all = c_new, k_rope_new
+        if cache is not None:
+            cache["c"], cache["k_rope"] = c_all, k_rope_all
+
+        T_full = c_all.shape[1]
+        k_nope = self.wk_up(c_all).view(
+            B, T_full, self.n_heads, self.nope_dim
+        ).transpose(1, 2)
+        v = self.wv_up(c_all).view(
+            B, T_full, self.n_heads, self.d_head
+        ).transpose(1, 2)
+        k = torch.cat([k_nope, k_rope_all.expand(-1, self.n_heads, -1, -1)], dim=-1)
+        q = torch.cat([q_nope, q_rope], dim=-1)
+
+        scores = (q @ k.transpose(-2, -1)) / math.sqrt(self.d_head)
+        causal = torch.ones(T, T_full, dtype=torch.bool, device=x.device).tril(
+            diagonal=T_full - T
+        )
+        probs = F.softmax(scores.masked_fill(~causal, float("-inf")), dim=-1)
+        out = probs @ v
+        return self.wo(out.transpose(1, 2).contiguous().view(B, T, -1))
+
+
+@check("MLA compressed-cache decode == full recompute")
+def _t_mla():
+    B, T, D, H = 1, 7, 64, 4
+    m = MultiHeadLatentAttention(D, H, kv_rank=12, rope_dim=8).eval()
+    x = torch.randn(B, T, D)
+    full = m(x)
+    cache, outs = {}, []
+    with torch.no_grad():
+        for t in range(T):
+            outs.append(m(x[:, t:t + 1], cache))
+    step = torch.cat(outs, dim=1)
+    assert torch.allclose(full, step, atol=1e-5), (full - step).abs().max()
+    cached_per_token = cache["c"].shape[-1] + cache["k_rope"].shape[-1]
+    mha_per_token = 2 * H * (D // H)
+    assert cached_per_token < mha_per_token, (cached_per_token, mha_per_token)
 
 
 # --------------------------------------------------------------------------------------
@@ -216,10 +313,14 @@ def online_softmax_weighted_sum(scores, values, block=4):
     on every block. This is exactly the FlashAttention recurrence, minus the tiling
     over queries and the GPU kernel.
     """
+    if scores.ndim != 1 or values.ndim != 2 or values.shape[0] != scores.shape[0]:
+        raise ValueError("expected scores (N,) and values (N, D)")
+    if scores.numel() == 0 or block <= 0:
+        raise ValueError("scores must be non-empty and block must be positive")
     n = scores.shape[0]
-    m = torch.tensor(float("-inf"))
-    l = torch.tensor(0.0)
-    acc = torch.zeros(values.shape[1])
+    m = scores.new_tensor(float("-inf"))
+    l = scores.new_tensor(0.0)
+    acc = values.new_zeros(values.shape[1])
     for start in range(0, n, block):
         s = scores[start : start + block]
         v = values[start : start + block]
@@ -248,12 +349,14 @@ def _t_online_softmax():
 class LoRALinear(nn.Module):
     def __init__(self, base: nn.Linear, r=8, alpha=16, dropout=0.0):
         super().__init__()
+        if r <= 0:
+            raise ValueError("r must be positive")
         self.base = base
         for p in self.base.parameters():
             p.requires_grad = False
         self.r, self.scaling = r, alpha / r
-        self.A = nn.Parameter(torch.zeros(r, base.in_features))
-        self.B = nn.Parameter(torch.zeros(base.out_features, r))
+        self.A = nn.Parameter(base.weight.new_zeros((r, base.in_features)))
+        self.B = nn.Parameter(base.weight.new_zeros((base.out_features, r)))
         nn.init.kaiming_uniform_(self.A, a=math.sqrt(5))
         # B starts at zero so the adapter is an exact no-op at step 0
         self.drop = nn.Dropout(dropout)
@@ -261,10 +364,14 @@ class LoRALinear(nn.Module):
     def forward(self, x):
         return self.base(x) + self.drop(x) @ self.A.T @ self.B.T * self.scaling
 
+    def merged_weight(self):
+        """Return the weight equivalent to the adapter path in eval mode."""
+        return self.base.weight + (self.B @ self.A) * self.scaling
+
     @torch.no_grad()
     def merge(self):
-        """Fold BA into the frozen weight: zero inference overhead after merging."""
-        self.base.weight += (self.B @ self.A) * self.scaling
+        """Fold BA into the frozen weight for inference without extra LoRA matmuls."""
+        self.base.weight.copy_(self.merged_weight())
         self.A.zero_()
         self.B.zero_()
         return self.base
@@ -286,30 +393,43 @@ def _t_lora():
     assert trainable == 4 * 16 + 32 * 4, trainable
     assert trainable < base.weight.numel()
 
+    base64 = nn.Linear(8, 8, bias=False, dtype=torch.float64)
+    lora64 = LoRALinear(base64, r=2)
+    assert lora64.A.dtype == torch.float64 and lora64.B.dtype == torch.float64
+
 
 # --------------------------------------------------------------------------------------
 # 6. Sampling: temperature / top-k / top-p
 # --------------------------------------------------------------------------------------
 def sample_next(logits, temperature=1.0, top_k=None, top_p=None, generator=None):
     """logits: (V,). Order matters: temperature -> top-k -> top-p -> sample."""
+    if logits.ndim != 1 or logits.numel() == 0:
+        raise ValueError("logits must be a non-empty 1D tensor")
+    if temperature < 0:
+        raise ValueError("temperature must be non-negative")
     if temperature == 0:  # greedy; guard against division by zero
         return int(logits.argmax())
     logits = logits / temperature
 
     if top_k is not None:
+        if top_k < 1:
+            raise ValueError("top_k must be at least 1")
         k = min(top_k, logits.numel())
-        kth = torch.topk(logits, k).values[-1]
-        logits = logits.masked_fill(logits < kth, float("-inf"))
+        kept, idx = torch.topk(logits, k)
+        logits = torch.full_like(logits, float("-inf")).scatter(0, idx, kept)
 
     if top_p is not None:
-        srt, idx = torch.sort(logits, descending=True)
-        probs = F.softmax(srt, dim=-1)
-        cum = torch.cumsum(probs, dim=-1)
-        # keep the smallest prefix whose mass exceeds p; shift so the crossing token stays
-        drop = cum - probs >= top_p
-        drop[0] = False  # the argmax always survives, so top_p=0 cannot empty the support
-        srt = srt.masked_fill(drop, float("-inf"))
-        logits = torch.full_like(logits, float("-inf")).scatter(0, idx, srt)
+        if top_p < 0:
+            raise ValueError("top_p must be non-negative")
+        if top_p < 1:
+            srt, idx = torch.sort(logits, descending=True)
+            probs = F.softmax(srt, dim=-1)
+            cum = torch.cumsum(probs, dim=-1)
+            # keep the smallest prefix whose mass exceeds p; shift so the crossing token stays
+            drop = cum - probs >= top_p
+            drop[0] = False  # the argmax always survives, so top_p=0 cannot empty the support
+            srt = srt.masked_fill(drop, float("-inf"))
+            logits = torch.full_like(logits, float("-inf")).scatter(0, idx, srt)
 
     probs = F.softmax(logits, dim=-1)
     return int(torch.multinomial(probs, 1, generator=generator))
@@ -327,6 +447,11 @@ def _t_sampling():
     # softmax([5,4,1,0.5,-3]) ~ [.71,.26,.013,.008,.0004]; p=0.9 keeps the top two
     picks = {sample_next(logits, temperature=1.0, top_p=0.9, generator=g) for _ in range(400)}
     assert picks <= {0, 1}, picks
+
+    # top_p=1 is a no-op even when cumulative sums round to exactly one early.
+    extreme = torch.tensor([700.0, 0.0, -700.0], dtype=torch.float64)
+    g1, g2 = torch.Generator().manual_seed(7), torch.Generator().manual_seed(7)
+    assert sample_next(extreme, generator=g1) == sample_next(extreme, top_p=1.5, generator=g2)
 
 
 # --------------------------------------------------------------------------------------
@@ -367,10 +492,11 @@ class RMSNorm(nn.Module):
         self.eps = eps
 
     def forward(self, x):
-        # The reduction genuinely has to run in fp32: summing d squared values in bf16
-        # accumulates enough rounding error to shift the norm. Cast back at the end so
-        # the layer is dtype-transparent.
-        xf = x.float()
+        # Promote low-precision inputs for the reduction without demoting float64.
+        reduction_dtype = (
+            torch.float32 if x.dtype in (torch.float16, torch.bfloat16) else x.dtype
+        )
+        xf = x.to(reduction_dtype)
         rms = torch.rsqrt(xf.pow(2).mean(-1, keepdim=True) + self.eps)
         return (xf * rms).type_as(x) * self.weight.type_as(x)
 
@@ -381,12 +507,23 @@ def _t_rmsnorm():
     m = RMSNorm(16)
     assert torch.allclose(m(x), F.rms_norm(x, (16,), m.weight, 1e-6), atol=1e-6)
 
+    x64 = torch.randn(2, 3, 16, dtype=torch.float64)
+    m64 = RMSNorm(16).double()
+    assert torch.allclose(
+        m64(x64), F.rms_norm(x64, (16,), m64.weight, 1e-6),
+        atol=1e-12, rtol=1e-12,
+    )
+
 
 # --------------------------------------------------------------------------------------
 # 9. Top-1 MoE routing with capacity (the "how does a sparse layer work" question)
 # --------------------------------------------------------------------------------------
 def top1_route(logits, capacity):
     """logits: (T, E). Returns (expert_idx, gate, kept_mask) with per-expert capacity."""
+    if logits.ndim != 2 or logits.shape[0] == 0 or logits.shape[1] == 0:
+        raise ValueError("logits must have non-empty shape (tokens, experts)")
+    if not isinstance(capacity, int) or capacity < 0:
+        raise ValueError("capacity must be a non-negative integer")
     gates = F.softmax(logits, dim=-1)
     gate, expert = gates.max(dim=-1)
     kept = torch.zeros_like(expert, dtype=torch.bool)
@@ -402,6 +539,8 @@ def top1_route(logits, capacity):
 
 def load_balancing_loss(logits):
     """Switch Transformer aux loss: E * sum_e (fraction of tokens to e) * (mean prob of e)."""
+    if logits.ndim != 2 or logits.shape[0] == 0 or logits.shape[1] == 0:
+        raise ValueError("logits must have non-empty shape (tokens, experts)")
     gates = F.softmax(logits, dim=-1)
     E = logits.shape[-1]
     expert = gates.argmax(dim=-1)
@@ -410,7 +549,7 @@ def load_balancing_loss(logits):
     return E * (frac * prob).sum()
 
 
-@check("MoE routing respects capacity; aux loss is minimised by a uniform router")
+@check("MoE routing respects capacity; aux loss penalises confident collapse")
 def _t_moe():
     T, E, cap = 20, 4, 3
     logits = torch.randn(T, E)
@@ -426,7 +565,7 @@ def _t_moe():
 
 
 # --------------------------------------------------------------------------------------
-# 10. GRPO objective (the post-training question of the moment)
+# 10. GRPO objective
 # --------------------------------------------------------------------------------------
 def grpo_loss(
     logp, logp_old, logp_ref, rewards, mask, clip_eps=0.2, beta=0.04, group_size=None
@@ -437,10 +576,12 @@ def grpo_loss(
     scalar per completion, standardised within its group, then broadcast to every token.
     """
     B = rewards.shape[0]
-    g = group_size or B
+    g = B if group_size is None else group_size
+    if g < 1 or B % g:
+        raise ValueError("group_size must be positive and divide the batch size")
     r = rewards.view(-1, g)
-    # a group of one carries no relative signal, and the unbiased std is NaN there
-    spread = r.std(dim=1, keepdim=True) if g > 1 else torch.zeros_like(r)
+    # Population std is the within-sampled-group scale; a singleton has zero signal.
+    spread = r.std(dim=1, keepdim=True, correction=0)
     adv = (r - r.mean(dim=1, keepdim=True)) / (spread + 1e-4)
     adv = adv.reshape(B, 1)  # broadcast over L
 
@@ -449,12 +590,17 @@ def grpo_loss(
     clipped = ratio.clamp(1 - clip_eps, 1 + clip_eps) * adv
     policy = -torch.min(unclipped, clipped)
 
-    # k3 estimator: unbiased, always >= 0, unlike a raw log-ratio difference
+    # k3 estimator: unbiased in expectation and non-negative per sample
     log_ratio = logp_ref - logp
     kl = log_ratio.exp() - log_ratio - 1.0
 
     per_token = policy + beta * kl
-    return (per_token * mask).sum() / mask.sum().clamp(min=1.0)
+    token_count = mask.sum(dim=1)
+    valid = token_count > 0
+    if not valid.any():
+        return per_token.sum() * 0.0
+    per_completion = (per_token * mask).sum(dim=1) / token_count.clamp(min=1.0)
+    return per_completion[valid].mean()
 
 
 @check("GRPO: zero advantage spread -> ~zero loss; k3 KL is non-negative")
@@ -464,7 +610,7 @@ def _t_grpo():
     mask = torch.ones(B, L)
 
     # all rewards equal -> advantage 0 -> policy term vanishes, and with logp_ref == logp
-    # the KL term vanishes too. This is exactly why GRPO drops all-tie groups (DAPO).
+    # the KL term vanishes too. Such a group carries no relative policy signal.
     flat = grpo_loss(logp, logp.clone(), logp.clone(), torch.ones(B), mask, group_size=4)
     assert abs(float(flat)) < 1e-6, float(flat)
 
@@ -507,8 +653,9 @@ def _t_dpo():
 def compute_gae(rewards, values, gamma=0.99, lam=0.95, last_value=0.0):
     """rewards, values: (T,). Returns (advantages, returns), both (T,)."""
     T = len(rewards)
-    adv = torch.zeros(T)
-    gae = 0.0
+    adv = torch.zeros_like(rewards)
+    gae = rewards.new_tensor(0.0)
+    last_value = torch.as_tensor(last_value, dtype=values.dtype, device=values.device)
     for t in reversed(range(T)):
         next_v = values[t + 1] if t + 1 < T else last_value
         delta = rewards[t] + gamma * next_v - values[t]
@@ -797,22 +944,28 @@ def flash_attention_forward(q, k, v, block_q=16, block_kv=16, causal=True):
     max m and denominator l per query row. This is FlashAttention's structure; a real
     kernel additionally keeps the tiles in SRAM and fuses everything into one launch.
     """
+    if q.ndim != 4 or q.shape != k.shape or q.shape != v.shape:
+        raise ValueError("q, k, and v must share shape (B, H, T, D)")
+    if q.shape[-2] == 0 or q.shape[-1] == 0 or block_q <= 0 or block_kv <= 0:
+        raise ValueError("sequence/head dimensions and block sizes must be positive")
     B, H, T, D = q.shape
+    acc_dtype = torch.float32 if q.dtype in (torch.float16, torch.bfloat16) else q.dtype
     scale = 1.0 / math.sqrt(D)
-    out = torch.zeros_like(q)
-    logsumexp = torch.zeros(B, H, T, dtype=q.dtype, device=q.device)
+    out = torch.zeros(B, H, T, D, dtype=acc_dtype, device=q.device)
+    logsumexp = torch.zeros(B, H, T, dtype=acc_dtype, device=q.device)
 
     for i in range(0, T, block_q):
-        qi = q[:, :, i : i + block_q]                      # (B, H, bq, D)
+        qi = q[:, :, i : i + block_q].to(acc_dtype)        # (B, H, bq, D)
         bq = qi.shape[2]
-        m = torch.full((B, H, bq), float("-inf"), dtype=q.dtype, device=q.device)
-        l = torch.zeros(B, H, bq, dtype=q.dtype, device=q.device)
-        acc = torch.zeros(B, H, bq, D, dtype=q.dtype, device=q.device)
+        m = torch.full((B, H, bq), float("-inf"), dtype=acc_dtype, device=q.device)
+        l = torch.zeros(B, H, bq, dtype=acc_dtype, device=q.device)
+        acc = torch.zeros(B, H, bq, D, dtype=acc_dtype, device=q.device)
 
         for j in range(0, T, block_kv):
             if causal and j > i + bq - 1:
                 break                                       # whole block is in the future
-            kj, vj = k[:, :, j : j + block_kv], v[:, :, j : j + block_kv]
+            kj = k[:, :, j : j + block_kv].to(acc_dtype)
+            vj = v[:, :, j : j + block_kv].to(acc_dtype)
             s = (qi @ kj.transpose(-2, -1)) * scale         # (B, H, bq, bkv)
             if causal:
                 rows = torch.arange(i, i + bq, device=q.device).unsqueeze(1)
@@ -833,7 +986,7 @@ def flash_attention_forward(q, k, v, block_q=16, block_kv=16, causal=True):
         out[:, :, i : i + bq] = acc / l.clamp(min=1e-30).unsqueeze(-1)
         logsumexp[:, :, i : i + bq] = m + l.clamp(min=1e-30).log()
 
-    return out, logsumexp
+    return out.to(q.dtype), logsumexp
 
 
 @check("tiled FlashAttention forward == exact attention")
@@ -851,12 +1004,21 @@ def _t_flash():
     got2, _ = flash_attention_forward(q, k, v, block_q=7, block_kv=5, causal=True)
     assert torch.allclose(ref, got2, atol=1e-10)
 
+    for dtype, atol in ((torch.float16, 2e-3), (torch.bfloat16, 2e-2)):
+        q_low, k_low, v_low = q.float().to(dtype), k.float().to(dtype), v.float().to(dtype)
+        want = F.scaled_dot_product_attention(
+            q_low.float(), k_low.float(), v_low.float(), is_causal=True
+        ).to(dtype)
+        got, lse = flash_attention_forward(q_low, k_low, v_low, block_q=7, block_kv=5)
+        assert got.dtype == dtype and lse.dtype == torch.float32
+        assert torch.allclose(got, want, atol=atol, rtol=atol), dtype
+
 
 # --------------------------------------------------------------------------------------
-# 18. A training loop that overfits a tiny batch (the debugging baseline)
+# 18. A training loop that overfits a tiny batch
 # --------------------------------------------------------------------------------------
 def overfit_tiny(steps=2000, lr=0.5):
-    """If a model cannot memorise ten examples, the bug is in the code, not the config."""
+    """Sanity check: a small network should memorise one fixed ten-example batch."""
     torch.manual_seed(0)
     x = torch.randn(10, 4)
     y = torch.randint(0, 3, (10,))
@@ -864,7 +1026,7 @@ def overfit_tiny(steps=2000, lr=0.5):
     opt = torch.optim.SGD(model.parameters(), lr=lr)
 
     for _ in range(steps):
-        opt.zero_grad()                       # forgetting this is the single most common bug
+        opt.zero_grad()
         loss = F.cross_entropy(model(x), y)
         loss.backward()
         opt.step()
@@ -889,8 +1051,9 @@ def _t_overfit():
 class SwiGLU(nn.Module):
     def __init__(self, d_model, d_ff=None):
         super().__init__()
-        # 8/3 keeps the parameter count equal to a 4x ReLU FFN: 3*d*F == 2*d*4d
-        d_ff = d_ff or int(8 * d_model / 3)
+        # 8/3 approximately matches a 4x ReLU FFN: 3*d*F ~= 2*d*4d
+        if d_ff is None:
+            d_ff = int(8 * d_model / 3)
         self.w_gate = nn.Linear(d_model, d_ff, bias=False)
         self.w_up = nn.Linear(d_model, d_ff, bias=False)
         self.w_down = nn.Linear(d_ff, d_model, bias=False)
@@ -939,7 +1102,7 @@ def _t_block():
 
 
 # --------------------------------------------------------------------------------------
-# 23. SFT loss masking over a padded, packed batch
+# 23. SFT loss masking and packed-sequence metadata
 # --------------------------------------------------------------------------------------
 def build_sft_labels(input_ids, prompt_lens, attention_mask, ignore_index=-100):
     """Supervise response tokens only; prompt and padding are excluded."""
@@ -950,7 +1113,47 @@ def build_sft_labels(input_ids, prompt_lens, attention_mask, ignore_index=-100):
     return labels
 
 
-@check("SFT masking hides prompt and padding, keeps every response token")
+def build_packed_sft_labels(input_ids, response_mask, attention_mask, ignore_index=-100):
+    """Label response tokens in a packed row; response_mask is supplied by preprocessing."""
+    keep = response_mask.bool() & attention_mask.bool()
+    return input_ids.masked_fill(~keep, ignore_index)
+
+
+def build_packed_attention(segment_ids, attention_mask):
+    """Return reset position ids and a block-diagonal causal mask for packed examples."""
+    B, T = segment_ids.shape
+    valid = attention_mask.bool()
+    positions = torch.zeros_like(segment_ids)
+    for b in range(B):
+        last_segment, offset = None, 0
+        for t in range(T):
+            if not valid[b, t]:
+                last_segment, offset = None, 0
+                continue
+            segment = int(segment_ids[b, t])
+            if segment != last_segment:
+                offset = 0
+                last_segment = segment
+            positions[b, t] = offset
+            offset += 1
+
+    starts = valid.clone()
+    starts[:, 1:] = valid[:, 1:] & (
+        ~valid[:, :-1] | (segment_ids[:, 1:] != segment_ids[:, :-1])
+    )
+    run_ids = starts.long().cumsum(dim=1)
+    same_segment = run_ids[:, :, None] == run_ids[:, None, :]
+    causal = torch.ones(T, T, dtype=torch.bool, device=segment_ids.device).tril()
+    allowed = (
+        same_segment
+        & causal[None]
+        & valid[:, :, None]
+        & valid[:, None, :]
+    )
+    return positions, allowed
+
+
+@check("SFT masking and packing preserve response and document boundaries")
 def _t_loss_masking():
     ids = torch.arange(24).reshape(3, 8)
     am = torch.ones(3, 8, dtype=torch.long); am[2, 6:] = 0
@@ -962,13 +1165,26 @@ def _t_loss_masking():
         assert (keep != -100).all() and keep.numel() > 0
     assert (lab[2, 6:] == -100).all()
 
+    packed_ids = torch.tensor([[10, 11, 12, 20, 21, 0]])
+    segments = torch.tensor([[0, 0, 0, 1, 1, -1]])
+    packed_am = torch.tensor([[1, 1, 1, 1, 1, 0]])
+    response = torch.tensor([[0, 1, 1, 0, 1, 0]])
+    packed_labels = build_packed_sft_labels(packed_ids, response, packed_am)
+    assert torch.equal(packed_labels, torch.tensor([[-100, 11, 12, -100, 21, -100]]))
+    positions, allowed = build_packed_attention(segments, packed_am)
+    assert torch.equal(positions, torch.tensor([[0, 1, 2, 0, 1, 0]]))
+    assert not allowed[0, 3, 2] and allowed[0, 4, 3] and not allowed[0, 5].any()
+
 
 # --------------------------------------------------------------------------------------
 # 24. Speculative decoding accept/reject (exactness is the whole point)
 # --------------------------------------------------------------------------------------
 def speculative_accept(p_target, q_draft, token, u):
     """Accept with prob min(1, p/q); on reject sample from the normalised residual."""
-    if u <= min(1.0, (p_target[token] / q_draft[token]).item()):
+    q_token = q_draft[token]
+    if q_token <= 0:
+        raise ValueError("the sampled draft token must have positive probability")
+    if u < min(1.0, (p_target[token] / q_token).item()):
         return int(token), True
     resid = torch.clamp(p_target - q_draft, min=0)
     resid = resid / resid.sum()
@@ -991,24 +1207,24 @@ def _t_speculative():
     emp = counts / N
     assert torch.allclose(emp, p, atol=0.01), (emp, p)
 
+    p_edge = torch.tensor([0.0, 1.0])
+    q_edge = torch.tensor([0.5, 0.5])
+    assert speculative_accept(p_edge, q_edge, token=0, u=0.0) == (1, False)
+
 
 # --------------------------------------------------------------------------------------
-# 25. 1-NN in pure NumPy, no loops (OpenAI, 3+ reports)
+# 25. 1-NN in pure NumPy, no loops
 # --------------------------------------------------------------------------------------
 def nearest_neighbour(train_x, train_y, test_x):
     """1-NN classification, fully vectorised.
 
-    The trick worth knowing: ||a - b||^2 = ||a||^2 - 2 a.b + ||b||^2, so all pairwise
-    distances are one matmul plus two norm vectors. Never loop over test points.
+    Direct differences avoid the cancellation in ||a||^2 + ||b||^2 - 2 a.b for nearby,
+    large float32 coordinates. Never loop over test points.
     """
     import numpy as np
 
-    # (n_test, 1) + (1, n_train) - 2 * (n_test, n_train)
-    d2 = (
-        (test_x ** 2).sum(1)[:, None]
-        + (train_x ** 2).sum(1)[None, :]
-        - 2 * test_x @ train_x.T
-    )
+    diff = test_x[:, None, :] - train_x[None, :, :]
+    d2 = np.sum(diff * diff, axis=-1)
     return train_y[np.argmin(d2, axis=1)]
 
 
@@ -1022,6 +1238,11 @@ def _t_nn():
     got = nearest_neighbour(tr_x, tr_y, te_x)
     want = np.array([tr_y[np.argmin(((tr_x - t) ** 2).sum(1))] for t in te_x])
     assert (got == want).all()
+
+    # Expanded norms cancel in float32 here; direct differences retain the nearest point.
+    tr_x = np.array([[100.02], [100.001]], dtype=np.float32)
+    te_x = np.array([[100.0]], dtype=np.float32)
+    assert nearest_neighbour(tr_x, np.array([0, 1]), te_x).item() == 1
 
 
 # --------------------------------------------------------------------------------------
@@ -1039,6 +1260,8 @@ class BatchNorm1dScratch(nn.Module):
 
     def forward(self, x):
         if self.training:
+            if x.shape[0] < 2:
+                raise ValueError("BatchNorm training needs at least two values per channel")
             mean = x.mean(0)
             var = x.var(0, unbiased=False)          # biased for normalising...
             with torch.no_grad():
@@ -1067,7 +1290,7 @@ def _t_batchnorm():
 
 
 # --------------------------------------------------------------------------------------
-# 27. Filtering bad human annotations (OpenAI, 2+ reports)
+# 27. Filtering bad human annotations
 # --------------------------------------------------------------------------------------
 def filter_annotations(labels, annotators, min_agreement=0.6, min_items=3):
     """labels[i][j] is annotator j's label for item i, or None if unlabelled.
@@ -1119,14 +1342,14 @@ def _t_filter():
 
 
 # --------------------------------------------------------------------------------------
-# 28. Cauchy from a spinning light source (OpenAI: "simulate, then verify the PDF")
+# 28. Cauchy from a spinning light source
 # --------------------------------------------------------------------------------------
 def light_source_samples(n, seed=0):
     """A lamp at distance 1 from an infinite wall points at a uniformly random angle.
 
     Where it hits the wall is x = tan(theta) with theta ~ Uniform(-pi/2, pi/2), which is
-    the standard Cauchy. The point of the question is that the mean does not exist, so
-    the sample mean never settles no matter how many samples you draw.
+    the standard Cauchy. Its population mean does not exist, and the n-sample mean has
+    the same standard Cauchy distribution for every n.
     """
     import numpy as np
 
@@ -1141,7 +1364,7 @@ def cauchy_pdf(x):
     return 1.0 / (np.pi * (1.0 + x ** 2))
 
 
-@check("light-source simulation matches the Cauchy PDF, and its mean never converges")
+@check("light-source simulation matches the Cauchy PDF and shows mean instability")
 def _t_cauchy():
     import numpy as np
 
@@ -1161,12 +1384,12 @@ def _t_cauchy():
     # the median is a fine estimator of the location parameter...
     assert abs(np.median(x)) < 0.02, np.median(x)
 
-    # ...but the sample mean does not settle. For a distribution with a finite mean the
-    # error would shrink like 1/sqrt(n); here it stays O(1) or worse at every size.
+    # One deterministic illustration of the unstable mean. The proof is analytic:
+    # integral |x| f(x) dx diverges; one finite simulation cannot prove non-convergence.
     means = [np.abs(light_source_samples(n, seed=s).mean())
              for s, n in enumerate([10_000, 100_000, 400_000])]
     assert min(means) > 0.5, (
-        f"sample means {means} are shrinking; a Cauchy mean should not converge")
+        f"sample means {means} were unexpectedly small for this fixed diagnostic")
 
 if __name__ == "__main__":
     failures = 0

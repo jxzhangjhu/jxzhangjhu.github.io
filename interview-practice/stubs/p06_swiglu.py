@@ -13,6 +13,10 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-class SwiGLU:
-    def __init__(self, *a, **kw):
+class SwiGLU(nn.Module):
+    def __init__(self, d_model, d_ff=None):
+        super().__init__()
+        raise NotImplementedError
+
+    def forward(self, x):
         raise NotImplementedError

@@ -4,12 +4,12 @@ Read one at a time.
 
 ## Level 1
 
-Two lines of forward, each a residual around a normalised sublayer.
+Complete p01, p05, and p06 first; this exercise deliberately reuses those modules.
 
 ## Level 2
 
-x = x + attn(norm1(x)); x = x + mlp(norm2(x)).
+Two residual lines: `x = x + attn(norm1(x))`, then `x = x + mlp(norm2(x))`.
 
 ## Level 3
 
-Pre-norm normalises the sublayer input; a full model also needs a final norm before lm_head.
+Pre-norm normalises each sublayer input. A complete language model also needs a final norm before `lm_head`.

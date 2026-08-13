@@ -12,4 +12,4 @@ Initialise A randomly (kaiming) and B to zeros, so B@A = 0 and the adapter start
 
 ## Level 3
 
-Freeze the base with `base.weight.requires_grad_(False)`; the merge is just `W + (alpha/r) * B @ A`.
+Freeze every base parameter; create A/B from `base.weight` so device and dtype match. The merge is `W + (alpha/r) * B @ A`.

@@ -1,7 +1,8 @@
 """Generate the micro debug drills d01-d08 from one spec. Rerun after editing SPECS.
 
 Writes drills/<id>_<name>.py (with the bug planted), drills/.solutions/<id>_<name>.py
-(the same file with the bug fixed), and tests/test_<id>_<name>.py.
+(the same file with the bug fixed), drills/.pristine/<id>_<name>.py (for reset), and
+tests/test_<id>_<name>.py.
 
 Each drill is one function with exactly one wrong line, so buggy and fixed are the same
 source with a single substitution. That keeps the two copies from drifting apart, which
@@ -19,9 +20,10 @@ from problems import DRILLS_BY_ID  # noqa: E402
 
 HEADER = '''"""{id} · {title}   —   budget {minutes} min
 
-{brief}
+Symptom: {brief}
 
 One line in this file is wrong. Run:  python -m pytest tests/test_{id}_{name}.py -q
+Stuck? Read hints/{id}_{name}.md one level at a time.
 """
 
 import math
@@ -44,7 +46,7 @@ def causal_scores(q, k):
     """q, k: (B, T, D). Returns pre-softmax scores with the future masked out."""
     T = q.shape[-2]
     scores = q @ k.transpose(-2, -1) / math.sqrt(q.shape[-1])
-    allowed = torch.tril(torch.ones(T, T, dtype=torch.bool))
+    allowed = torch.tril(torch.ones(T, T, dtype=torch.bool, device=q.device))
 {impl}
 ''',
     '    return scores.masked_fill(allowed, float("-inf"))',
@@ -57,7 +59,7 @@ def test_future_is_masked_and_past_is_not():
     assert torch.isinf(s[0, 1:]).all(), \\
         "query 0 must not see any later position"
     assert torch.isfinite(s[3, :4]).all(), \\
-        "query 3 must see positions 0..3; masked_fill fills where the mask is True"
+        "query 3 must see positions 0..3"
     w = F.softmax(s, dim=-1)
     assert torch.allclose(w[0, 0], torch.tensor(1.0)), \\
         "row 0 should put all its weight on itself"
@@ -83,7 +85,7 @@ def test_merge_matches_a_manual_concat():
     want = torch.cat([x[:, h] for h in range(3)], dim=-1)
     assert got.shape == want.shape, f"expected {tuple(want.shape)}, got {tuple(got.shape)}"
     assert torch.equal(got, want), \\
-        "heads came back interleaved: view() reused the pre-transpose strides"
+        "head values were not restored in per-token order"
 ''',
 )
 
@@ -93,7 +95,9 @@ SPECS["d03"] = (
     "which means the token that crosses the threshold stays in.",
     '''
 def nucleus(logits, top_p):
-    """logits: (V,). Returns logits with everything outside the nucleus set to -inf."""
+    """logits: (V,), 0 < top_p <= 1. Returns logits outside the nucleus as -inf."""
+    if not 0 < top_p <= 1:
+        raise ValueError("top_p must lie in (0, 1]")
     srt, idx = torch.sort(logits, descending=True)
     probs = F.softmax(srt, dim=-1)
     cum = torch.cumsum(probs, dim=-1)
@@ -104,12 +108,11 @@ def nucleus(logits, top_p):
     '    drop = cum >= top_p',
     '    drop = cum - probs >= top_p',
     '''
-def test_the_crossing_token_survives():
+def test_nucleus_is_the_shortest_prefix_reaching_p():
     logits = torch.log(torch.tensor([0.5, 0.3, 0.15, 0.05]))
     kept = torch.isfinite(d.nucleus(logits, 0.9)).nonzero().flatten().tolist()
     assert kept == [0, 1, 2], \\
-        f"p=0.9 on [.5,.3,.15,.05] should keep three tokens, kept {kept}: " \\
-        "use the exclusive cumulative sum, cum - probs"
+        f"p=0.9 on [.5,.3,.15,.05] should keep three tokens, kept {kept}"
 
 
 def test_a_single_dominant_token_is_never_dropped():
@@ -157,7 +160,8 @@ class LoRALinear(nn.Module):
     def __init__(self, base: nn.Linear, r=4, alpha=8):
         super().__init__()
         self.base, self.scaling = base, alpha / r
-        base.weight.requires_grad_(False)
+        for p in base.parameters():
+            p.requires_grad_(False)
         self.A = nn.Parameter(torch.randn(r, base.in_features) * 0.01)
 {impl}
 
@@ -174,22 +178,21 @@ def test_adapter_is_identity_before_training():
     want = base(x).clone()
     got = d.LoRALinear(base, r=4, alpha=8)(x)
     assert torch.allclose(got, want, atol=1e-7), \\
-        "a fresh adapter changed the output: one of A, B must start at zero"
+        "a fresh adapter changed the base model's output"
 
 
 def test_the_adapter_is_not_dead_at_init():
-    """With B = 0 the gradient reaches B but not A, which is why zeroing both is fatal."""
     torch.manual_seed(0)
     m = d.LoRALinear(nn.Linear(16, 32), r=4, alpha=8)
     m(torch.randn(4, 16)).sum().backward()
     assert m.B.grad is not None and m.B.grad.abs().sum() > 0, \\
-        "no gradient reaches B: zeroing both factors makes the adapter untrainable"
+        "the adapter receives no useful first-step gradient"
 ''',
 )
 
 SPECS["d06"] = (
     "softmax without the max subtraction",
-    "Works on toy logits, overflows to inf on the logit magnitudes a real model produces.",
+    "Works on small logits, but overflows under a large-logit numerical stress test.",
     '''
 def softmax(x):
     """x: (..., V) -> the same shape, rows summing to 1."""
@@ -199,11 +202,11 @@ def softmax(x):
     '    e = x.exp()',
     '    e = (x - x.max(dim=-1, keepdim=True).values).exp()',
     '''
-def test_survives_realistic_logit_magnitudes():
+def test_survives_large_finite_logits():
     x = torch.tensor([[1e4, 2e4, 3e4]])
     got = d.softmax(x)
     assert torch.isfinite(got).all(), \\
-        "exp() overflowed to inf, then inf/inf gave nan: subtract the row max first"
+        "finite logits produced non-finite probabilities"
     assert torch.allclose(got, F.softmax(x, dim=-1), atol=1e-6)
 
 
@@ -216,7 +219,7 @@ def test_still_correct_on_ordinary_logits():
 SPECS["d07"] = (
     "Attention scaled by the wrong dimension",
     "The scale is the square root of the *per-head* dimension. With eight heads this is\n"
-    "off by a factor of sqrt(8), which just looks like a model that trains badly.",
+    "off by a factor of sqrt(8), silently changing the effective softmax temperature.",
     '''
 def attention(q, k, v, n_heads):
     """q, k, v: (B, T, D) with D = n_heads * d_head. Non-causal, single call."""
@@ -242,7 +245,7 @@ def test_matches_pytorch_sdpa():
     want = F.scaled_dot_product_attention(qq, kk, vv)
     want = want.transpose(1, 2).contiguous().view(B, T, D)
     assert torch.allclose(got, want, atol=1e-5), \\
-        "scores are scaled by sqrt(d_model) instead of sqrt(d_head)"
+        "attention disagrees with scaled_dot_product_attention"
 ''',
 )
 
@@ -260,7 +263,7 @@ def sft_loss(logits, input_ids, prompt_len):
 ''',
     '    targets = targets.clone()',
     '    targets = targets.clone()\n'
-    '    positions = torch.arange(Tm1).expand(B, Tm1)\n'
+    '    positions = torch.arange(Tm1, device=targets.device).expand(B, Tm1)\n'
     '    targets[positions < prompt_len - 1] = -100',
     '''
 def test_prompt_tokens_do_not_affect_the_loss():
@@ -303,22 +306,25 @@ from drills import {id}_{name} as d  # noqa: E402
 def main():
     drills = HERE / "drills"
     sols = drills / ".solutions"
+    pristine = drills / ".pristine"
     sols.mkdir(parents=True, exist_ok=True)
+    pristine.mkdir(parents=True, exist_ok=True)
     written = 0
 
     for did, (title, brief, body, buggy, fixed, test) in sorted(SPECS.items()):
         meta = DRILLS_BY_ID[did]
-        head = HEADER.format(id=did, name=meta.name, title=title,
-                             minutes=meta.minutes, brief=brief)
+        head = HEADER.format(id=did, name=meta.name, title=meta.title_en,
+                             minutes=meta.minutes, brief=meta.symptom_en)
         stem = f"{did}_{meta.name}"
-        (drills / f"{stem}.py").write_text(head + body.format(impl=buggy).lstrip("\n"),
-                                           encoding="utf-8")
+        buggy_text = head + body.format(impl=buggy).lstrip("\n")
+        (drills / f"{stem}.py").write_text(buggy_text, encoding="utf-8")
+        (pristine / f"{stem}.py").write_text(buggy_text, encoding="utf-8")
         (sols / f"{stem}.py").write_text(head + body.format(impl=fixed).lstrip("\n"),
                                          encoding="utf-8")
         (HERE / "tests" / f"test_{stem}.py").write_text(
             TEST_HEADER.format(id=did, name=meta.name, title=title) + test.lstrip("\n"),
             encoding="utf-8")
-        written += 3
+        written += 4
         print(f"  {did}  {meta.name}")
 
     print(f"\n{written} files written for {len(SPECS)} micro-drills")

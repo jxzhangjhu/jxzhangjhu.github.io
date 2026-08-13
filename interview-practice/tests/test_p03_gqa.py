@@ -1,9 +1,11 @@
 """Tests for p03 · Grouped-query attention. Run: python run.py p03"""
 
+import math
 import sys
 from pathlib import Path
 
 import numpy as np
+import pytest
 import torch
 import torch.nn as nn
 import torch.nn.functional as F

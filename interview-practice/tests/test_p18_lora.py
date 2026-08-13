@@ -35,6 +35,13 @@ def test_merge_is_lossless():
 
 
 def test_base_is_frozen():
-    base = nn.Linear(8, 8, bias=False)
+    base = nn.Linear(8, 8, bias=True)
     lora = stub.LoRALinear(base, r=2)
-    assert not lora.base.weight.requires_grad, "the base must be frozen — that is the memory win"
+    assert all(not p.requires_grad for p in lora.base.parameters()),         "every base parameter, including bias, must be frozen"
+
+
+def test_adapter_inherits_base_dtype():
+    base = nn.Linear(8, 8, bias=False, dtype=torch.float64)
+    lora = stub.LoRALinear(base, r=2)
+    assert lora.A.dtype == base.weight.dtype and lora.B.dtype == base.weight.dtype
+    assert lora(torch.randn(3, 8, dtype=torch.float64)).dtype == torch.float64

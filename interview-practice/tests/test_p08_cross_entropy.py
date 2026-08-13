@@ -32,11 +32,10 @@ def test_no_overflow_on_huge_logits():
     assert torch.isfinite(loss), "overflowed: subtract the row max before exponentiating"
 
 
-def test_fully_masked_batch_is_zero_not_nan():
-    logits = torch.randn(4, 10, requires_grad=True)
-    loss = stub.cross_entropy(logits, torch.full((4,), -100))
-    assert torch.isfinite(loss) and abs(loss.detach().item()) < 1e-9, \
-        f"a fully masked microbatch must contribute nothing, got {loss.detach().item()}"
+def test_fully_masked_batch_is_zero_and_stays_on_graph():
+    logits = torch.randn(4, 7, requires_grad=True)
+    targets = torch.full((4,), -100)
+    loss = stub.cross_entropy(logits, targets)
+    assert loss.shape == () and loss.detach().item() == 0.0 and torch.isfinite(loss)
     loss.backward()
-    assert logits.grad is not None and torch.isfinite(logits.grad).all(), \
-        "the zero has to stay attached to the graph, or .backward() breaks"
+    assert logits.grad is not None and torch.equal(logits.grad, torch.zeros_like(logits))

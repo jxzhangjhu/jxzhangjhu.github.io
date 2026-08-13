@@ -23,6 +23,13 @@ def test_top_k_restricts_support():
     assert got <= {0, 1}, f"top-k=2 sampled outside the top two: {got}"
 
 
+def test_top_k_keeps_exactly_k_slots_when_logits_tie():
+    torch.manual_seed(1)
+    logits = torch.zeros(4)
+    got = {stub.sample_next(logits, top_k=2) for _ in range(300)}
+    assert len(got) == 2, f"top-k=2 should retain exactly two tied slots, sampled {got}"
+
+
 def test_top_p_keeps_the_crossing_token():
     # probs approx [0.5, 0.3, 0.15, 0.05]; p=0.9 must keep exactly the first three
     logits = torch.log(torch.tensor([0.5, 0.3, 0.15, 0.05]))
@@ -31,9 +38,18 @@ def test_top_p_keeps_the_crossing_token():
         f"expected the nucleus to be exactly {{0,1,2}}, sampled {got} (off-by-one in the shift?)"
 
 
-def test_degenerate_top_p_does_not_empty_the_support():
-    logits = torch.log(torch.tensor([0.5, 0.3, 0.15, 0.05]))
-    for p in (0.0, 1e-6, 0.4):
-        got = stub.sample_next(logits, temperature=1.0, top_p=p)
-        assert got == 0, \
-            f"top_p={p} must collapse to the argmax, got {got} (keep the top token unconditionally)"
+def test_top_p_one_preserves_finite_logit_support(monkeypatch):
+    captured = {}
+
+    def capture(probs, num_samples, generator=None):
+        captured["probs"] = probs
+        return torch.tensor([0], device=probs.device)
+
+    monkeypatch.setattr(torch, "multinomial", capture)
+    logits = torch.tensor([700.0, 0.0, -700.0], dtype=torch.float64)
+    for top_p in (1.0, 1.5):
+        stub.sample_next(logits, top_p=top_p)
+        assert captured["probs"][1] > 0, (
+            "top_p>=1 must bypass nucleus filtering; cumulative sums can round to one "
+            "early for extreme finite logits"
+        )

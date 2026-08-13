@@ -194,14 +194,21 @@ def test_reduction_runs_in_fp32_under_bf16():
     x = (torch.randn(2, 3, 64) * 100).to(torch.bfloat16)
     y = m(x)
     assert y.dtype == x.dtype, "output dtype should follow the input (cast back at the end)"
-    # a bf16 reduction over 64 squared values of magnitude ~1e4 drifts well past 1%
+    # a bf16 reduction over 64 squared values of magnitude ~1e4 can drift substantially
     want = F.rms_norm(x.float(), (64,), m.weight.float(), eps=1e-6)
     err = (y.float() - want).abs().max() / want.abs().max()
     assert err < 5e-3, f"relative error {err:.2%}: is the reduction running in fp32?"
+
+
+def test_float64_is_not_silently_demoted():
+    m = stub.RMSNorm(32).double()
+    x = torch.randn(2, 3, 32, dtype=torch.float64)
+    want = F.rms_norm(x, (32,), m.weight, eps=1e-6)
+    assert torch.allclose(m(x), want, atol=1e-12, rtol=1e-12)
 ''',
 ["RMS(x) = sqrt(mean(x^2) + eps) over the last dimension, keepdim=True.",
  "There is no mean subtraction and no bias term — that is the whole difference from LayerNorm.",
- "Compute the reduction in fp32 (`x.float()`) and cast back with `.type_as(x)`; a bf16 sum over 64+ squared values loses too much precision."])
+ "Promote fp16/bf16 reductions to fp32, but do not demote float64; cast the normalised activations back to the input dtype."])
 
 SPECS["p08"] = (
 "Cross entropy from logits, with the log-sum-exp trick and ignore_index support.",
@@ -230,10 +237,19 @@ def test_no_overflow_on_huge_logits():
     logits = torch.tensor([[1e4, 2e4, 3e4]])
     loss = stub.cross_entropy(logits, torch.tensor([2]))
     assert torch.isfinite(loss), "overflowed: subtract the row max before exponentiating"
+
+
+def test_fully_masked_batch_is_zero_and_stays_on_graph():
+    logits = torch.randn(4, 7, requires_grad=True)
+    targets = torch.full((4,), -100)
+    loss = stub.cross_entropy(logits, targets)
+    assert loss.shape == () and loss.detach().item() == 0.0 and torch.isfinite(loss)
+    loss.backward()
+    assert logits.grad is not None and torch.equal(logits.grad, torch.zeros_like(logits))
 ''',
 ["log_softmax(x)[t] = x[t] - logsumexp(x). Never build probabilities and then take a log.",
  "logsumexp needs the max subtracted first: m + log(sum(exp(x - m))).",
- "For ignore_index, build a boolean keep-mask, gather only the kept rows, and divide by the number kept — not by N."])
+ "For ignore_index, average only kept rows. If none remain, return `logits.sum() * 0.0`: finite zero, still attached to the graph."])
 
 SPECS["p10"] = (
 "Write a training loop that drives a tiny fixed batch to near-zero loss.\nThis is the smoke test every real run should start with.",
@@ -276,15 +292,39 @@ def test_top_k_restricts_support():
     assert got <= {0, 1}, f"top-k=2 sampled outside the top two: {got}"
 
 
+def test_top_k_keeps_exactly_k_slots_when_logits_tie():
+    torch.manual_seed(1)
+    logits = torch.zeros(4)
+    got = {stub.sample_next(logits, top_k=2) for _ in range(300)}
+    assert len(got) == 2, f"top-k=2 should retain exactly two tied slots, sampled {got}"
+
+
 def test_top_p_keeps_the_crossing_token():
     # probs approx [0.5, 0.3, 0.15, 0.05]; p=0.9 must keep exactly the first three
     logits = torch.log(torch.tensor([0.5, 0.3, 0.15, 0.05]))
     got = {stub.sample_next(logits, temperature=1.0, top_p=0.9) for _ in range(600)}
     assert got <= {0, 1, 2} and 2 in got, \\
         f"expected the nucleus to be exactly {{0,1,2}}, sampled {got} (off-by-one in the shift?)"
+
+
+def test_top_p_one_preserves_finite_logit_support(monkeypatch):
+    captured = {}
+
+    def capture(probs, num_samples, generator=None):
+        captured["probs"] = probs
+        return torch.tensor([0], device=probs.device)
+
+    monkeypatch.setattr(torch, "multinomial", capture)
+    logits = torch.tensor([700.0, 0.0, -700.0], dtype=torch.float64)
+    for top_p in (1.0, 1.5):
+        stub.sample_next(logits, top_p=top_p)
+        assert captured["probs"][1] > 0, (
+            "top_p>=1 must bypass nucleus filtering; cumulative sums can round to one "
+            "early for extreme finite logits"
+        )
 ''',
 ["Apply temperature first — it changes the distribution the truncations then act on.",
- "For top-p, sort descending, take the cumulative sum, and keep the shortest prefix whose mass reaches p.",
+ "For top-p below 1, sort descending, take the cumulative sum, and keep the shortest prefix whose mass reaches p. At top_p>=1, skip nucleus filtering so every finite-logit slot remains in support.",
  "The exclusive cumulative sum is `cum - probs`; drop where that is already >= top_p, which keeps the token that crosses the threshold."])
 
 SPECS["p18"] = (
@@ -327,13 +367,21 @@ def test_merge_is_lossless():
 
 
 def test_base_is_frozen():
-    base = nn.Linear(8, 8, bias=False)
+    base = nn.Linear(8, 8, bias=True)
     lora = stub.LoRALinear(base, r=2)
-    assert not lora.base.weight.requires_grad, "the base must be frozen — that is the memory win"
+    assert all(not p.requires_grad for p in lora.base.parameters()), \
+        "every base parameter, including bias, must be frozen"
+
+
+def test_adapter_inherits_base_dtype():
+    base = nn.Linear(8, 8, bias=False, dtype=torch.float64)
+    lora = stub.LoRALinear(base, r=2)
+    assert lora.A.dtype == base.weight.dtype and lora.B.dtype == base.weight.dtype
+    assert lora(torch.randn(3, 8, dtype=torch.float64)).dtype == torch.float64
 ''',
 ["W' = W + (alpha/r) * B @ A, with A of shape (r, in) and B of shape (out, r).",
  "Initialise A randomly (kaiming) and B to zeros, so B@A = 0 and the adapter starts as a no-op.",
- "Freeze the base with `base.weight.requires_grad_(False)`; the merge is just `W + (alpha/r) * B @ A`."])
+ "Freeze every base parameter; create A/B from `base.weight` so device and dtype match. The merge is `W + (alpha/r) * B @ A`."])
 
 SPECS["p22"] = (
 "Byte-pair encoding: train the merges, then encode with them.",
@@ -360,7 +408,7 @@ def test_compresses_and_round_trips():
     merges = stub.bpe_train(text, 10)
     ids = stub.bpe_encode(text, merges)
     raw = list(text.encode("utf-8"))
-    assert len(ids) < len(raw) * 0.7, "20+ merges on a repetitive string should compress a lot"
+    assert len(ids) < len(raw) * 0.7, "ten merges on a repetitive string should compress a lot"
 
     table = {i: bytes([i]) for i in range(256)}
     for (a, b), new in merges.items():

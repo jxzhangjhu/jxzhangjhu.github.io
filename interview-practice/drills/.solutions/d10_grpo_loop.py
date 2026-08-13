@@ -1,16 +1,15 @@
 """d10 · Debug a GRPO training loop — budget 30 min
 
-The most reported ML-coding question at Anthropic, and it also shows up at OpenAI.
-A complete GRPO script that runs end to end without raising — that is the trap. Two of
-the bugs are numerical (you find them by running it), one is algorithmic (you find it by
-reading the ratio formula against the objective you know).
+This Anthropic-style drill is synthesised from public, anecdotal reports; it is not an
+official or verbatim question. The script runs end to end, but sampling, group-relative
+advantages, and the policy objective violate behavioural invariants.
 
-The interviewer then asks the real question, which is not about the code:
+After the repairs, discuss a systems diagnostic:
 
-    This loop is strictly on-policy — rollouts come from the policy being updated.
-    So why is the mean importance ratio not exactly 1?
+    At the first update of an on-policy rollout, when should each importance ratio be 1?
+    Why can a logged minibatch mean differ after the policy moves?
 
-Have an answer ready before you look at `hints/`.
+Have an answer ready before reading hints/d10_grpo_loop.md one level at a time.
 """
 
 import torch
@@ -41,7 +40,9 @@ def rollout(policy, obs, generator=None):
 def compute_advantage(rewards, group_size):
     """Group-relative advantage: standardise the reward within each prompt's group."""
     r = rewards.view(-1, group_size)
-    adv = (r - r.mean(dim=1, keepdim=True)) / (r.std(dim=1, keepdim=True) + 1e-5)  # FIX 2
+    # correction=0 also makes the G=1 edge case finite; epsilon handles tied larger groups.
+    std = r.std(dim=1, keepdim=True, correction=0)
+    adv = (r - r.mean(dim=1, keepdim=True)) / (std + 1e-5)  # FIX 2
     return adv.reshape(-1)
 
 

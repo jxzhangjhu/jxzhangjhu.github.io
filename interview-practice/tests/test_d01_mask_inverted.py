@@ -17,7 +17,7 @@ def test_future_is_masked_and_past_is_not():
     assert torch.isinf(s[0, 1:]).all(), \
         "query 0 must not see any later position"
     assert torch.isfinite(s[3, :4]).all(), \
-        "query 3 must see positions 0..3; masked_fill fills where the mask is True"
+        "query 3 must see positions 0..3"
     w = F.softmax(s, dim=-1)
     assert torch.allclose(w[0, 0], torch.tensor(1.0)), \
         "row 0 should put all its weight on itself"

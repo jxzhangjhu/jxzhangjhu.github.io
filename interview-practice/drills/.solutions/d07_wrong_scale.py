@@ -1,9 +1,9 @@
-"""d07 · Attention scaled by the wrong dimension   —   budget 3 min
+"""d07 · Attention-scale failure   —   budget 3 min
 
-The scale is the square root of the *per-head* dimension. With eight heads this is
-off by a factor of sqrt(8), which just looks like a model that trains badly.
+Symptom: attention disagrees with the scaled-dot-product definition
 
 One line in this file is wrong. Run:  python -m pytest tests/test_d07_wrong_scale.py -q
+Stuck? Read hints/d07_wrong_scale.md one level at a time.
 """
 
 import math

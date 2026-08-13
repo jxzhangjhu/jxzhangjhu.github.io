@@ -1,4 +1,4 @@
-"""p03 · Grouped-query attention   —   budget 10 min  [reported: Datadog]
+"""p03 · Grouped-query attention   —   budget 10 min  [reported: Personal anecdotal report: Datadog]
 
 Grouped-query attention: n_kv_heads < n_heads, each group sharing one K/V head.
 

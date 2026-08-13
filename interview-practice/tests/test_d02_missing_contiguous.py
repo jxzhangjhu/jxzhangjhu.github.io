@@ -16,4 +16,4 @@ def test_merge_matches_a_manual_concat():
     want = torch.cat([x[:, h] for h in range(3)], dim=-1)
     assert got.shape == want.shape, f"expected {tuple(want.shape)}, got {tuple(got.shape)}"
     assert torch.equal(got, want), \
-        "heads came back interleaved: view() reused the pre-transpose strides"
+        "head values were not restored in per-token order"

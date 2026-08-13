@@ -23,7 +23,7 @@ def test_compresses_and_round_trips():
     merges = stub.bpe_train(text, 10)
     ids = stub.bpe_encode(text, merges)
     raw = list(text.encode("utf-8"))
-    assert len(ids) < len(raw) * 0.7, "20+ merges on a repetitive string should compress a lot"
+    assert len(ids) < len(raw) * 0.7, "ten merges on a repetitive string should compress a lot"
 
     table = {i: bytes([i]) for i in range(256)}
     for (a, b), new in merges.items():

@@ -4,12 +4,12 @@ Read one at a time.
 
 ## Level 1
 
-Work backwards through down-projection, activation, up-projection.
+Work backwards through the down projection, ReLU, then the up projection.
 
 ## Level 2
 
-Each gradient has the shape of the tensor it belongs to; that fixes every contraction.
+Every gradient must have the shape of the tensor it belongs to; use that to determine each transpose.
 
 ## Level 3
 
-The bias gradient sums over the batch, because broadcasting forward means summing backward.
+A broadcast bias becomes a sum over the broadcast batch dimension in backward.

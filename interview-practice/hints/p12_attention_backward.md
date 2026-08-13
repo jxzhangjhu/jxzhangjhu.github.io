@@ -4,12 +4,12 @@ Read one at a time.
 
 ## Level 1
 
-d_v = P^T d_out and d_p = d_out V^T are the easy two.
+From `O = P V`: `dV = P^T dO`, `dP = dO V^T`.
 
 ## Level 2
 
-The softmax VJP is d_s = P * (d_p - rowsum(d_p * P)).
+Softmax VJP: `dS = P * (dP - rowsum(dP * P))`.
 
 ## Level 3
 
-Masked positions have P = 0, so their gradient is zeroed automatically — no need to re-apply the mask.
+From `S = scale QK^T`: `dQ = scale dS K`, `dK = scale dS^T Q`. Masked entries already have P=0.

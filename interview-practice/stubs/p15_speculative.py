@@ -1,6 +1,6 @@
 """p15 · Speculative decoding accept/reject   —   budget 20 min
 
-Speculative decoding accept/reject.
+Implement one exact speculative-decoding accept/reject step.
 
 Fill in the body. Run:  python run.py p15
 Stuck? hints/p15_speculative.md has three levels.
@@ -13,6 +13,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-def speculative_accept(*args, **kwargs):
-    """Signature matches reference.speculative_accept."""
+def speculative_accept(p_target, q_draft, token, u):
+    """Return (emitted_token, accepted_draft: bool)."""
     raise NotImplementedError

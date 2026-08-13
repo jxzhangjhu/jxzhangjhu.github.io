@@ -12,4 +12,4 @@ There is no mean subtraction and no bias term — that is the whole difference f
 
 ## Level 3
 
-Compute the reduction in fp32 (`x.float()`) and cast back with `.type_as(x)`; a bf16 sum over 64+ squared values loses too much precision.
+Promote fp16/bf16 reductions to fp32, but do not demote float64; cast the normalised activations back to the input dtype.

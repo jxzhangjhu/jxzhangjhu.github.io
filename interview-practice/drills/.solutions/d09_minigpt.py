@@ -1,19 +1,18 @@
 """d09 · Debug miniGPT — budget 35 min
 
-This is the single most reported ML-coding question at OpenAI (7+ independent accounts).
-The shape is always the same: you are handed a nanoGPT-style causal LM that RUNS but
-generates garbage, and told there are about four deliberate bugs. Then, if time remains,
-you are asked to add a KV cache and prove it matches the uncached path.
+This OpenAI-style drill is synthesised from public, anecdotal interview reports; it is
+not an official or verbatim question. You are handed a nanoGPT-style causal LM that runs
+but violates four behavioural invariants. Then implement a KV cache and prove it matches
+the uncached path.
 
 The bugs here are logical, not syntactic. Nothing raises. `python -m pytest
 tests/test_d09_minigpt.py -q` tells you which invariant is violated, not where.
 
 Your job:
   1. find and fix the four bugs (the tests name the symptom, not the line)
-  2. then implement KVCache.forward_cached below and make the last test pass
+  2. implement forward_cached below and make the last test pass
 
-Reported strategy from people who passed: reproduce deterministically in eval mode with
-greedy decoding, then localise with shape assertions rather than by reading harder.
+Stuck? Read hints/d09_minigpt.md one level at a time.
 """
 
 import math
@@ -98,11 +97,8 @@ def train_step(model, opt, idx, targets):
 
 
 # ----------------------------------------------------------------------------------
-# Follow-up, asked whenever time remains. Cache K and V per layer so that generating
-# token t costs O(t) instead of O(t^2), and prove the cached path is identical.
-#
-# The detail people miss: the positional index of the new token is the cache length,
-# not 0, and the causal mask is unnecessary once there is exactly one query row.
+# Follow-up: implement a per-layer K/V cache and verify its positional and masking
+# contracts against the uncached path.
 # ----------------------------------------------------------------------------------
 def forward_cached(model, idx, caches=None):
     """idx: (B, T_new). caches: list of (k, v) per layer, or None."""

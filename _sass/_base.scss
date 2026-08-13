@@ -781,6 +781,27 @@ html.transition *::after {
     }
   }
   .post-content{
+    // Keep long equations and wide comparison tables from widening the whole page
+    // on mobile. Each wide element remains horizontally scrollable inside the
+    // reading column; the article itself contains any MathJax glyph overhang.
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: hidden;
+    mjx-container[display="true"] {
+      max-width: 100%;
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding-bottom: 0.2rem;
+    }
+    // Explicit question/section anchors and ordinary heading IDs should land
+    // below the fixed navigation bar instead of hiding the heading underneath it.
+    a[id] {
+      display: block;
+      scroll-margin-top: 5rem;
+    }
+    h1[id], h2[id], h3[id], h4[id], h5[id], h6[id] {
+      scroll-margin-top: 5rem;
+    }
     // language toggle (English / 中文) at the top of bilingual posts
     .lang-switch {
       font-size: 0.9rem;
@@ -819,7 +840,11 @@ html.transition *::after {
     }
     // paper-style tables: clear top/bottom rules + header underline + light row lines
     table {
+      display: block;
       width: 100%;
+      max-width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
       border-collapse: collapse;
       margin: 1.5rem 0;
       font-size: 0.95rem;

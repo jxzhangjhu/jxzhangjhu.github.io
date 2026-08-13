@@ -8,7 +8,7 @@ Apply temperature first — it changes the distribution the truncations then act
 
 ## Level 2
 
-For top-p, sort descending, take the cumulative sum, and keep the shortest prefix whose mass reaches p.
+For top-p below 1, sort descending, take the cumulative sum, and keep the shortest prefix whose mass reaches p. At top_p>=1, skip nucleus filtering so every finite-logit slot remains in support.
 
 ## Level 3
 

@@ -21,4 +21,4 @@ def test_matches_pytorch_sdpa():
     want = F.scaled_dot_product_attention(qq, kk, vv)
     want = want.transpose(1, 2).contiguous().view(B, T, D)
     assert torch.allclose(got, want, atol=1e-5), \
-        "scores are scaled by sqrt(d_model) instead of sqrt(d_head)"
+        "attention disagrees with scaled_dot_product_attention"

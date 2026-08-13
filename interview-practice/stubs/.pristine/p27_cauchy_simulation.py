@@ -1,4 +1,4 @@
-"""p27 · Spinning light source -> Cauchy   —   budget 20 min  [reported: OpenAI]
+"""p27 · Spinning light source → Cauchy   —   budget 20 min
 
 Simulate a spinning light source hitting a wall, then verify the distribution.
 

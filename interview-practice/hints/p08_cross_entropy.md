@@ -12,4 +12,4 @@ logsumexp needs the max subtracted first: m + log(sum(exp(x - m))).
 
 ## Level 3
 
-For ignore_index, build a boolean keep-mask, gather only the kept rows, and divide by the number kept — not by N.
+For ignore_index, average only kept rows. If none remain, return `logits.sum() * 0.0`: finite zero, still attached to the graph.

@@ -10,12 +10,11 @@ import torch.nn.functional as F
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from drills import d03_top_p_off_by_one as d  # noqa: E402
 
-def test_the_crossing_token_survives():
+def test_nucleus_is_the_shortest_prefix_reaching_p():
     logits = torch.log(torch.tensor([0.5, 0.3, 0.15, 0.05]))
     kept = torch.isfinite(d.nucleus(logits, 0.9)).nonzero().flatten().tolist()
     assert kept == [0, 1, 2], \
-        f"p=0.9 on [.5,.3,.15,.05] should keep three tokens, kept {kept}: " \
-        "use the exclusive cumulative sum, cum - probs"
+        f"p=0.9 on [.5,.3,.15,.05] should keep three tokens, kept {kept}"
 
 
 def test_a_single_dominant_token_is_never_dropped():

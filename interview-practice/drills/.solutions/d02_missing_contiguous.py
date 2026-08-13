@@ -1,9 +1,9 @@
-"""d02 · view() on a transposed tensor   —   budget 3 min
+"""d02 · Head-merge failure   —   budget 3 min
 
-Merging heads back together after a transpose. The tensor is no longer contiguous,
-so view() cannot reinterpret its strides.
+Symptom: head merging raises or interleaves values
 
 One line in this file is wrong. Run:  python -m pytest tests/test_d02_missing_contiguous.py -q
+Stuck? Read hints/d02_missing_contiguous.md one level at a time.
 """
 
 import math

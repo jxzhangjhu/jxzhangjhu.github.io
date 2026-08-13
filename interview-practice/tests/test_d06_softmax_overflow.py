@@ -10,11 +10,11 @@ import torch.nn.functional as F
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from drills import d06_softmax_overflow as d  # noqa: E402
 
-def test_survives_realistic_logit_magnitudes():
+def test_survives_large_finite_logits():
     x = torch.tensor([[1e4, 2e4, 3e4]])
     got = d.softmax(x)
     assert torch.isfinite(got).all(), \
-        "exp() overflowed to inf, then inf/inf gave nan: subtract the row max first"
+        "finite logits produced non-finite probabilities"
     assert torch.allclose(got, F.softmax(x, dim=-1), atol=1e-6)
 
 

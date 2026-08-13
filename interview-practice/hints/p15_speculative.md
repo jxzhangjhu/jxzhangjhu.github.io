@@ -4,12 +4,12 @@ Read one at a time.
 
 ## Level 1
 
-Accept with probability min(1, p(x)/q(x)).
+Require `q_draft[token] > 0`, then accept exactly when `u < min(1, p_target[token] / q_draft[token])`; the strict inequality matters at a zero threshold.
 
 ## Level 2
 
-On rejection, sample from the normalised residual max(0, p - q).
+On rejection, form `clamp(p_target - q_draft, min=0)` and normalise it.
 
 ## Level 3
 
-This is exact: the emitted distribution is provably p. Verify it by sampling a few hundred thousand times.
+Sample from that residual with `torch.multinomial`; the accepted mass plus residual mass equals the target distribution exactly.

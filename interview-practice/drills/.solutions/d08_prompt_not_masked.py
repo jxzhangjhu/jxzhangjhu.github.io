@@ -1,9 +1,9 @@
-"""d08 · SFT loss counting the prompt   —   budget 4 min
+"""d08 · SFT objective failure   —   budget 4 min
 
-Supervised fine-tuning should only score the completion. Scoring the prompt too
-trains the model to generate the instructions it is supposed to follow.
+Symptom: changing prompt tokens changes the completion loss
 
 One line in this file is wrong. Run:  python -m pytest tests/test_d08_prompt_not_masked.py -q
+Stuck? Read hints/d08_prompt_not_masked.md one level at a time.
 """
 
 import math
@@ -17,6 +17,6 @@ def sft_loss(logits, input_ids, prompt_len):
     logits, targets = logits[:, :-1], input_ids[:, 1:]
     B, Tm1, V = logits.shape
     targets = targets.clone()
-    positions = torch.arange(Tm1).expand(B, Tm1)
+    positions = torch.arange(Tm1, device=targets.device).expand(B, Tm1)
     targets[positions < prompt_len - 1] = -100
     return F.cross_entropy(logits.reshape(-1, V), targets.reshape(-1), ignore_index=-100)

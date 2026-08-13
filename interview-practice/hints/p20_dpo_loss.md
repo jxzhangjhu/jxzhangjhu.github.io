@@ -4,12 +4,12 @@ Read one at a time.
 
 ## Level 1
 
-The margin is (pi_chosen - ref_chosen) - (pi_rejected - ref_rejected).
+Compute policy and reference chosen-minus-rejected log-ratios.
 
 ## Level 2
 
-Loss is -logsigmoid(beta * margin), averaged.
+The margin is `(pi_chosen - pi_rejected) - (ref_chosen - ref_rejected)`.
 
 ## Level 3
 
-Sanity check: at the reference policy the margin is 0 and the loss is exactly log 2.
+Return `-logsigmoid(beta * margin).mean()`; zero margin must give exactly log(2).

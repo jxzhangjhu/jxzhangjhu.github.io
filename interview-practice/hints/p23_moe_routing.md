@@ -4,12 +4,12 @@ Read one at a time.
 
 ## Level 1
 
-Softmax the router logits, take the argmax, and assign in order until an expert is full.
+Softmax router logits, then take each token's maximum probability and expert index.
 
 ## Level 2
 
-Overflowing tokens skip the layer entirely and pass through the residual.
+For each expert, keep at most `capacity` assigned tokens — the most confident ones, not merely the first ones.
 
 ## Level 3
 
-The Switch loss is E * sum_e f_e * p_e, minimised at uniform routing where it equals 1.
+Balance loss is `E * sum(fraction_routed.detach-like * mean_gate_probability)`; hard routing supplies load while gradients flow through probabilities.

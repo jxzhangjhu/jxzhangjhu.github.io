@@ -1,15 +1,15 @@
-# Hints · p11 A 40-line autograd
+# Hints · p11 A minimal scalar autograd
 
 Read one at a time.
 
 ## Level 1
 
-Each node stores data, grad, its children, and a closure that pushes gradient to them.
+Each result stores its parents and a closure that pushes `out.grad` into them.
 
 ## Level 2
 
-Accumulate with += , not = : a node used twice receives gradient from both paths.
+Use `+=`, not `=`: one node may receive gradient through several graph paths.
 
 ## Level 3
 
-backward() needs a reverse topological order, built with a DFS post-order.
+`backward()` builds a DFS post-order, seeds the output gradient with 1, then executes closures in reverse topological order.

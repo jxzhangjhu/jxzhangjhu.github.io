@@ -4,12 +4,12 @@ Read one at a time.
 
 ## Level 1
 
-Expand the square: ||a - b||^2 = ||a||^2 - 2 a.b + ||b||^2.
+Broadcast direct differences to shape (m, n, d): `test_x[:, None, :] - train_x[None, :, :]`.
 
 ## Level 2
 
-The cross term is a single matmul, test_x @ train_x.T, of shape (m, n).
+Square those differences and sum over the feature axis. This avoids cancellation from expanding two large nearby squared norms.
 
 ## Level 3
 
-Add the two norm vectors with explicit broadcasting: (m,1) + (1,n). You never need sqrt, because argmin is invariant to it.
+You never need sqrt because argmin is invariant to it. This teaching version materialises (m,n,d); production code can chunk rows or use a vetted distance kernel.

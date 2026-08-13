@@ -1,4 +1,4 @@
-"""p24 · 1-NN in pure NumPy, no loops   —   budget 15 min  [cold-start set]  [reported: OpenAI 3+]
+"""p24 · 1-NN in pure NumPy, no loops   —   budget 15 min  [cold-start set]  [reported: Anecdotal report: OpenAI]
 
 1-nearest-neighbour classification in NumPy. No Python loops over test points.
 

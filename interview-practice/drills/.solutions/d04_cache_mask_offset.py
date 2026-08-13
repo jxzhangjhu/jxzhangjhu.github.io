@@ -1,9 +1,9 @@
-"""d04 · Cached decode with an unshifted mask   —   budget 5 min
+"""d04 · Cached-mask failure   —   budget 5 min
 
-During incremental decode the query block is short but the key block is the whole
-cache, so a plain lower triangle points at the wrong keys.
+Symptom: cached decode cannot attend to legal history
 
 One line in this file is wrong. Run:  python -m pytest tests/test_d04_cache_mask_offset.py -q
+Stuck? Read hints/d04_cache_mask_offset.md one level at a time.
 """
 
 import math
