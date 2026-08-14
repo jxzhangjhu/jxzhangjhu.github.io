@@ -117,7 +117,8 @@ bing_site_verification:  # out your bing-site-verification ID (Bing Webmaster)
 # -----------------------------------------------------------------------------
 
 blog_name: # blog_name will be displayed in your blog page
-blog_nav_title: Blog  # shown in the nav bar
+blog_nav_title: Blog  # title used by the blog page and metadata
+show_blog_nav: false  # keep the blog public at /blog/, but hide its navbar link
 blog_description: a simple whitespace theme for academics
 permalink: /blog/:year/:title/
 
