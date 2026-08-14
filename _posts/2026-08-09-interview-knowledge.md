@@ -26,6 +26,10 @@ reason: before an interview I want exactly one place to go.
 > **Each concept is laid out as** detailed exposition → optional `Self-test`. Useful
 > **Follow-ups** and **Traps** stay even when a concept does not need a standalone question.
 > People often fail on the boundary conditions and follow-up, not on the definition.
+>
+> **Acronyms.** Universally familiar terms such as LLM, GPU and API stay compact. A specialised
+> acronym is expanded and briefly defined at its first explanatory use; the table of contents may
+> keep the short form for scanning.
 
 **Sources.** A1–A6 build on Alisa Liu's public LLM notes — she went from a PhD to OpenAI in 2026
 and published her whole preparation — extended with quantization, MoE, MFU and long context.
@@ -62,7 +66,7 @@ rounds are Part III.
   - [A1.19 Decision trees](#a1-19)
   - [A1.20 k-means](#a1-20)
   - [A1.21 Support vector machines](#a1-21)
-- **[A2 · Transformer architecture and implementation](#section-a2)** — 19 questions
+- **[A2 · Transformer architecture and implementation](#section-a2)** — 20 questions
   - [A2.1 The three architectural paradigms](#a2-1)
   - [A2.2 Anatomy of a block: the residual stream](#a2-2)
   - [A2.3 Self-attention and $$\sqrt{d_k}$$](#a2-3)
@@ -81,6 +85,7 @@ rounds are Part III.
   - [A2.16 Normalization architecture variants](#a2-16)
   - [A2.17 Diffusion language models](#a2-17)
   - [A2.18 Architecture search and why the constants look historical](#a2-18)
+  - [A2.19 Architecture design map: choose by bottleneck](#a2-19)
 - **[A3 · Common models](#section-a3)** — 10 questions
   - [A3.1 One comparison table](#a3-1)
   - [A3.2 Llama 3: throwing Chinchilla out](#a3-2)
@@ -103,7 +108,7 @@ rounds are Part III.
   - [A4.8 Why training and inference can be numerically different](#a4-8)
   - [A4.9 Model soups, task vectors and the boundary of model merging](#a4-9)
   - [A4.10 How to read a public training logbook](#a4-10)
-- **[A5 · Training infrastructure](#section-a5)** — 8 questions
+- **[A5 · Training infrastructure](#section-a5)** — 9 questions
   - [A5.1 Where the memory goes](#a5-1)
   - [A5.2 Parallelism strategies: what each one shards](#a5-2)
   - [A5.3 Mixed precision](#a5-3)
@@ -115,7 +120,8 @@ rounds are Part III.
   - [A5.9 Orchestration with SLURM and Kubernetes](#a5-9)
   - [A5.10 Failure detection, automatic restart and elastic training](#a5-10)
   - [A5.11 Debugging train/inference numerical mismatch](#a5-11)
-- **[A6 · Post-training and RL](#section-a6)** — 15 questions
+  - [A5.12 Training MoE at scale](#a5-12)
+- **[A6 · Post-training and RL](#section-a6)** — 19 questions
   - [A6.1 The post-training ladder](#a6-1)
   - [A6.2 SFT: more detail than you would think](#a6-2)
   - [A6.3 Reward models and Bradley-Terry](#a6-3)
@@ -126,12 +132,13 @@ rounds are Part III.
   - [A6.8 DPO](#a6-8)
   - [A6.9 Reward hacking and KL control](#a6-9)
   - [A6.10 ★ Distillation](#a6-10)
-  - [A6.11 LoRA and PEFT](#a6-11)
+  - [A6.11 LoRA and parameter-efficient fine-tuning (PEFT)](#a6-11)
   - [A6.12 Iterative and online DPO](#a6-12)
-  - [A6.13 Process reward models](#a6-13)
+  - [A6.13 Process reward models (PRMs)](#a6-13)
   - [A6.14 Self-play, AI feedback and self-rewarding models](#a6-14)
   - [A6.15 Measuring the alignment tax](#a6-15)
   - [A6.16 RLHF from data collection to deployment: the spoken walkthrough](#a6-16)
+  - [A6.17 Rejection-sampling fine-tuning (RFT)](#a6-17)
 - **[A7 · Reasoning models and test-time compute](#section-a7)** — 8 questions
   - [A7.1 The third scaling axis](#a7-1)
   - [A7.2 How reasoning models get trained](#a7-2)
@@ -178,9 +185,9 @@ rounds are Part III.
   - [A9.16 Data attribution](#a9-16)
 - **[A10 · Estimation](#section-a10)** — 17 questions
   - [A10.0 Four anchor numbers and three formulas](#a10-0)
-- **[A11 · Scaling and evaluation](#section-a11)** — 10 questions
+- **[A11 · Scaling and evaluation](#section-a11)** — 11 questions
   - [A11.1 Kaplan and Chinchilla](#a11-1)
-  - [A11.2 muP](#a11-2)
+  - [A11.2 muP (maximal update parametrization)](#a11-2)
   - [A11.3 What test-time compute does to evaluation](#a11-3)
   - [A11.4 Perplexity](#a11-4)
   - [A11.5 Evaluating when you cannot verify the answer](#a11-5)
@@ -191,7 +198,8 @@ rounds are Part III.
   - [A11.10 Evaluating a reward model](#a11-10)
   - [A11.11 Multilingual and fairness evaluation](#a11-11)
   - [A11.12 A/B testing and online metrics](#a11-12)
-- **[A12 · Agentic RL and environments](#section-a12)** — 14 questions
+  - [A11.13 pass@1, pass@k, selected@k, and pass^k](#a11-13)
+- **[A12 · Agentic RL and environments](#section-a12)** — 17 questions
   - [A12.1 From chat to agent: what changes formally](#a12-1)
   - [A12.2 Anatomy of an environment](#a12-2)
   - [A12.3 Difficulty ≠ trainability](#a12-3)
@@ -208,6 +216,8 @@ rounds are Part III.
   - [A12.14 Agent harness and durable runtime](#a12-14)
   - [A12.15 Protocol, identity and authorization boundaries](#a12-15)
   - [A12.16 API tools versus computer use](#a12-16)
+  - [A12.17 Multi-turn conversational and agent RL](#a12-17)
+  - [A12.18 RLHF for non-verifiable and open-ended agent tasks](#a12-18)
 - **[A13 · Alignment, calibration, continual learning](#section-a13)** — 15 questions
   - [A13.1 The full RLHF pipeline](#a13-1)
   - [A13.2 Constitutional AI and RLAIF](#a13-2)
@@ -530,7 +540,8 @@ Bias correction exists because $$m_0=v_0=0$$, which biases the early estimates t
 $$\theta_t=\theta_{t-1}-\alpha\frac{\hat m_t}{\sqrt{\hat v_t}+\epsilon}-\alpha\lambda\theta_{t-1}$$
 
 > **The memory bill.** Adam keeps two fp32 states per parameter = 8 bytes, which is **half** of the
-> 16 bytes/parameter budget of mixed-precision training. That is the entire reason ZeRO exists.
+> 16 bytes/parameter budget of mixed-precision training. That is the entire reason
+> **ZeRO (Zero Redundancy Optimizer)** exists.
 >
 > **Typical LLM hyperparameters:** $$\beta_1=0.9$$, $$\beta_2=0.95$$ (below the 0.999 default, because
 > a long-horizon second moment goes stale), weight decay 0.1.
@@ -679,8 +690,9 @@ same batch. That is philosophically odd, and practically it means **results depe
 composition**, which makes reproduction and debugging harder.
 
 **Reason three: distributed training forces a choice between wrong statistics and extra
-communication.** Plain `nn.BatchNorm` under DDP does **not** synchronise — each device normalises with
-its local batch, which for a large model may be 1–4 sequences. `SyncBatchNorm` fixes that but adds an
+communication.** Plain `nn.BatchNorm` under **DDP (Distributed Data Parallel)** does **not**
+synchronise — each device normalises with its local batch, which for a large model may be 1–4
+sequences. `SyncBatchNorm` fixes that but adds an
 all-reduce per normalisation layer per forward pass, and a transformer block has two. LayerNorm needs
 neither.
 
@@ -976,7 +988,8 @@ parameters, so you need a REINFORCE-style estimator (reparameterisation is unava
 distributions — A1.13). It is policy gradient in disguise.
 
 > **Sequence-level direction and training-state distribution are separable in practical
-> distillation.** The table describes the exact full-sequence KL expectations. In token-level GKD,
+> distillation.** The table describes the exact full-sequence KL expectations. In token-level
+> **GKD (generalized knowledge distillation)**,
 > you may first sample prefixes from the student and then minimize forward
 > $$\operatorname{KL}(p_T(\cdot\mid h)\|p_S(\cdot\mid h))$$ at those student-visited histories $$h$$.
 > That is **on-policy forward-KL distillation**: it addresses exposure bias without requiring the
@@ -1006,7 +1019,7 @@ distributions — A1.13). It is policy gradient in disguise.
 | Logit distillation | CE against teacher soft targets | Forward | Teacher |
 | MiniLLM / GKD | Reverse KL / on-policy | Reverse | **Student** |
 | RLHF · PPO | KL subtracted from the reward | $$\operatorname{KL}(\pi_\theta\|\pi_\text{ref})$$ | The policy |
-| GRPO | Per-token k3 term in the loss | Same | The policy |
+| GRPO | Per-token **k3 KL estimator** in the loss | Same | The policy |
 | DPO | Implicit KL via the reference | Same | Preference data |
 
 **Two consequences worth stating unprompted. One: SFT's exposure bias is a direct consequence of
@@ -1527,8 +1540,9 @@ throughput can occasionally improve even though one fixed step does more arithme
 - Checkpointing an operation whose outputs were detached cannot recreate a missing gradient path.
 - “Model checkpoint” (saving weights to disk for recovery) is unrelated despite the name.
 
-This topic is implemented in the training infrastructure and composes with FlashAttention, FSDP/ZeRO,
-tensor parallelism and sequence parallelism; A5 covers those system-level memory trades.
+This topic is implemented in the training infrastructure and composes with FlashAttention,
+**FSDP (Fully Sharded Data Parallel)** / ZeRO, tensor parallelism and sequence parallelism; A5
+covers those system-level memory trades.
 
 #### Self-test · A1.17
 
@@ -1706,8 +1720,8 @@ classes are not usefully separable.
 ## A2 · Transformer architecture and implementation
 
 This section is **where the coding round lives**: causal self-attention gets asked six different
-ways. Alisa's book is deepest here, but she does not cover MoE, tokenization, multimodality or SSMs
-at all — those are additions (marked ★).
+ways. Alisa's book is deepest here, but she does not cover MoE, tokenization, multimodality or
+**state-space models (SSMs)** at all — those are additions (marked ★).
 
 **How to read it:** A2.1–A2.4 are the skeleton and you must be able to rebuild them closed-book;
 A2.5–A2.8 are the choices every modern model makes; A2.9–A2.13 are what you reach for to show depth
@@ -1993,6 +2007,9 @@ Offering the test before being asked is a strong signal.
 <a id="a2-5"></a>
 ### A2.5 Attention variants: MHA → MQA → GQA → MLA
 
+The names are **MHA (multi-head attention)**, **MQA (multi-query attention)**,
+**GQA (grouped-query attention)**, and **MLA (multi-head latent attention)**.
+
 Let $$L$$ be layer count, $$H_q$$ query-head count, $$H_{kv}$$ KV-head count, $$d_h$$ head
 dimension, and $$b$$ bytes per cached element. There is one driver and one only: **KV cache size**:
 
@@ -2098,7 +2115,8 @@ out = torch.stack([rx1, rx2], dim=-1).flatten(-2)
 <a id="a2-6-1"></a>
 
 **Q A2.6.1** — A model trained to 8K must serve 32K. What does plain position interpolation do to
-position 32K and to a one-token local offset? Why might NTK-aware scaling or YaRN preserve local
+position 32K and to a one-token local offset? Why might neural-tangent-kernel (**NTK**)-aware scaling
+or **YaRN (Yet another RoPE extensioN)** preserve local
 behavior better?
 
 Interpolation uses $$p'=p/4$$, so 32K maps back to the largest trained coordinate, 8K. But a local
@@ -2158,10 +2176,15 @@ gates = F.softmax(x @ W_router, dim=-1)     # (T, E)
 gate, expert = gates.max(dim=-1)            # top-1
 ```
 
-**Capacity and token dropping.** All-to-all communication needs fixed-size buffers, so every expert
-has a **capacity limit**. When a popular expert overflows, the excess tokens **skip the layer
-entirely** and pass straight along the residual stream. This is why the same MoE model produces
-slightly different outputs depending on what else is in the batch.
+**Capacity, overflow, and dropless dispatch.** Capacity-limited implementations allocate fixed-size
+expert buffers. When a popular expert overflows, the implementation may **drop or skip** the expert
+branch for excess tokens, reroute them to another expert, or pad/overprovision capacity; the policy
+is implementation-specific and can make outputs depend on batch composition.
+
+That behavior is not universal. **Dropless** implementations use dynamic dispatch and grouped GEMM
+over variable per-expert token counts, avoiding token dropping. Their risks move elsewhere: peak and
+fragmented memory, irregular or undersized GEMMs, load-dependent all-to-all traffic, and stragglers
+that worsen tail latency.
 
 **Auxiliary loss.** First correct a widely repeated claim: **the router is not gradient-free**. The
 gate probability $$p_e$$ multiplies the chosen expert's output, so the language-modeling loss
@@ -2170,9 +2193,10 @@ expert is good. The only non-differentiable part is the top-$$k$$ **selection**.
 
 The problem is that this gradient self-reinforces: an expert that receives more tokens trains faster,
 so the router favours it more, producing rich-get-richer **routing collapse**. On top of that, expert
-capacity and expert parallelism both demand balanced load, which is why an extra balancing term is
-needed. The Switch Transformer loss multiplies "the fraction of tokens routed to each expert" $$f_e$$
-by "that expert's mean gate probability" $$p_e$$:
+capacity and expert parallelism both demand balanced load. Practical systems therefore need an
+explicit balancing mechanism—an auxiliary objective, dynamic expert bias, or another control—not
+necessarily the same extra loss. The Switch Transformer loss, for example, multiplies "the fraction
+of tokens routed to each expert" $$f_e$$ by "that expert's mean gate probability" $$p_e$$:
 
 $$\mathcal L_\text{aux} = E\sum_{e=1}^{E} f_e \cdot p_e$$
 
@@ -2200,8 +2224,10 @@ coexist with correlated top-$$k$$ choices; balanced scores can still overflow if
 for the wrong token count; a dispatch bug can disagree with both.
 
 The balancing loss controls the self-reinforcing load dynamic, not missing gradients. Dynamic expert
-bias is an alternative control mechanism. Token dropping means overflowed tokens skip the expert
-branch through the residual path, so batch composition can affect outputs.
+bias is an alternative control mechanism. Under a capacity-limited drop/skip policy, overflowed
+tokens bypass the expert branch through the residual path, so batch composition can affect outputs.
+Rerouting and dropless stacks need different counters—reroute destinations or variable dispatch
+sizes—and load imbalance alone does not prove that any token was dropped.
 
 <a id="a2-8-2"></a>
 
@@ -2230,7 +2256,7 @@ token; communication and non-expert work still need separate accounting.
 <a id="a2-9"></a>
 ### A2.9 ★ Tokenization
 
-**The BPE training loop.** Start from a byte sequence and repeat: count every adjacent pair, merge
+**The BPE (byte-pair encoding) training loop.** Start from a byte sequence and repeat: count every adjacent pair, merge
 the most frequent pair into a new token, record the merge. Stop at the target vocabulary size.
 
 ```python
@@ -2759,6 +2785,69 @@ are empirical/hardware choices that must be benchmarked.
 
 ---
 
+<a id="a2-19"></a>
+### A2.19 Architecture design map: choose by bottleneck
+
+**This is a constraint map, not a paper-name catalogue.** Start with the binding bottleneck, choose
+the smallest intervention that attacks it, and then test the whole bundle. The rows below are design
+axes, not mutually exclusive menus: SwiGLU can be a dense FFN or an expert FFN, shared experts sit
+beside routed experts, and pre-LN placement can use RMSNorm.
+
+![Architecture choices organized by the bottleneck they address](/assets/img/blog/interview-knowledge/qa10_architecture_map_en.png)
+
+| Bottleneck / design axis | Choices | Main benefit | Real cost or failure mode | Choose when |
+|---|---|---|---|---|
+| **KV/state memory** | MHA / MQA / GQA / MLA | MHA preserves independent K/V capacity; MQA and GQA reduce cache bytes and decode bandwidth; MLA caches a compressed latent | MHA cache grows quickly; MQA can create a narrow quality/stability bottleneck; GQA is a compromise; MLA adds reconstruction, positional and kernel constraints and may not lower wall clock | Use MHA as a quality/reference point for short contexts, GQA as the established serving compromise, MQA only under extreme cache pressure, and MLA after quality plus target-kernel validation |
+| **Conditional capacity** | dense / SwiGLU / MoE / shared experts | Dense SwiGLU gives predictable always-on capacity; MoE raises total parameter capacity at roughly fixed active expert arithmetic; shared experts carry common features | SwiGLU has three projections; MoE raises resident weight memory, routing and all-to-all cost, and risks collapse, imbalance and tail latency; capacity-limited stacks may lose or reroute traffic; shared experts add always-on compute | Prefer dense/SwiGLU for compact models and tight p99; choose MoE when quality benefits justify memory and communication; add shared experts when common knowledge should not compete for routed slots |
+| **Long-context mixing** | full / sliding / local-global / learned sparse | Full attention gives every query a direct path to every key; sliding bounds local work and cache; local-global restores occasional long paths; learned sparsity can choose content-dependent keys | Full attention has quadratic prefill work and large state; sliding can miss old evidence; global layers can dominate cost; learned sparsity introduces routing/recall errors and irregular kernels | Use full attention when contexts are moderate or direct retrieval dominates, sliding for recency-heavy streams, local-global for long documents that still need distant evidence, and learned sparse only with measured recall and efficient target kernels |
+| **Sequence state** | attention / SSM / linear attention / hybrid | Attention keeps addressable history; SSM and linear attention compress history into bounded state and support parallel training; hybrids combine cheap mixing with direct lookup layers | Attention state and decode work grow with context; fixed state is lossy and can forget exact facts; linear attention often loses sharp selectivity; hybrids add kernel, schedule and interface complexity | Keep attention for exact-evidence tasks, use SSM/linear designs for streaming and severe state limits, and use hybrids when both long-run efficiency and direct retrieval matter |
+| **Optimization geometry** | pre-LN / RMSNorm / QK-norm / DeepNorm / nGPT | Pre-LN with RMSNorm is a robust baseline; QK-norm targets attention-logit growth; DeepNorm targets very deep residual accumulation; nGPT constrains the broader geometry | Extra norms add reductions; DeepNorm couples residual scaling to initialization; nGPT changes the full parameterization, optimizer assumptions and kernels rather than acting as a drop-in patch | Start with pre-LN/RMSNorm, add QK-norm for diagnosed logit instability, evaluate DeepNorm for unusually deep stacks, and treat nGPT as a retraining-scale research choice |
+| **Generation / objective** | AR / MTP / diffusion | AR has mature caching and tool-use semantics; multi-token prediction adds future-token supervision and can supply parallel proposals; diffusion can revise many positions and supports arbitrary-order infilling | AR decode is sequential; MTP proposals can conflict and speed depends on acceptance/verification; diffusion repeats full changing-sequence passes, loses the standard AR cache, and can be inconsistent | Use AR by default, MTP when accepted-token throughput wins end to end, and diffusion when revision/infilling benefits justify an actively researched serving stack |
+| **Multimodal fusion** | projector / cross-attention / native | A projector cheaply reuses a frozen encoder; cross-attention keeps modality memory separate and queryable; native training gives deeper alignment and can support multimodal generation | Projectors can discard fine detail and consume many tokens; cross-attention adds blocks, source caches and cross-sequence work; native fusion is a pretraining-scale data and systems commitment with modality-balance risks | Use a projector for limited budgets, cross-attention when a separate encoder memory should remain queryable, and native fusion when deep cross-modal generation justifies full pretraining |
+
+**Read the map as interacting bundles.** Compressing K/V can move the bottleneck from memory traffic
+to projections; MoE can reduce active expert arithmetic while adding collectives; sparse mixing can
+remove score-matrix work while creating irregular gathers; MTP or diffusion can expose parallelism
+while doing more total work. **Fewer FLOPs need not mean lower wall-clock time or better p99.**
+Benchmark the complete bundle on the target accelerators, interconnect, compiler, batch sizes and
+context distribution, reporting quality, peak/resident memory, throughput, prefill, decode and tail
+latency.
+
+Also label the maturity of the claim. AR, pre-LN/RMSNorm, MHA/GQA, dense SwiGLU and full/sliding
+attention are established baselines. MoE, MLA, local-global attention, projector/cross-attention and
+native multimodal training are established but highly workload- and stack-dependent. Claims that
+learned sparsity, SSM/linear state, nGPT, MTP serving or diffusion universally replace those
+baselines remain active research; a result on one hardware and training recipe is evidence, not a
+portable default.
+
+#### Self-test · A2.19
+
+<a id="a2-19-1"></a>
+
+**Q A2.19.1** — An enterprise document model must handle 256K-token contexts, quote an arbitrary
+identifier exactly, sustain eight concurrent sessions inside an 80-GB KV/state-memory budget, and
+keep p99 decode inter-token latency below 50 ms on the target accelerator. Choose a starting bundle
+and specify the ablations that could change it.
+
+Start with **GQA + attention + local-global mixing + dense SwiGLU + pre-LN/RMSNorm + AR**. Most layers
+can use a sliding window, but periodic full/global attention layers preserve a direct route to old
+evidence; an all-SSM or all-linear design is too risky for arbitrary exact recall. GQA is a mature
+cache reduction with more head capacity than MQA. Dense FFNs avoid MoE all-to-all and load-dependent
+p99 for the first latency-constrained baseline, while AR supplies the most predictable cache and
+tool behavior. Add QK-norm only if long-context logit diagnostics justify it.
+
+No neural bundle guarantees exact copying, so evaluate citation/identifier fidelity and pair the
+system with an evidence-copy or exact-check path if the requirement is hard. First ablate GQA head
+counts against MHA references and an MLA candidate, measuring cache bytes, quality and decode
+bandwidth. Then sweep window size and the number/spacing of global layers against a full-attention
+reference on needles at every distance with distractors. Compare the attention baseline with
+SSM/attention and linear/attention hybrids at matched state memory and training compute. Only then
+test dense versus MoE and AR versus MTP, recording resident weights, all-to-all time, accepted tokens,
+prefill, p50/p99 decode and exact-retrieval accuracy. Reject any bundle that meets average FLOPs but
+misses the measured 80-GB or p99 constraints.
+
+---
+
 <a id="section-a3"></a>
 
 ## A3 · Common models
@@ -2870,7 +2959,8 @@ To be precise this is **batch-level** — they still keep a sequence-level balan
 
 **3. FP8 mixed-precision training.** Per-tile / per-block scaling instead of a single global scale.
 
-**R1: RLVR makes long reasoning emerge.** R1-Zero runs verifiable-reward RL directly on the base
+**R1: RLVR (reinforcement learning with verifiable rewards) makes long reasoning emerge.**
+R1-Zero runs verifiable-reward RL directly on the base
 model with **no SFT cold start**, and long-chain reasoning grew on its own — including backtracking
 behaviour like "wait, let me check that again." That is strong evidence that reasoning can be
 **elicited** by reward rather than having to be demonstrated. The released R1 does add a cold-start
@@ -3480,7 +3570,8 @@ scratch," go in this order.
    (larger for multilingual). **Once this is locked in, it is extremely hard to change.**
 4. **Build the data pipeline.** Collect → extract → filter → deduplicate → decontaminate → mix (see A9).
 5. **Fix the architecture.** Depth-to-width ratio, attention variant (GQA/MLA), FFN type, positional encoding, norm placement.
-6. **Set hyperparameters with a small proxy model.** muP makes the optimal LR width-invariant, so you can sweep on a small model.
+6. **Set hyperparameters with a small proxy model.** **muP (maximal update parametrization,
+   pronounced “mew-P”)** makes the optimal learning rate width-invariant, so you can sweep on a small model.
 7. **Do a short validation run.** A few hundred steps: check that loss falls, check MFU, memory, and that checkpoints save and load.
 8. **Launch, and watch the dashboard.** Loss, gradient norm (pre-clip), MFU, agreement across ranks.
 9. **Midtrain.** Long-context extension plus a high-quality data anneal (see A9.3).
@@ -3522,8 +3613,9 @@ heavily, Chinchilla-optimal is the wrong target — train something smaller for 
 
 **Step five: check it fits.** Training state for a 61B model is $$61\times10^9 \times 16 = 976$$ GB.
 The 512 cards hold 40 TiB between them, so the total is nowhere near binding — the problem is the
-**distribution**: TP=8 inside a node over NVLink, PP across nodes, DP for whatever is left, with ZeRO
-sharding the optimizer states (see A5.2).
+**distribution**: tensor parallelism (**TP**) = 8 inside a node over NVLink, pipeline parallelism
+(**PP**) across nodes, data parallelism (**DP**) for whatever is left, with ZeRO sharding the
+optimizer states (see A5.2).
 
 **Step six: check the step count and the global batch.** At a 4M-token global batch the run is
 $$1.2\times10^{12}/4\times10^6 = 3\times10^5\ \text{steps}$$ — reasonable. If the number comes out at
@@ -4258,10 +4350,11 @@ adding DP/ZeRO ranks can shard state while leaving each rank's activations uncha
 **global** batch is fixed instead, increasing DP reduces the local micro-batch and activations can
 fall; that is a batch-allocation effect, not activation sharding by DP.
 
-What does shard activations is the other axes: **TP** splits them within a layer,
-**sequence/context parallelism** splits along $$S$$, and **PP** leaves each stage holding only its own
-layers' activations (at the cost of budgeting for in-flight micro-batches). That is why long-context
-training always reaches for TP or CP — ZeRO alone cannot get there.
+What does shard activations is the other axes: **tensor parallelism (TP)** splits them within a layer,
+**sequence/context parallelism (CP)** splits along $$S$$, and **pipeline parallelism (PP)** leaves
+each stage holding only its own layers' activations (at the cost of budgeting for in-flight
+micro-batches). That is why long-context training always reaches for TP or CP—ZeRO alone cannot get
+there.
 
 ---
 
@@ -4305,8 +4398,8 @@ Measure peak allocated memory, tokens/second and step time, not MFU alone. For a
 hardware count and peak denominator, MFU is a constant multiple of tokens/second, so they move in the
 same direction. At the same micro-batch, recomputation normally lowers both. If the freed memory
 enables a sufficiently larger micro-batch, kernel efficiency can improve enough that **net**
-tokens/second and MFU both rise. HFU separately counts executed recompute work and may move
-differently; use it with a profiler trace.
+tokens/second and MFU both rise. **HFU (hardware FLOPs utilisation)** separately counts executed
+recompute work and may move differently; use it with a profiler trace.
 
 ---
 
@@ -4375,7 +4468,8 @@ collectives, the DP/ZeRO-2 collective, recomputation, or smaller local matrices 
 step time; compare tokens/second, MFU, HFU and collective overlap.
 
 > **Follow-ups**
-> - *How do you shrink the pipeline bubble?* → More micro-batches, interleaved 1F1B, or zero-bubble
+> - *How do you shrink the pipeline bubble?* → More micro-batches, interleaved
+>   **1F1B (one-forward-one-backward)**, or zero-bubble
 >   schedules that split the backward into input-gradient and weight-gradient halves.
 > - *Why is ZeRO-1/2 communication comparable to DDP's?* → Because all-reduce is literally
 >   reduce-scatter followed by all-gather. ZeRO-3 has an additional parameter gather and is analysed
@@ -4570,7 +4664,8 @@ kernel back below the roof.
 
 **The same hierarchy continues outside the chip.** PCIe connects devices to the host and sometimes
 to peers; NVLink/NVSwitch provides a scale-up GPU fabric inside a high-bandwidth domain; InfiniBand
-or RoCE commonly provides RDMA-capable scale-out networking between nodes. Names do not determine
+or **RoCE (RDMA over Converged Ethernet)** commonly provides RDMA-capable scale-out networking
+between nodes. Names do not determine
 performance: link generation, switch oversubscription, GPU-to-NIC affinity and the actual path
 matter. That is why TP belongs on the best scale-up domain and why NCCL topology must be measured,
 not inferred from a node count.
@@ -4818,6 +4913,200 @@ measure arithmetic drift.
 
 ---
 
+<a id="a5-12"></a>
+### A5.12 Training MoE at scale
+
+**Invariant: MoE training keeps the same next-token objective as dense training.** What changes is
+the FFN path: each token conditionally executes a small subset of experts, while the trainer may add
+routing- or system-oriented auxiliary losses:
+
+$$\mathcal{L}=\mathcal{L}_{\mathrm{LM}}+\lambda_{\mathrm{bal}}\mathcal{L}_{\mathrm{bal}}+\lambda_z\mathcal{L}_z+\cdots$$
+
+The LM target is unchanged, and the extra terms are design choices rather than universal
+requirements. For the model-side motivation and routing taxonomy, see [A2.8](#a2-8); for the
+parallelism axes that MoE must compose with, see [A5.2](#a5-2).
+
+![MoE training dataflow across expert-parallel ranks](/assets/img/blog/interview-knowledge/qa8_moe_training_en.png)
+
+**The exact forward path.** Let the padded residual states have shape `B × S × D`, and let
+$$m_{b,s}$$ mark valid tokens. Exclude padding from routing, apply the block's normalization as
+appropriate, and flatten the valid token states into `X`. Here $$N$$ is the valid-token count seen
+by one expert-parallel routing group, not necessarily the job-wide batch. A representative linear
+softmax router produces:
+
+$$N=\sum_{b=1}^{B}\sum_{s=1}^{S}m_{b,s}\le BS,\qquad R=XW_r\in\mathbb{R}^{N\times E}$$
+
+$$p_{i,:}=\operatorname{softmax}(R_{i,:}),\qquad S_i=\operatorname{TopK}(p_{i,:},k)$$
+
+The top-k operation returns expert indices `S_i` and gate weights. In the common renormalized form,
+
+$$g_{i,e}=\frac{p_{i,e}}{\sum_{j\in S_i}p_{i,j}}\quad(e\in S_i),\qquad
+m_i=\sum_{e\in S_i}g_{i,e}F_e(x_i),\qquad y_i=h_i+m_i$$
+
+where `h_i` is the residual-stream input and `x_i` is the normalized FFN input. Variants use
+sigmoid scores, unnormalized selected weights, shared experts, or a post-combine scale, so an
+interview answer should state the convention rather than assume it.
+
+The systems path realizes that equation:
+
+1. Materialize `N*k` assignment records. A token appears once for each selected expert; attach its
+   source token, destination expert/rank, and gate weight.
+2. Permute or sort records by destination expert-parallel rank and then by local expert. Apply
+   capacity admission here or at the receiver, depending on the implementation.
+3. Run an expert-parallel all-to-all to send token states and routing metadata to the ranks that own
+   the experts.
+4. Form variable-height matrices for local experts and execute their FFN projections as grouped or
+   batched expert GEMMs. Padding for kernel alignment is implementation overhead, not a model
+   token.
+5. Run the inverse all-to-all to return expert outputs to each token's source rank.
+6. Undo the permutation, take the gate-weighted sum across the selected outputs, and add the
+   residual. A shared expert, if present, contributes an additional always-on branch.
+
+Across the routing group, the average number of assignments per expert and a conventional
+capacity-limited buffer size are
+
+$$\bar n_e=\frac{Nk}{E},\qquad C=\left\lceil\alpha\frac{Nk}{E}\right\rceil$$
+
+with capacity factor `alpha`. This average is not a per-expert guarantee. A **capacity-limited**
+implementation reserves at most `C` slots per expert; assignments beyond it must be dropped,
+rerouted, or handled by an explicitly defined fallback. “Dropped” normally means dropping that
+expert branch while the residual token continues, not deleting the token from the sequence. A
+**dropless** implementation—such as the grouped-GEMM approach in
+[MegaBlocks](https://arxiv.org/abs/2211.15841)—processes every assignment with ragged or
+variable-size dispatch. It does not enforce `C`, although it may still pad for kernels and must
+provision memory and step time for the maximum, not the average, load.
+
+**Backward follows the communication graph in reverse.** The combine operation first sends task
+loss gradient into the residual, selected gate weights, and returned selected-expert outputs. The
+backward of the inverse all-to-all carries expert-output gradients from source ranks to expert
+owners. Each owner runs the selected experts' backward GEMMs, accumulating parameter gradients only
+from assignments that those experts processed. The backward of the dispatch all-to-all then returns
+input-state gradients to source ranks; inverse permutation and summation merge the up-to-`k`
+contributions before continuing through the residual and normalization paths. Expert gradients are
+therefore sparse by token. If an expert has replicas along a DP dimension, only the matching expert
+replicas reduce that expert's gradients.
+
+**Router gradients require a precise distinction.** For a fixed selected set, the selected gate
+weights receive task-loss gradient through the weighted combine, and selected expert parameters
+receive gradient through their outputs. The discrete top-k membership decision is non-differentiable
+and is treated as constant by ordinary backpropagation; an unselected expert receives no direct
+parameter gradient from that token. Whether an unselected *router logit* receives an indirect
+gradient depends on the gate convention: keeping values from a full softmax couples logits through
+its denominator, whereas renormalizing only selected logits usually removes that coupling. Router
+gradient and expert-parameter gradient are not the same claim.
+
+Several controls can supply broader or more stable routing signals:
+
+- A **load-balance auxiliary loss** typically couples mean router probability with observed
+  assignment fractions so overloaded experts become costly. Its exact estimator and stop-gradient
+  choices matter; too much weight can buy balance by hurting the LM objective.
+- A **router z-loss or other logit control**, as studied in
+  [ST-MoE](https://arxiv.org/abs/2202.08906), penalizes excessive log-partition/logit magnitude,
+  improving numerical behavior and preventing overconfident scores. It is not itself a load
+  conservation check.
+- A **dynamic expert bias** can be adjusted from measured over- or under-load to change future
+  selections without putting the balancing objective directly into the task gradient.
+- **Shared experts** give every token an always-on path and can absorb common features, but consume
+  active compute and do not make routed-expert imbalance harmless.
+
+These are a toolbox. A model may use an auxiliary loss, dynamic bias, shared experts, combinations
+of them, or another router; none should be described as mandatory for every MoE.
+
+| Aspect | Dense FFN training | Sparse MoE FFN training |
+|---|---|---|
+| Objective | Next-token LM loss | The same next-token LM loss, optionally plus routing auxiliaries |
+| Total vs active parameters | Nearly all FFN parameters are both stored and active for every token | Total parameters include all experts; each token activates only `k` routed experts plus any shared experts |
+| Compute | Every token executes the dense FFN | Active expert compute follows `k` and expert shape, not total `E`; routing, padding, permutation, and collectives add overhead |
+| Memory / optimizer state | State scales with the dense parameters | All expert weights and optimizer states must exist somewhere; EP distributes them but does not erase them, and dispatch buffers add transient memory |
+| Communication | DP/TP/PP collectives, with no token-to-expert exchange | Adds dispatch and return all-to-all in forward and their reverse communication in backward |
+| Local effective expert batch | The FFN sees all `N` local valid tokens | One expert sees a variable batch centered only around `Nk/E`; high EP degree or skew can create skinny GEMMs |
+| Gradients | Every FFN parameter is exposed to every local token | Only selected routed experts get direct task gradient from a token; unused or starved experts can receive little or none |
+| Failure modes | Numerical instability, bad data, optimizer and collective faults | All dense failures plus collapse, dead/overloaded experts, overflow, dispatch corruption, and straggler amplification |
+| Serving implication | Predictable placement and compute, but all dense parameters are active | Low active-to-total ratio can reduce arithmetic, but weight residency, routing, cross-device traffic, and small batches mean latency is not automatically lower |
+
+**EP is an additional mesh axis, not a replacement for DP/TP/PP.** EP assigns different experts to
+different ranks. TP may shard each expert's GEMMs as well as dense layers; PP assigns MoE blocks to
+stages; DP creates replicas of the resulting mesh and reduces corresponding dense and expert
+parameters. The exact process groups depend on the framework, so derive them from parameter
+ownership rather than multiplying acronyms by habit.
+
+Every routed MoE layer introduces a dispatch all-to-all and a return all-to-all, with corresponding
+reverse traffic in backward. The slowest destination controls the critical path: a rank that
+receives more tokens performs taller grouped GEMMs and sends more bytes, while a slow GPU, NIC, or
+network rail can stall balanced peers. That is why all-to-all exposed time and stragglers, rather
+than nominal FLOPs, often dominate. Keep chatty TP inside the strongest scale-up domain; place EP
+groups where all-to-all has uniform high bandwidth and good GPU-to-NIC affinity; map PP and DP so
+their traffic does not oversubscribe the same rails. Topology-aware rank placement matters even when
+the logical mesh is unchanged.
+
+**From-scratch training and dense-to-MoE upcycling have different initialization risks.**
+From scratch, router and expert initialization, early capacity, and balancing controls determine
+whether experts receive enough distinct signal before routing hardens.
+[Sparse Upcycling](https://arxiv.org/abs/2212.05055) can initialize routed experts from a dense FFN,
+but cloning alone preserves functional and parameter symmetry: when expert outputs are identical,
+task loss gives the router little reason to prefer one clone.
+
+Under the narrow conditions of normalized gates, matching FFN architecture, and no dropped routes,
+a weighted mixture of identical clones can initially reproduce the source FFN output. That is not
+instant training or capability equivalence: routing, capacity, shared branches, numerical order,
+optimizer-state mapping, and later sparse updates can all differ. Use a deliberate router and/or
+expert perturbation, expert-specific diversification or data exposure, and continued training.
+Different routed token subsets may eventually break symmetry, but relying on tie-breaking alone is
+an uncontrolled upcycling strategy. Validate the held-out loss immediately after conversion and
+through the continued-training transient.
+
+**Monitoring checklist, per MoE layer and per rank:**
+
+1. Pre-capacity and executed token assignments per expert, their coefficient of variation,
+   max-to-mean ratio, zero-load experts, and the expected `Nk/E` baseline.
+2. Overflow, dropped-branch, reroute, and fallback rates, including which tokens and experts they
+   affect.
+3. Router entropy, logit and log-partition ranges, top-k margins, and selection stability; averages
+   alone can hide a few saturated experts.
+4. Per-expert activation, output, parameter-gradient, and update norms, with non-finite and
+   persistently zero values called out.
+5. All-to-all bytes by peer, total and **exposed** all-to-all time, per-rank tails, and overlap with
+   useful compute.
+6. Grouped-GEMM row counts, padding, tensor-core occupancy, and time by expert; aggregate GPU
+   utilization can hide skinny or waiting kernels.
+7. End-to-end step time, tokens/second, and consumed-token accounting alongside held-out LM loss.
+8. Specialization audits by domain, language, token type, or controlled routing intervention.
+   Useful specialization need not be cleanly human-interpretable; balanced routing and quality are
+   stronger requirements than a compelling label for every expert.
+
+#### Self-test · A5.12
+
+<a id="a5-12-1"></a>
+
+**Q A5.12.1** — After scaling an MoE run to more nodes, held-out LM loss remains normal, but
+throughput falls and the reported expert loads become increasingly skewed. How do you distinguish
+router collapse, a capacity/dispatch bug, and a topology or straggler problem?
+
+First freeze a checkpoint and replay the same token IDs on the old and new meshes. Normalize for the
+actual valid `N`, `k`, `E`, and routing-group boundaries: changing the EP mesh can legitimately
+shrink each expert's effective batch. Log both **pre-capacity router intent** and **post-dispatch
+execution**, not one “load” counter.
+
+- **Router collapse:** pre-capacity assignment CV and max-to-mean rise, router entropy falls or
+  logits/top-k margins saturate, and the same experts win across repeated batches. Compare
+  per-expert probabilities, hard selections, auxiliary-loss terms, and router-gradient norms.
+- **Capacity/dispatch bug:** pre-capacity choices are plausible, but accepted/executed counts
+  diverge from them. Check that pre-capacity assignments sum to `N*k`, that accepted plus
+  dropped/rerouted records conserve the documented policy, that `C` used the valid token count and
+  correct routing group, and that per-peer send/receive counts, token IDs, padding masks, and inverse
+  permutation agree.
+- **Topology/straggler:** intended and executed counts reconcile, yet all-to-all exposed time or its
+  rank tail grows. Measure the per-peer byte matrix, collective arrival/wait time by rank,
+  grouped-GEMM time for equal row counts, GPU-to-NIC affinity, rail and switch counters, transport
+  fallback, and slow-GPU clocks/errors. A single slow destination can stall every peer even with a
+  healthy router.
+
+Normal LM loss does not clear any of the three: residual/shared paths can mask routing damage, and a
+pure placement problem need not change the mathematics at all. Classify with these counters before
+tuning the balance-loss weight or capacity factor.
+
+---
+
 <a id="section-a6"></a>
 
 ## A6 · Post-training and RL
@@ -4942,10 +5231,64 @@ rollouts contain informative successes.
 <a id="a6-2"></a>
 ### A6.2 SFT: more detail than you would think
 
-SFT looks like "just keep doing next-token prediction," but four implementation details get asked about.
+SFT still uses causal next-token prediction, but a chat or agent example is no longer one undifferentiated
+string. Four objects must be specified separately:
 
-**1. Loss masking.** Compute the loss only on the **response** tokens; set the prompt labels to `-100`.
-Without the mask, the model spends capacity learning to model the prompt distribution, which is not the behaviour you want.
+1. the **typed transcript**—system, user, assistant, tool call, tool result;
+2. the **serialization**—the exact chat template and control tokens;
+3. the **causal-attention graph**—which earlier tokens each token may read;
+4. the **loss mask**—which next-token predictions count as policy supervision.
+
+Let the typed messages be $$m_1,\ldots,m_K$$, let the deployment chat template serialize them as
+$$z_{1:N}=S(m_1,\ldots,m_K)$$, and let $$w_i\in\{0,1\}$$ be the policy-loss mask. The usual
+assistant-only objective is
+
+$$\mathcal L_{\rm SFT}
+=-\frac{\sum_{i=1}^{N}w_i\log p_\theta(z_i\mid z_{<i})}
+{\sum_{i=1}^{N}w_i}.$$
+
+**The default agent mask follows control: train what the policy emitted; condition on what the
+world supplied.**
+
+| Serialized span | Producer at deployment | Visible to later assistant tokens? | Policy-loss mask |
+|---|---|---|---|
+| System instruction and tool schemas | Harness / developer | Yes | `0` / label `-100` |
+| User message | User or user simulator | Yes | `0` / label `-100` |
+| Assistant natural-language response | Policy | Yes | `1` |
+| Assistant tool name and arguments | Policy action | Yes | `1` |
+| Tool or environment result | Environment | Yes, but treat as untrusted input | `0` / label `-100` |
+| Padding | Nobody | No | `0` / label `-100` |
+
+Control tokens need an explicit contract. If the serving harness inserts the opening
+`<assistant>` marker, it is prompt-side and normally masked. If the model must emit an
+end-of-turn, end-of-tool-call, or channel delimiter, supervise that delimiter. Hidden scratchpads,
+critic annotations, and privileged environment state should not become targets—or even inputs—unless
+the deployed student will receive the same channel.
+
+A two-tool-turn example therefore looks schematically like this:
+
+```text
+<system> use the supplied tools safely                     labels: -100 ...
+<user> book the cheapest refundable option                 labels: -100 ...
+<assistant><tool_call>{"name":"search", ...}</tool_call>   labels: token ids ...
+<tool>{"options":[...]}</tool>                              labels: -100 ...
+<assistant>Option A is refundable and costs ...</assistant> labels: token ids ...
+```
+
+Render the template **before** assigning masks, retain typed span provenance, and test by decoding
+every token beside its `label`. Separately tokenizing message strings and then concatenating them can
+change whitespace and boundary tokenization; regexing rendered text to rediscover tool spans is also
+brittle.
+
+![Agent and conversational SFT masks, plus full-trajectory versus per-step training](/assets/img/blog/interview-knowledge/qa11_agent_sft_en.png)
+
+*[Open the full-resolution figure](/assets/img/blog/interview-knowledge/qa11_agent_sft_en.png).*
+
+**Attention mask is not loss mask.** User and tool-result tokens normally remain causally visible to
+the later assistant even though their labels are `-100`. The attention mask changes what the model
+can read; `ignore_index=-100` changes only which predictions are scored. A masked prompt position
+can still receive gradient through a later supervised token that attends to its representation.
+Conversely, a loss mask cannot prevent two packed examples from reading each other.
 
 ```python
 labels = input_ids.clone()                    # input_ids: (B, T)
@@ -4958,17 +5301,41 @@ labels[attention_mask == 0] = -100            # mask the padding too
 > **batch dimension** — masking out the first few examples entirely instead of each example's prompt.
 > It is only correct for a single unbatched example.
 
-**2. Packing and cross-talk.** Pack several short examples into one sequence for utilisation, but you
+For a general multi-role transcript, `prompt_lens` is insufficient: construct labels from typed
+assistant-action spans so that tool observations between two assistant turns are masked again.
+
+**All assistant turns or only the last one?** If $$h_t$$ is the history before assistant action
+$$a_t$$, two legitimate objectives are
+
+$$\mathcal L_{\rm all}=-\sum_{t=1}^{T}\log\pi_\theta(a_t\mid h_t),
+\qquad
+\mathcal L_{\rm last}=-\log\pi_\theta(a_T\mid h_T).$$
+
+Here each turn log-probability itself sums its generated tokens. **All-turn supervision** is the
+natural behaviour-cloning objective when every assistant turn is a trusted expert action; it uses
+data efficiently and teaches tool selection, recovery, and stopping. **Last-turn-only supervision**
+fits datasets where earlier assistant messages are merely context, came from another or weaker
+policy, or are not licensed as targets. It otherwise discards valid demonstrations.
+
+State the reduction too. A global token mean gives long turns and trajectories more weight; averaging
+within turns and then conversations changes the objective. Per-conversation weighting is often
+useful when one 100-step trace should not outweigh 100 one-step examples.
+
+**Packing and cross-talk.** Pack several short examples into one sequence for utilisation, but you
 **must block cross-example attention** with a block-diagonal/segment mask. Reset `position_ids` when
 the model's positional scheme expects each segment to start at zero, but position resets alone do
 not block attention. Otherwise example B can see example A, which is a silent form of data
 contamination.
 
-**3. Number of epochs.** SFT datasets are usually small, so **1–3 epochs**. Past that it starts memorising,
-and both diversity and calibration degrade.
+**Epochs and quality.** One to three epochs is a common starting range for a small high-quality SFT
+set, not a law. Choose from prompt-disjoint held-out behaviour, exact-format validity, diversity,
+calibration, and forgetting—not training loss alone. LIMA is evidence that a small curated set can
+strongly shape behaviour; it is not proof that quantity never helps or that SFT cannot teach a
+demonstrated procedure.
 
-**4. Quality beats quantity, by a lot.** The LIMA result — a thousand carefully chosen examples beating tens of
-thousands of noisy ones — holds at this stage, because what you are tuning is **format and behaviour**, not knowledge.
+The most important train–serve invariant is exact serialization: same system contract, role tokens,
+tool schema, assistant prefix, stop delimiters, context truncation, and control of who emits each
+span. A correct mask on the wrong chat template still trains the wrong policy.
 
 #### Self-test · A6.2
 
@@ -4986,31 +5353,132 @@ packed, up to the numerical tolerance of the chosen kernel.
 Also check that the fast attention backend actually supports the supplied segment mask; a silent
 fallback or ignored mask can make the data pipeline look correct while the executed kernel is not.
 
+<a id="a6-2-2"></a>
+
+**Q A6.2.2** — A training trace is `system → user → assistant tool call → tool result → assistant
+answer`. Which spans receive policy loss? Does masking the tool result mean it receives no gradient
+or that the answer cannot condition on it?
+
+Mask system and user spans, supervise the assistant's tool name/arguments, mask the tool result, and
+supervise the final assistant answer plus every delimiter the policy must emit. Padding is both
+invisible and label-masked. The tool result remains visible through causal attention because it is
+an observation needed for the answer.
+
+Label masking removes the tool span's **own next-token cross-entropy**; it does not detach that span.
+Later answer losses can backpropagate through attention into the representations and shared
+parameters that processed the observation. Setting the tool span's attention mask to zero would be a
+different and usually destructive operation.
+
 > **Follow-ups**
 > - *Does it ever help to train on prompts?* → Slightly, in very low-data regimes, as a regulariser.
->   Most recipes mask.
+>   Assistant-only masking is the normal policy objective, but the choice is empirical rather than a
+>   theorem.
 > - *What breaks with packing?* → Cross-contamination without a block-diagonal mask. Position resets
 >   can still be needed for the positional scheme, but are not an attention barrier.
+> - *Should reasoning tokens be supervised?* → Only if that channel is part of the intended policy
+>   output and is available under the same deployment contract. Tool actions are observable policy
+>   actions; private reasoning and environment state are different objects.
+>
+> **Traps**
+> - Using an attention mask to remove system/user/tool observations when only their labels should be
+>   masked.
+> - Assuming `label=-100` means a token can receive no indirect gradient.
+> - Supervising tool results, which teaches the policy to imitate text produced by an environment it
+>   will not control.
 
 ---
 
 <a id="a6-3"></a>
 ### A6.3 Reward models and Bradley-Terry
 
-Train a scalar head on preference pairs:
+**Start from the data contract.** For one shared prompt or interaction state $$x$$, collect a chosen
+response or trajectory $$y_w$$ and a rejected one $$y_l$$. Candidates should come from relevant and
+diverse policy checkpoints and samplers; randomise display order, blind model identity, preserve
+ties/disagreement, and split evaluation by prompt, user, task, and time—not by response row. Comparing
+outputs from different prompts confounds response quality with prompt difficulty.
 
-$$\mathcal L = -\log\sigma\big(r_\theta(x,y_w) - r_\theta(x,y_l)\big)$$
+**A common reward-model architecture.** Serialize `prompt + response` or the complete observable
+trajectory, run a pretrained transformer, gather the final non-padding/EOS representation, and add
+a scalar head:
 
-This is the Bradley-Terry model: it assumes the probability a human prefers $$y_w$$ is $$\sigma(r_w - r_l)$$.
+$$H_\phi=f_\phi(S(x,y))\in\mathbb R^{B\times L\times D},
+\qquad
+h_{\rm end}\in\mathbb R^{B\times D},
+\qquad
+r_\phi(x,y)=w^\top h_{\rm end}+b\in\mathbb R^B.$$
 
-**Three things you have to be able to say:**
+For a batch of $$B$$ pairs, implementations either run chosen and rejected tensors separately with
+shape `[B,L]` or concatenate them into `[2B,L]`; the shared model returns one unbounded scalar per
+candidate. Padding uses an attention mask. There is no token-level LM label mask unless a separate
+auxiliary language-model loss is deliberately added. Final-state pooling is common, not required:
+token heads, bidirectional encoders, and generative judges are alternative scoring models.
 
-1. **The reward is only determined up to an additive constant.** BT constrains **differences**, not absolute
-   values, so comparing raw reward numbers across runs is meaningless. Hence per-batch normalisation.
-2. **It is trained on a narrow distribution and then queried far away from it** — because the policy moves.
-   That is a textbook Goodhart setup, and it is the entire reason the KL penalty exists.
-3. **Wherever you can get a verifier, the verifier beats a learned reward.** A unit test is a function, not a
-   network, and cannot be gamed the same way. The causal chain from "this answer is correct" to a gradient is far shorter.
+The original [Bradley–Terry model](https://doi.org/10.1093/biomet/39.3-4.324) turns two scalar
+scores into a pairwise probability and binary cross-entropy:
+
+$$P_\phi(y_w\succ y_l\mid x)
+=\sigma\!\left(\frac{r_w-r_l}{\tau}\right),
+\qquad
+\mathcal L_{\rm BT}
+=-\log P_\phi(y_w\succ y_l\mid x)
+=\operatorname{softplus}\!\left(-\frac{r_w-r_l}{\tau}\right).$$
+
+So the answer to “is this regression?” is **no in the ordinary supervised sense**. The network emits
+a continuous score, but no human target says “this answer is 3.7.” Training is pairwise logistic
+classification on a score **difference**. At prediction time, one forward pass yields a ranking
+score; two scores plus the sigmoid yield a preference probability under the fitted BT model. A raw
+score is neither a probability nor an absolute unit of quality.
+
+![Bradley-Terry reward-model dataflow and the open-ended agent reward stack](/assets/img/blog/interview-knowledge/qa12_reward_model_en.png)
+
+*[Open the full-resolution figure](/assets/img/blog/interview-knowledge/qa12_reward_model_en.png).*
+
+**Identifiability is precise.**
+
+- Adding the same $$c(x)$$ to every candidate score for one prompt changes no pair probability, so
+  the absolute zero is unidentified. Disconnected comparison graphs have independently floating
+  offsets.
+- With fixed $$\tau$$, arbitrary rescaling is **not** an invariance: it changes preference
+  probabilities. Different data, regularisation, heads, or learned temperatures can nevertheless
+  make scales incomparable across RM versions.
+- Perfectly separable pairs can drive an unregularised margin toward infinity. Weight decay, label
+  smoothing, ties, and diverse hard comparisons are not cosmetic.
+- Reward whitening or normalisation during PPO may stabilise optimisation, but it does not make the
+  reward an identified physical quantity.
+
+The scalar model also assumes preferences can be represented by one transitive utility. Real
+annotators can disagree or cycle; length, style, identity, and ordering can become shortcuts.
+Bradley–Terry with binary labels does not automatically model ties, annotator populations, or
+pluralistic objectives.
+
+**For conversations and agents, choose the scoring unit deliberately.**
+
+| Model | Input | Output | Supervision and limitation |
+|---|---|---|---|
+| Response RM | Shared dialogue prefix plus one next response | One scalar | Pair preference for that turn; misses later consequences |
+| Full-trajectory outcome RM | Initial task plus all visible actions and observations | One terminal scalar | Whole-episode preference; sees the process but receives only outcome supervision |
+| Process / step RM | Prefix or branch point at step $$t$$ | Step score, $$V(h_t)$$, or local preference | Needs step/branch labels or structural assumptions; see A6.13 |
+
+If only terminal pair labels supervise a decomposition
+
+$$R_\phi(\tau)=\sum_{t=1}^{T}r_{\phi,t},$$
+
+the individual step rewards are not identifiable: infinitely many allocations produce the same
+total. A full-trajectory transformer attending to every action is still an **outcome** RM unless
+steps or shared-prefix branches are separately labelled. For stochastic agent worlds, compare
+trajectories from the same initial state and, where possible, matched environment randomness; an
+easy tool outcome should not masquerade as a better policy.
+
+**Collection and use form a loop.** Train an initial RM on prompt-matched pairs, evaluate pair
+accuracy, log loss, calibration, slices, and disagreement, then optimise a policy. Because the
+policy searches for RM errors and moves off the original candidate distribution, collect fresh
+current-policy comparisons and preserve a frozen human or independent-judge audit. A11.10 covers RM
+evaluation; A12.18 covers open-ended agent trajectories.
+
+Where an exact verifier exists, prefer it for the dimension it can actually check. A unit test is
+not universally “better” than a learned RM—it may have incomplete coverage—but its specified pass
+condition is cheaper and less statistically ambiguous. Open-ended quality still needs human,
+rubric, or learned feedback.
 
 #### Self-test · A6.3
 
@@ -5028,6 +5496,29 @@ Goodharting.
 Slice by length, style and task, read samples, measure KL from the reference, and collect new
 preferences on current-policy outputs. The corrective action is to improve/retrain the RM and tighten
 policy constraints, not to renormalise the graph until it looks healthy.
+
+<a id="a6-3-2"></a>
+
+**Q A6.3.2** — A decoder-only RM receives eight chosen/rejected pairs of length 512 with hidden
+width 4096. Describe the tensors, outputs, and loss. Is its scalar output a regression prediction?
+
+Run the shared encoder on two `[8,512]` batches or one `[16,512]` batch. Its hidden tensor is
+`[16,512,4096]`; gather the last valid or EOS state to `[16,4096]`, apply one scalar head to obtain
+`[16]`, split into `r_chosen` and `r_rejected` of shape `[8]`, and form eight margins. The mean
+`softplus(-(r_chosen-r_rejected)/tau)` is the BT loss.
+
+The head output is continuous, but training is pairwise classification, not regression to absolute
+quality labels. Only score differences affect the likelihood. Padding is removed by attention and
+pooling masks; prompt/response token `-100` labels are irrelevant unless the run also includes an
+explicit LM auxiliary objective.
+
+> **Traps**
+> - Calling the raw scalar a preference probability; the probability comes after differencing two
+>   prompt-matched scores and applying the sigmoid.
+> - Claiming any monotone transform leaves the BT model unchanged. It preserves ranking, not the
+>   fitted likelihood.
+> - Calling a whole-trajectory score “process supervision” merely because the encoder saw every
+>   step.
 
 ---
 
@@ -5135,16 +5626,96 @@ remain unclipped. Monitor empirical KL, the ratio distribution and clip fraction
 early-stop an epoch when KL exceeds a pre-registered target. The `min` is pessimistic about estimated
 improvements, not a feasibility constraint.
 
-**GAE.** The advantage interpolates between one-step TD (biased, low variance) and Monte Carlo (unbiased, high variance):
+**GAE (generalized advantage estimation).** The advantage interpolates between one-step TD
+(temporal difference; biased, low variance) and Monte Carlo (unbiased, high variance):
 
 $$\delta_t = r_t + \gamma V(s_{t+1}) - V(s_t),\qquad \hat A_t = \sum_{l\ge0}(\gamma\lambda)^l\delta_{t+l}$$
 
 $$\lambda=1$$ collapses to Monte Carlo, $$\lambda=0$$ to one-step TD. When you implement it, **assert both limits** —
 the cheapest correctness check there is.
 
-**Four models sit in memory:** the policy, a frozen reference, the reward model, and the critic.
+**Five logical roles, not five mandatory resident models.** Let $$B$$ be the number of prompts, $$T$$
+the padded response length, and $$V$$ the vocabulary size. The roles in a canonical RLHF PPO cycle are:
 
-**Where the KL goes:** in PPO the convention is to **subtract it from the reward** before computing advantages.
+| Logical role | Input | Output tensor or semantic output | Whether and how it is updated | Exact purpose |
+|---|---|---|---|---|
+| **Current policy / actor** $$\pi_\theta$$ | Prompt plus each generated response prefix and its mask | Next-token scores `[B,T,V]`; gathered chosen-token log-probabilities `[B,T]` | Trainable. Updated for several PPO minibatch epochs on the fixed rollout batch | The policy being improved; supplies the numerator of the PPO importance ratio |
+| **Old / behaviour policy** $$\pi_{\theta_{\rm old}}$$ | The same prefixes; autoregressive state during generation | Sampled response tokens and chosen-token log-probabilities `[B,T]` | Frozen within one rollout-and-update cycle. Synchronized from the current actor before the next rollout cycle | Collects the on-policy batch and supplies the fixed denominator of the PPO importance ratio |
+| **Frozen reference policy** $$\pi_{\rm ref}$$ | The sampled prompt-response tokens | Reference chosen-token log-probabilities `[B,T]` | Usually initialized from SFT and held fixed throughout RL; no policy-gradient update | Anchors the actor through a KL penalty so reward optimization does not drift arbitrarily far from the SFT policy |
+| **Reward model or verifier** | Usually the complete prompt-response pair; sometimes intermediate states or tool outputs | A completion score `[B]`, token/process scores `[B,T]`, or semantic results such as pass/fail | Normally fixed during the PPO phase; a learned reward model is trained separately. A verifier may instead be tests, a compiler, or other code | Supplies the task, preference, safety, or correctness signal |
+| **Critic / value model** $$V_\psi$$ | The state at each response prefix | State values `[B,T]`, or `[B,T+1]` when the final bootstrap state is stored in the same tensor | Trained by regression to rollout returns; it may be a separate network or a value head on a shared actor backbone | Provides the state-dependent baseline and bootstrap values used by GAE |
+
+**The old policy is not the reference policy.** At the start of a cycle, the rollout engine is
+copied or synchronized from the current actor. That behaviour snapshot generates the batch and then
+stays fixed while the actor takes multiple optimization steps. Its chosen-token log-probabilities are
+cached once and reused as the PPO denominator; recomputing that denominator from the already-updated
+actor would no longer represent the data-collection policy. At the next rollout cycle, the old policy
+is refreshed from the new actor. The reference policy instead remains the usually fixed SFT anchor
+used for KL control. They can be numerically identical at initialization, but their roles and refresh
+schedules are different.
+
+![PPO and GRPO model topology from DeepSeekMath](/assets/img/blog/interview-knowledge/qa7_ppo_grpo_deepseekmath.png)
+
+*[Open the full-resolution figure](/assets/img/blog/interview-knowledge/qa7_ppo_grpo_deepseekmath.png). Source: Figure 4 of [DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models](https://arxiv.org/abs/2402.03300). Yellow denotes trainable components and blue denotes frozen components. The old-policy snapshot, or its cached old log-probabilities, is implicit rather than a fifth drawn box.*
+
+These are five **logical** roles, not necessarily five simultaneously resident full model copies.
+During optimization, cached old log-probabilities can replace an old-policy forward pass; the
+rollout engine may be offloaded or colocated; the reference and reward model can be sharded or
+scheduled at different times; the actor and critic can share a backbone with separate heads; and a
+verifier may be code rather than a neural model. State the logical role first, then describe the
+physical deployment.
+
+**Tensor contract.** For variable response lengths $$T_b\le T$$, let the response-token mask have
+shape `[B,T]`. The following tensors refer only to generated response positions, not prompt positions
+or the full vocabulary:
+
+- Response token IDs and the mask are `[B,T]`.
+- Current, old, and reference chosen-token log-probabilities are each `[B,T]`. Current
+  log-probabilities are recomputed on each actor update; old log-probabilities are fixed rollout
+  data; reference log-probabilities are fixed targets and may also be cached.
+- A terminal reward is `[B]` and is usually placed on the last valid response token. A process or
+  dense reward is `[B,T]`. After placement and masking, the reward consumed by GAE is `[B,T]`.
+  A common canonical RLHF shaping convention is
+
+$$r^{\text{shaped}}_{b,t}=r^{\text{task}}_{b,t}-\beta\big(\log p_{\text{old},b,t}-\log p_{\text{ref},b,t}\big)$$
+
+At collection time the current actor and behaviour snapshot coincide. Using the cached old
+log-probabilities keeps this shaped rollout reward, and therefore the computed advantages, fixed
+across the subsequent PPO epochs.
+
+- If $$s_t$$ is the prefix before action $$a_t$$, then $$T$$ response actions need values for
+  $$s_0,\ldots,s_{T-1}$$ plus the post-action state $$s_T$$ for bootstrapping. Implementations
+  therefore store values as `[B,T]` plus a separate `[B]` bootstrap, or as `[B,T+1]`. Advantages
+  and returns still have shape `[B,T]`, one entry per action. The bootstrap is zero after a true
+  terminal token, but not automatically after a time-limit truncation.
+
+**Where the KL goes.** In canonical RLHF PPO, the sampled per-token KL penalty is **subtracted from
+the reward before** values, returns, and advantages are computed. This is a convention of this PPO
+formulation, not a universal law for every PPO implementation.
+
+**One PPO cycle, end to end:**
+
+1. **Freeze the behaviour snapshot and sample.** Draw $$B$$ prompts, synchronize the rollout policy
+   from the actor, generate each response, and store token IDs, masks, termination flags, and the
+   exact chosen-token old log-probabilities. Those cached values must correspond to the sampler
+   version and logits processing that actually produced the tokens.
+2. **Score the completed trajectories.** Run the reward model or verifier to obtain scalar or
+   process rewards, and run the frozen reference policy on the sampled tokens to obtain reference
+   log-probabilities.
+3. **Construct token rewards.** Place a scalar score at the last valid action, or retain process
+   rewards at their positions; subtract the reference-KL shaping term; and mask padding.
+4. **Compute values, GAE, and returns.** Evaluate the critic on response-prefix states, apply the
+   correct terminal or truncation bootstrap, run GAE backward over valid tokens, and form fixed
+   return targets.
+5. **Update the actor.** On several shuffled minibatch epochs, recompute current log-probabilities,
+   divide by the cached old-policy probabilities, and optimize the clipped surrogate. Clipping
+   removes an incentive beyond one branch's threshold; it does not hard-constrain the realized
+   ratio or KL, so empirical KL and clip fraction still need monitoring.
+6. **Update the critic.** Regress its state values toward the rollout return targets, with masking.
+   This may be a separate optimizer step or a value-head loss on a shared backbone.
+7. **Refresh for the next cycle.** Discard or archive the consumed on-policy batch, synchronize the
+   new actor into the behaviour/rollout policy, and collect fresh trajectories. The reference policy
+   remains unchanged.
 
 #### Self-test · A6.6
 
@@ -5165,12 +5736,18 @@ in code and measure critic error and advantage variance on held-out rollouts.
 
 > **Follow-ups**
 > - *Why is the value function hard to train for LLMs?* → Sparse reward (one scalar per response),
->   distribution shift as the policy improves so the critic always lags, and it is another full-size
->   model in memory. All three arguments point at GRPO.
+>   distribution shift as the policy improves so the critic always lags, and extra forward,
+>   backward, parameter, and optimizer-state cost. A shared backbone can reduce the incremental
+>   footprint; these issues motivate critic-free methods but do not prove they are cheaper overall.
+> - *Can the old and reference policies be the same model?* → They can begin with identical weights,
+>   but not the same update schedule or logical role: old refreshes every rollout cycle and defines
+>   the PPO denominator; reference is normally fixed and defines the KL anchor.
 >
 > **Traps**
 > - Saying clipping bounds gradient magnitude, KL, or the realised probability ratio. It only
 >   saturates one branch of the sampled surrogate incentive.
+> - Conflating $$\pi_{\theta_{\rm old}}$$ with $$\pi_{\rm ref}$$, or counting every logical role as
+>   a separately resident full model.
 
 ---
 
@@ -5185,11 +5762,40 @@ $$\mu_g=\frac1G\sum_{j=1}^{G}r_j,\qquad
 \sigma_g=\sqrt{\frac1G\sum_{j=1}^{G}(r_j-\mu_g)^2},\qquad
 \hat A_i=\frac{r_i-\mu_g}{\sigma_g+\varepsilon}$$
 
+**Roles and tensor contract.** In the outcome-supervision contract implemented below, for $$B$$
+prompts, generate $$G$$ completions per prompt and pad each response to $$T$$ tokens:
+
+| Logical role | Main tensors | Update and purpose |
+|---|---|---|
+| **Current actor** | Current chosen-token log-probabilities `[B,G,T]` | The only trainable network in the canonical GRPO policy update; supplies the importance-ratio numerator |
+| **Old / behaviour policy** | Generated tokens and cached old log-probabilities `[B,G,T]` | Frozen within the update cycle and refreshed from the actor for the next group rollout; supplies the sampling distribution and ratio denominator |
+| **Frozen reference policy** | Reference log-probabilities `[B,G,T]` | Normally fixed; supplies the direct per-token KL regularizer in original GRPO |
+| **Reward model or verifier** | One completion reward `[B,G]` | Normally fixed during policy optimization; ranks outcomes within each prompt group and may be learned or executable code |
+| **Critic / value model** | **Absent** | No value prediction, return target, critic regression, or GAE |
+
+The token IDs and mask are `[B,G,T]`. The completion rewards are `[B,G]`; their group mean and
+standard deviation are `[B,1]`; and the normalized group advantage is `[B,G,1]`, broadcast across
+the token axis to `[B,G,T]`. Current, old, and reference chosen-token log-probabilities are all
+`[B,G,T]`, as are the probability ratio and per-token policy/KL terms after broadcasting. There is
+no value tensor and therefore no $$T+1$$ bootstrap convention. The code below flattens the first two
+axes to a completion batch of size $$B G$$.
+
+The `[B,G]` reward and broadcast `[B,G,1]` advantage are specifically the outcome-supervision form.
+DeepSeekMath also describes process-supervision GRPO, in which step rewards produce token-varying
+cumulative advantages. That is a different reward/advantage tensor contract; it does not give the
+scalar outcome form hidden token-level credit assignment.
+
+What disappears relative to PPO is specifically the **learned critic, its regression loss, and
+GAE/value bootstrapping**. The current actor, rollout behaviour snapshot or cached old
+log-probabilities, frozen reference in the canonical formulation, reward model or verifier,
+on-policy generation, importance ratio, and clipping all remain. Thus “PPO without a critic” names
+the deletion but misses the grouped sampling and group-relative baseline that replace it.
+
 ```python
 r = rewards.view(-1, G)
 spread = r.std(dim=1, keepdim=True, correction=0)
 adv = (r - r.mean(dim=1, keepdim=True)) / (spread + 1e-4)
-adv = adv.reshape(B, 1)                    # one scalar per completion
+adv = adv.reshape(-1, 1)                   # one scalar per completion
 
 ratio  = (logp - logp_old).exp()
 policy = -torch.min(ratio * adv, ratio.clamp(1-eps, 1+eps) * adv)
@@ -5231,8 +5837,10 @@ matches Part II's sequence-level `reference.py::grpo_loss`.
    In the code, `log_ratio = logp_ref - logp` is $$\log r$$, hence `log_ratio.exp() - log_ratio - 1`.
    You use this instead of the naive $$-\log r$$ because k3 is unbiased **and** non-negative per sample —
    the naive log-ratio difference can come out negative on a single sample, which is a meaningless KL estimate.
-2. **The advantage is bandit-shaped**: one scalar per completion, broadcast to every token. **There is no
-   per-token credit assignment whatsoever.** That is a real limitation and worth raising yourself.
+2. **In the outcome-supervision form, the advantage is bandit-shaped**: one scalar per completion,
+   broadcast to every token. **There is no intrinsic per-token credit assignment in that contract.**
+   Process-supervision GRPO is an explicit alternative contract, not evidence that the scalar form
+   attributes credit by token.
 3. **A singleton or fully tied group has zero reward-driven policy signal.** The numerator is exactly
    zero; `correction=0` makes the singleton spread well-defined, and $$\varepsilon$$ prevents division
    by zero. A nonzero KL regulariser may still contribute, but the rewards contribute no relative
@@ -5240,6 +5848,28 @@ matches Part II's sequence-level `reference.py::grpo_loss`.
 4. **Reduction changes length weighting.** Sequence means give completions equal total weight and
    smaller per-token weight to longer completions; a global-token mean weights longer completions
    more. Name which objective you are using.
+
+**PPO versus GRPO at a glance.**
+
+| Dimension | PPO | GRPO |
+|---|---|---|
+| **Baseline / advantage** | A learned state value and GAE produce token-indexed advantages | Within-prompt completion rewards are normalized; one `[B,G,1]` advantage is broadcast over tokens |
+| **Trainable networks** | Actor and critic, though they may share a backbone | Actor only; no learned critic |
+| **Generation** | Fresh on-policy trajectories, with no requirement to draw a fixed same-prompt group | Requires $$G$$ on-policy completions for each of $$B$$ prompts so relative outcomes can be compared |
+| **Reward** | Completion or process rewards can be placed on tokens and then combined with value bootstrapping | Canonical form uses one scalar reward `[B,G]` per completion and depends on within-group variation |
+| **KL placement in the canonical forms here** | Sampled per-token reference KL is folded into shaped rewards before GAE | Original DeepSeekMath GRPO adds a per-token reference-KL term directly to the loss |
+| **Credit assignment** | Returns and advantages are token-indexed; process rewards can make them denser, although a terminal score is still delayed | In the scalar outcome form, the same completion-level advantage is broadcast to every response token; process-supervision variants use a different, token-varying contract |
+| **Memory and compute** | Pays for critic inference, training, parameters, and optimizer state; sharing can reduce the parameter increment | Removes critic cost, but still pays for actor/reference/reward roles and for $$G$$ generations and scores |
+| **Sample cost** | No mandatory $$G$$ same-prompt rollouts; the learned baseline is amortized across prompts | Uses $$B G$$ completions per batch, and all-tie groups spend rollout and scoring compute without reward-driven gradient |
+| **Best-fit regime** | Useful when a learned state-dependent baseline and GAE returns are valuable, generation is expensive, or critic training is affordable | Useful when outcome verification and parallel sampling are affordable, group rewards vary, and critic memory/training is the bottleneck |
+
+This table compares the canonical outcome-supervision formulation described here. The original
+DeepSeekMath paper also studies process-supervision and iterative variants, and later GRPO-family
+systems may remove the reference model, change the KL estimator, alter clipping, or change token
+reduction. Those contract or objective changes should be named, not silently attributed to all GRPO.
+In DeepSeekMath's iterative algorithm, the reference is reset from the policy at an outer iteration
+and then frozen for the inner update steps; “frozen” describes that optimization window there, not
+an immutable SFT checkpoint in every GRPO system.
 
 #### Self-test · A6.7
 
@@ -5263,8 +5893,8 @@ distinct choices. None creates token-level credit assignment—the completion re
 broadcast—so process rewards are a separate modelling choice.
 
 > **Follow-ups**
-> - *When is GRPO a bad choice?* → Dense per-token rewards; when you cannot afford $$G$$ samples; and
->   when within-group variance is low.
+> - *When is GRPO a bad choice?* → When fine-grained credit is required but only scalar outcome
+>   rewards are available; when you cannot afford $$G$$ samples; and when within-group variance is low.
 > - *What does DAPO fix?* → Four things. **Clip-Higher** (asymmetric clip ranges so low-probability
 >   tokens can still be boosted, preventing entropy collapse); **dynamic sampling** (drop all-tie
 >   groups — exactly the zero-signal problem above); a **global-token loss reduction** rather than
@@ -5273,6 +5903,8 @@ broadcast—so process rewards are a separate modelling choice.
 > **Traps**
 > - Saying GRPO "is just PPO without a critic" and stopping there.
 > - Calling per-completion and global-token reductions the same objective.
+> - Claiming GRPO is universally cheaper: it removes critic cost but may spend more on $$G$$
+>   rollouts, verifier calls, and all-tie groups.
 
 ---
 
@@ -5400,6 +6032,80 @@ relative probabilities among the wrong answers encode similarity structure that 
 mean-covering — it smears mass over modes it cannot represent. Reverse KL makes it mode-seeking — pick one mode
 and do it well. For a small student that cannot represent the teacher's full distribution, reverse KL often generates better.
 
+**Agent trajectories add a second axis: full serialized trajectory versus one example per
+decision.** Write the observable trajectory and history as
+
+$$\tau=(o_1,a_1,o_2,a_2,\ldots,o_{T+1}),
+\qquad
+h_t=(o_1,a_1,\ldots,o_t).$$
+
+Under shared environment dynamics,
+
+$$P_\pi(\tau)
+=\rho(o_1)\prod_{t=1}^{T}
+\pi_\theta(a_t\mid h_t)\,
+P(o_{t+1}\mid h_t,a_t),$$
+
+so the environment terms do not depend on policy parameters:
+
+$$-\log P_\pi(\tau)
+=C(\tau)-\sum_{t=1}^{T}\log\pi_\theta(a_t\mid h_t).$$
+
+That equation gives the clean answer: **feeding one whole causally masked trajectory and summing
+loss over all teacher action spans is mathematically the same behaviour-cloning objective as
+creating one `history → teacher action` example per step**—provided every target appears once, every
+action sees the identical serialized history and position semantics, no context is truncated, and
+the reductions assign the same token/turn/trajectory weights. Each language action then factorises
+again over its own tokens. This is equality of the expected objective, not a promise of bit-identical
+optimizer steps: batching, dropout masks, padding, and numerical order can change gradient noise.
+
+| Choice | What it buys | What can silently change |
+|---|---|---|
+| Full trajectory in one sequence | Prefix computation is shared; exact interleaving and long-horizon coherence are preserved | Long traces dominate a token mean; context truncation may delete early state; one oversized trace wastes padding |
+| Per-step `h_t → a_t` examples | Easy to rebalance turn positions, failures, branches, and action types; shorter batches | Prefixes are duplicated; omitted history causes state aliasing; per-row averaging reweights trajectories |
+
+“Split step by step” therefore must not mean “drop dependence.” In a partially observable task the
+student generally needs the complete available history $$h_t$$ or a **sufficient** belief/state
+summary produced by the same deployed memory system. Current observation alone is insufficient when
+the same screen or user utterance requires different actions because of earlier commitments. Do not
+condition the student on privileged simulator state or teacher scratchpads unavailable at inference.
+
+The next observation also depends on the action. If the student chooses a different tool call, you
+cannot splice that action into the teacher's recorded suffix and pretend the old tool result is the
+counterfactual world. Re-run the environment, or keep the original teacher action with its original
+observation.
+
+**The more important split is whose histories you train on.**
+
+- **Offline trajectory SFT / behaviour cloning:** $$h_t\sim d_E^t$$, where the teacher or expert
+  generated earlier actions. It is cheap and stable, but the student rarely sees its own mistakes.
+- **Learner-history relabelling:** roll out the student, query a teacher or human for the desired next
+  action at visited states, and aggregate the data—the **DAgger (Dataset Aggregation)** idea
+  ([arXiv:1011.0686](https://arxiv.org/abs/1011.0686)).
+- **On-policy logit distillation:** sample histories from the student and match a teacher distribution:
+
+$$\mathcal L_{\rm on}
+=\sum_t\mathbb E_{h_t\sim d_{\pi_\theta}^{t}}
+\left[D\!\left(q(\cdot\mid h_t)\,\|\,\pi_\theta(\cdot\mid h_t)\right)\right].$$
+
+Stop gradients through sampled histories; state the divergence direction and whether the teacher
+returns logits, a corrected action, or only a scalar. Teacher relabelling can repair a bad prefix;
+blindly SFTing the student's failed action cannot.
+
+**Where train–inference mismatch enters:**
+
+1. expert histories $$d_E$$ versus student histories $$d_{\pi_\theta}$$;
+2. train-only system prompts, tool schemas, hidden state, or scratchpads;
+3. recorded teacher tool results versus the environment version used by the student;
+4. full training history versus deployment truncation, compaction, or external memory;
+5. different role tokens, assistant prefixes, sampling rules, or stop conditions;
+6. objective reweighting when per-step rows or long trajectories are averaged differently.
+
+Teacher forcing is still the correct maximum-likelihood estimator on demonstrations; “exposure
+bias” does not make the chain rule wrong. It says deployment visits a different occupancy
+distribution after the student's early errors. Mix offline expert coverage with learner rollouts,
+failed-prefix repair, and environment replay according to cost and risk.
+
 #### Self-test · A6.10
 
 <a id="a6-10-1"></a>
@@ -5419,10 +6125,36 @@ signal, then let RL push past the teacher (see A7.2).
 > **Traps**
 > - Only covering Hinton-style soft targets. Almost all "distillation" in LLM land is sequence-level behaviour cloning.
 
+<a id="a6-10-2"></a>
+
+**Q A6.10.2** — A team converts each successful 20-step teacher trajectory into 20 rows but keeps
+only the current screenshot and teacher action. Offline accuracy rises; deployment forgets earlier
+constraints and cannot recover after its first wrong tool call. Is step-wise training itself the
+problem?
+
+No. Step-wise and full-trajectory BC are equivalent only when each row retains the same sufficient
+history and weighting. The screenshot aliases states that differ in earlier user constraints, files,
+actions, and tool results, so incompatible actions are presented for apparently identical inputs.
+Restore the complete deployable history or the same versioned memory/ledger summary used in
+production; prevent context truncation from deleting load-bearing facts.
+
+The recovery failure is a separate occupancy-shift problem: all rows came from teacher histories.
+Roll out the student in the real environment, ask the teacher or a human to label actions at
+student-visited failure prefixes, and mix those examples with expert trajectories. Never attach the
+teacher's old post-action observation to a different student action; execute the environment to get
+the resulting state.
+
+> **Follow-ups**
+> - *Should previous teacher actions remain in history?* → Yes when the deployed policy will see its
+>   own previous actions and they affect state. They are context for a later action; whether their
+>   labels are also trained is the all-turn versus last-turn decision from A6.2.
+> - *Can per-step rows be better?* → They can deliberately rebalance rare recovery or late-turn
+>   decisions. That is an objective change, not a free storage refactor.
+
 ---
 
 <a id="a6-11"></a>
-### A6.11 LoRA and PEFT
+### A6.11 LoRA and parameter-efficient fine-tuning (PEFT)
 
 $$W' = W + \frac{\alpha}{r}BA,\qquad A\in\mathbb R^{r\times d_\text{in}},\; B\in\mathbb R^{d_\text{out}\times r}$$
 
@@ -5463,7 +6195,8 @@ Activations are largely unchanged — you still forward through the whole networ
 checkpointing is still worth it.
 
 > **Follow-ups**
-> - *QLoRA?* → Quantise the frozen base to 4-bit (NF4), keep the adapter in higher precision, plus
+> - *QLoRA (Quantized LoRA)?* → Quantise the frozen base to
+>   **NF4 (4-bit NormalFloat)**, keep the adapter in higher precision, plus
 >   paged optimizers and double quantization. The original paper fine-tuned a **65B**, not 70B,
 >   model on a single 48GB GPU.
 > - *Where do you attach it?* → Attention projections by default; adding the MLP matrices helps on
@@ -5536,7 +6269,7 @@ reference stays at SFT or moves to the previous round; otherwise a gain cannot b
 ---
 
 <a id="a6-13"></a>
-### A6.13 Process reward models
+### A6.13 Process reward models (PRMs)
 
 **Mental model: an outcome reward says whether the trip ended well; a process reward marks where the
 route became invalid.** Split a reasoning trace into steps $$z_1,\ldots,z_T$$ and train
@@ -5625,7 +6358,8 @@ training signal.** Several mechanisms share the name:
   the target distribution from its own old distribution.
 - **Self-rewarding** samples several candidates, asks the model itself—through an
   LLM-as-a-judge rubric—to rank them, and performs iterative DPO on those synthetic preferences.
-- **Constitutional/RLAIF loops** use an explicit human-written principle set and often a separate
+- **Constitutional/RLAIF (reinforcement learning from AI feedback) loops** use an explicit
+  human-written principle set and often a separate
   model to critique, revise or rank outputs. Human judgement has moved into the constitution and
   audits; it has not disappeared.
 
@@ -5827,6 +6561,186 @@ the incident is exactly why data recollection and reversible deployment are part
 
 ---
 
+<a id="a6-17"></a>
+### A6.17 Rejection-sampling fine-tuning (RFT)
+
+**Expand the acronym every time the audience may be mixed.** In this section, **RFT means
+rejection-sampling fine-tuning**: generate candidates, select good ones, and run ordinary supervised
+fine-tuning on the selected trajectories. The acronym is overloaded—OpenAI product documentation
+also uses **RFT for reinforcement fine-tuning**, which is a policy-gradient service—and it is
+different again from **ReFT**, representation fine-tuning.
+
+**RFT is a data-construction procedure, not a new optimizer.** For prompt $$x_i$$, a frozen
+collection policy $$\mu_t$$, score or verifier $$S$$, threshold $$\tau$$, and $$N$$ candidates,
+
+$$y_{ij}\sim\mu_t(\cdot\mid x_i),
+\qquad
+\mathcal A_t=\{(x_i,y_{ij}):S(x_i,y_{ij})\ge\tau\}.$$
+
+A best-of-$$N$$ variant instead retains
+
+$$y_i^\star=\arg\max_{1\le j\le N}S(x_i,y_{ij}).$$
+
+After deduplication and weighting, training is the same masked next-token cross-entropy as SFT:
+
+$$\mathcal L_{\rm RFT}(\theta)
+=-\frac{
+\sum_{(i,j)\in\mathcal A_t}w_{ij}
+\sum_{k=1}^{|y_{ij}|}m_{ijk}
+\log\pi_\theta(y_{ij,k}\mid x_i,y_{ij,<k})
+}{
+\sum_{(i,j)\in\mathcal A_t}w_{ij}
+\sum_{k=1}^{|y_{ij}|}m_{ijk}
+}.$$
+
+The response mask $$m_{ijk}$$ follows A6.2: assistant actions count, prompts and environment
+observations do not. One can stop after this single generate–select–train pass. **Iterative RFT**
+promotes the fine-tuned checkpoint to a new collection policy and repeats; each SFT phase remains an
+offline fit to a fixed selected set.
+
+![Rejection-sampling fine-tuning pipeline and its boundary with RL](/assets/img/blog/interview-knowledge/qa13_rft_en.png)
+
+*[Open the full-resolution figure](/assets/img/blog/interview-knowledge/qa13_rft_en.png).*
+
+**What distribution does it fit?** For a binary verifier $$V$$, selection changes the collection
+policy into its success-conditioned distribution:
+
+$$q_\mu(y\mid x,V=1)
+=\frac{\mu(y\mid x)V(x,y)}{Z_\mu(x)},
+\qquad
+Z_\mu(x)=\Pr_{y\sim\mu}[V(x,y)=1].$$
+
+Maximum likelihood on accepted traces approximately projects that distribution into the new model:
+
+$$\theta^\star
+=\arg\min_\theta
+\mathbb E_x\left[
+D_{\rm KL}\!\left(q_\mu(\cdot\mid x,V=1)\,\|\,\pi_\theta(\cdot\mid x)\right)
+\right].$$
+
+That is why RFT can make an occasional success into a common first sample. It does not directly
+learn from rejected trajectories: they affect which rows are absent, but contribute no negative
+token gradient.
+
+**What RFT buys in practice.**
+
+1. **Amplify rare successes.** If the policy already solves a useful fraction of math, code, tool,
+   or agent tasks, RFT concentrates training on those successful modes using stable SFT machinery.
+2. **Amortize search into weights.** Best-of-$$N$$ spends $$N$$ generations at inference. Generate
+   and select offline, then train a one-sample policy to imitate the selected distribution; this is
+   the same “test-time compute into weights” idea as sequence distillation.
+3. **Adapt data to the current policy.** Current-policy samples expose its own style, formatting, and
+   reachable strategies, reducing the gap from a static teacher dataset—although later SFT epochs on
+   the frozen accepted set are no longer on-policy updates.
+4. **Consolidate a pipeline stage.** Llama 2 used reward-model-ranked rejection sampling before PPO;
+   DeepSeek-R1 used filtered reasoning traces between RL and later SFT/RL stages. RFT can stabilise or
+   distil expensive search/RL outputs.
+5. **Provide a strong baseline before RL.** For agent tasks, accepted complete recoveries can improve
+   recovery if they already occur often enough. A12.8 compares this with failed-prefix repair data
+   and verifier RL at matched rollout budget.
+
+**Yield determines whether the method is viable.** If independent samples pass with probability
+$$p_x$$, and $$K_x$$ of $$N$$ pass,
+
+$$K_x\sim\operatorname{Binomial}(N,p_x),
+\qquad
+\mathbb E[K_x]=Np_x,
+\qquad
+\Pr(K_x\ge1)=1-(1-p_x)^N.$$
+
+To cover a prompt with at least one success at probability $$\alpha$$,
+
+$$N_\alpha=
+\left\lceil
+\frac{\log(1-\alpha)}{\log(1-p_x)}
+\right\rceil.$$
+
+| Per-sample success $$p_x$$ | Samples for 90% prompt coverage | Samples for 95% |
+|---:|---:|---:|
+| 1% | 230 | 299 |
+| 5% | 45 | 59 |
+| 10% | 22 | 29 |
+| 25% | 9 | 11 |
+
+This assumes conditionally independent samples. Correlated decoding and duplicate modes reduce the
+effective yield. Keeping **every** pass weights a prompt approximately by $$Np_x$$; keeping at most
+one weights it by $$1-(1-p_x)^N$$. Both favour easy prompts unless prompt quotas, curriculum, or
+inverse-yield weighting correct the mixture.
+
+**RFT, STaR, distillation, and RL are related but not synonyms.**
+
+| Method | Where candidates come from | What training uses | What rejected samples do |
+|---|---|---|---|
+| Ordinary SFT | Human, teacher, or static data | Token NLL on demonstrations | Usually absent |
+| RFT | A collection policy, often the current checkpoint | Token NLL on selected trajectories | Discarded |
+| Distillation | A stronger teacher's traces or logits | Token NLL or distribution KL | Depends on recipe |
+| DPO | Chosen/rejected pairs | Reference-relative preference loss | Explicit negative comparison |
+| RLVR | Fresh policy rollouts plus a verifier | Reward-weighted policy-gradient objective | Can receive negative relative advantage |
+
+[STaR](https://arxiv.org/abs/2203.14465) means **Self-Taught Reasoner**. It is one iterative
+rationale-bootstrapping recipe: generate a rationale, retain answer-correct examples, and for missed
+questions optionally rationalize with the correct answer as a hint before retraining. It belongs to
+the RFT family, but “RFT = STaR” is too narrow. Learned-reward top-$$N$$ selection, exact-verifier
+filtering, and cross-model filtered distillation are different points in the same broader design
+space.
+
+**The important failure modes.**
+
+- **It is not classical rejection sampling.** LLM RFT usually applies a threshold or ranker without
+  density-ratio correction, so it offers no exact target-distribution guarantee. Do not confuse it
+  with the accept/correct algorithm in speculative decoding.
+- **Zero yield stays zero.** If $$p_x=0$$ under the collection policy, more SFT epochs cannot invent a
+  successful trace. Add a teacher, hints, decomposition, search, a curriculum, or exploratory RL.
+- **Verifier precision dominates data quality.** If true-success prevalence is $$p$$, verifier
+  true-positive rate is $$a$$, and false-positive rate is $$b$$,
+
+$$\Pr(\text{true}\mid\text{accepted})
+=\frac{ap}{ap+b(1-p)}.$$
+
+  At $$p=1\%$$, $$a=95\%$$, and $$b=1\%$$, only about 49% of accepted samples are truly correct.
+  More candidates also search harder for false positives:
+  $$\Pr(\text{at least one false pass})=1-(1-b)^N$$.
+- **A correct answer need not imply a correct trace.** Re-execute calculations, tests, and final
+  state; deduplicate semantic strategies, not only strings.
+- **Iteration creates optimisation pressure.** Even without a policy-gradient learner, later
+  checkpoints adapt to verifier loopholes. Keep hidden tests, independent audits, sandboxing, and
+  anti-tamper controls.
+- **Selection can reward luck, length, and one mode.** Re-evaluate stochastic environments across
+  seeds, cap per-prompt examples, preserve diverse solutions, mix trusted anchor data, and monitor
+  calibration, entropy, and retained capabilities.
+
+> **Decision rule.** Use RFT when valid successes already appear at usable yield, selection precision
+> is high, and stable offline SFT is enough. Pay for RLVR when fresh exploration, explicit use of
+> failures, or trajectory-level reward trade-offs beat equal-budget RFT and recovery-data SFT.
+
+#### Self-test · A6.17
+
+<a id="a6-17-1"></a>
+
+**Q A6.17.1** — A policy has 2% independent success on each prompt and you sample $$N=32$$ times.
+How much accepted data and prompt coverage should you expect? Why can “keep every success” distort
+the next training distribution?
+
+The expected accepted count is
+
+$$\mathbb E[K]=32(0.02)=0.64$$
+
+per prompt, while the probability of at least one success is
+
+$$1-0.98^{32}\approx47.6\%.$$
+
+Across 10,000 prompts, keeping every pass yields about 6,400 accepted trajectories but covers only
+about 4,760 prompts. Easy prompts contribute many rows; difficult prompts contribute none, so a
+global token mean shifts training toward already-solved modes. Use a per-prompt cap or weight,
+deduplicate strategies, oversample informative frontier prompts, and report both accepted-trace
+count and unique-prompt coverage.
+
+If repeated or more diverse sampling cannot raise yield on an important bucket, RFT has no positive
+target there. Add teacher/search/recovery data or test RL with a richer signal rather than repeatedly
+fine-tuning the same easy successes.
+
+---
+
 <a id="section-a7"></a>
 
 ## A7 · Reasoning models and test-time compute
@@ -5949,7 +6863,7 @@ None of it is free. Volunteering the costs is more convincing than only praising
 
 | Cost | What it looks like |
 |---|---|
-| **Latency and cost** | One answer can burn thousands to tens of thousands of tokens; TTFT is unchanged but completion time balloons |
+| **Latency and cost** | One answer can burn thousands to tens of thousands of tokens; **TTFT (time to first token)** is unchanged but completion time balloons |
 | **KV cache** | Long reasoning chains inflate the cache, so concurrency drops directly (see A10-08) |
 | **Overthinking** | Long reasoning even on easy questions — a by-product of RL learning that "long = good" |
 | **Worse calibration** | Confidence on long chains is often worse, not better (see A13) |
@@ -6089,7 +7003,8 @@ model-generated label bias are all reward-hacking surfaces. A PRM is a learned s
 checker, so pair it with executable or symbolic outcome verification whenever possible.
 
 **LLM practice.** Report first-error localisation and calibration, then the end-to-end frontier of
-accuracy versus generated and verified tokens. Compare ORM-only, PRM-only, and combined selection on
+accuracy versus generated and verified tokens. Compare **ORM (outcome reward model)** only,
+PRM-only, and combined selection on
 the same candidate set; otherwise a stronger generator can be mistaken for a better verifier.
 
 #### Self-test · A7.5
@@ -6317,7 +7232,7 @@ runs TP=8. (Incidentally, 141 GB does not fit on one 80 GB H100 anyway, so TP≥
 | Batching | Amortises the weight read across sequences → the main lever for decode |
 | Continuous batching | A static batch wastes the tail while it waits on the longest sequence |
 | Paged KV cache | The cache, not the weights, is what limits batch size; contiguous allocation fragments badly |
-| Chunked prefill | One very long prompt monopolises the GPU and wrecks everyone else's TPOT |
+| Chunked prefill | One very long prompt monopolises the GPU and wrecks everyone else's **TPOT (time per output token)** |
 | Prefix caching | A shared system prompt would otherwise be recomputed on every request |
 | Speculative decoding | Decode has idle FLOPs; spend them verifying draft tokens |
 | P/D disaggregation | The two phases want different hardware ratios |
@@ -6344,7 +7259,8 @@ though peak FLOPs did not change. Real measurements are worse because KV reads, 
 collectives add time. This calculation also explains why tensor parallelism can lower latency: it
 reads weight shards in parallel, provided all-reduce latency does not eat the saving.
 
-> **Boundary.** Arithmetic intensity grows with batch size, but KV capacity and latency SLOs often
+> **Boundary.** Arithmetic intensity grows with batch size, but KV capacity and latency
+> **SLOs (service-level objectives)** often
 > bind before decode becomes compute-bound. “More compute cannot help” is too broad; more aggregate
 > memory bandwidth can help, including bandwidth obtained by sharding weights across cards.
 
@@ -6663,8 +7579,10 @@ The fixes are all variants of "stop sharing one scale":
 - **LLM.int8()** — keep the outlier channels in fp16 and quantize the rest.
 - **SmoothQuant** — migrate the difficulty from activations to weights with a per-channel rescaling that is
   mathematically absorbed into the previous layer.
-- **GPTQ** — layer-by-layer second-order (Hessian) rounding that minimises output error rather than weight error.
-- **AWQ** — protect the roughly 1% most important weights, identified by activation magnitude.
+- **GPTQ** — a Hessian-aware post-training weight quantizer: layer-by-layer second-order rounding
+  minimises output error rather than weight error.
+- **AWQ (Activation-aware Weight Quantization)** — protect the roughly 1% most important weights,
+  identified by activation magnitude.
 
 **What actually degrades is model- and method-dependent.** Good INT8 recipes often move perplexity
 little; INT4 is more sensitive. Long-context behaviour, reasoning, and long-tail knowledge can regress
@@ -7268,6 +8186,9 @@ enormous margin.
 It generalises beyond literal examples, but provides no direct supervision on states reached after
 its own mistakes. That **exposure bias** makes recovery and long-horizon exploration weak; on-policy
 training or deliberately corrupted-prefix data addresses a gap that adding more clean demos does not.
+The exact role serialization, assistant/tool loss masks, and all-turn versus last-turn choice are in
+[A6.2](#a6-2); full-trajectory versus per-step distillation and learner-history relabelling are in
+[A6.10](#a6-10).
 
 #### Self-test · A9.4
 
@@ -7361,6 +8282,8 @@ and non-binary reward variance also matter. “Hard” is not synonymous with �
 
 **Rule of thumb:** climb as high as the domain allows; when you cannot climb, use several weak
 signals that **fail in uncorrelated ways** rather than one strong-looking signal.
+For stateful, open-ended agent trajectories, [A12.18](#a12-18) turns this ladder into a complete
+preference/rubric collection and RLHF loop.
 
 **The trap that lives at every rung: invalid reasoning with a correct answer.** Outcome verification
 is blind to it. That is the reason process reward models exist.
@@ -9049,7 +9972,10 @@ few-epoch results are empirical regimes, not a universal "four epochs and learni
 ---
 
 <a id="a11-2"></a>
-### A11.2 muP
+### A11.2 muP (maximal update parametrization)
+
+The name is written **muP** or **μP** and pronounced “mew-P”: the “mu” refers to maximal update,
+not to an unrelated all-caps acronym “MUP.”
 
 **The problem.** Under standard parameterisation the optimal learning rate **moves with width**. So
 the hyperparameters you tuned on a 1B proxy are wrong at 70B — and 70B is the one you cannot afford
@@ -9407,6 +10333,8 @@ private set. If public and private scores diverge, investigate before averaging 
 **Mental model.** A reward model is not merely a preference classifier. It is a proxy that a policy
 will **optimise against**, so evaluation must test both ordinary ranking and behaviour under
 selection pressure.
+For how prompt/response tensors become scalar scores and a Bradley-Terry loss, see
+[A6.3](#a6-3); this section evaluates that learned measurement after it exists.
 
 **Mechanism — four layers of evidence:**
 
@@ -9527,6 +10455,136 @@ Check the pre-registered primary outcome — ideally verified resolution without
 along with latency and safety margins. Confirm sticky user-level assignment, sample-ratio balance,
 and enough follow-up time. If verified resolution falls or a guardrail crosses its margin, the
 treatment loses even though the easiest engagement metrics increased.
+
+---
+
+<a id="a11-13"></a>
+### A11.13 pass@1, pass@k, selected@k, and pass^k
+
+**Freeze the protocol before naming the metric.** For one task, fix the model, prompt, sampling
+distribution, temperature, token/tool limits, harness, and verifier. Let each attempt have success
+indicator $$Y_i$$ and per-attempt success probability $$p$$. Under IID attempts, pass@k is the
+probability that **at least one** of the $$k$$ sampled attempts passes the verifier:
+
+$$
+\mathrm{pass@}k
+=\Pr\!\left(\sum_{i=1}^{k}Y_i\ge1\right)
+=1-(1-p)^k.
+$$
+
+This is verifier-relative coverage, not automatically semantic correctness. Changing the prompt,
+temperature, tool budget, stopping rule, or checker creates a different protocol and therefore a
+different curve.
+
+**The standard finite-sample estimator.** The estimator popularized by
+[HumanEval](https://arxiv.org/abs/2107.03374) generates $$n$$ samples for a task and observes
+$$c$$ correct ones. For $$n\ge k$$, use
+
+$$
+\widehat{\mathrm{pass@}k}
+=1-\frac{\binom{n-c}{k}}{\binom{n}{k}},
+\qquad n\ge k.
+$$
+
+The ratio is the probability that a uniform size-$$k$$ subset drawn **without replacement from the
+finite generated pool** contains no correct sample. Averaged over IID generation of that pool, its
+complement is unbiased for the underlying pass@k. The plug-in `1-(1-c/n)^k` describes repeated
+sampling from the empirical success rate and is useful as an approximation in some regimes, but it
+is **not** the standard unbiased finite-sample estimator.
+
+| Metric | Success event | What it measures |
+|---|---|---|
+| pass@1 | One sampled attempt passes | The $$k=1$$ point of the same sampling protocol |
+| pass@k | At least one of $$k$$ candidates passes | Oracle/verifier coverage before an operational selection decision |
+| selected@k | The candidate returned by the actual selector or verifier passes a trusted evaluation | Real best-of-$$k$$ system accuracy; its gap to pass@k is selector regret |
+| majority@k | The majority or aggregated answer is correct | Self-consistency aggregation, which can amplify correlated mistakes |
+| pass^k | All $$k$$ repeated runs pass | Repeated-run reliability or consistency |
+
+For repeated runs,
+
+$$
+\mathrm{pass}^{k}
+=\Pr(Y_1=\cdots=Y_k=1),
+\qquad
+\mathrm{pass}^{k}=p^k\quad(\mathrm{IID}).
+$$
+
+Benchmark notation is not universal: some suites use these names differently or aggregate at the
+task level. Check the benchmark documentation and scoring code rather than inferring semantics from
+the typography. In particular, **greedy accuracy is not pass@1** unless greedy decoding is the
+declared one-attempt protocol; greedy and stochastic one-sample decoding are different systems.
+
+![Pass@k, selected accuracy, and repeated-run reliability](/assets/img/blog/interview-knowledge/qa9_pass_at_k_en.png)
+
+**Monotonicity is within one fixed system.** For fixed model and protocol, pass@k is monotone in
+$$k$$ because the event “one of the first $$k$$ attempts passes” is nested as more attempts are
+added. Its own pass@1 therefore cannot literally exceed its own pass@k. The meaningful comparisons
+are whether pass@1 is more operationally important, or whether **two models change rank**: model A
+can beat B at pass@1 while B beats A at a large $$k$$. That is exactly the kind of probability-mass
+concentration versus coverage crossover discussed in A6.1.
+
+**Which operating point matters depends on the product.**
+
+- **pass@1 matters** when one answer is shipped, latency or cost permits one attempt, no trustworthy
+  selector exists, or an action is irreversible. Better first-attempt mass is a real capability of
+  the deployed system, not a lesser version of search.
+- **pass@k matters** for coverage and exploration when attempts can be generated offline, an exact
+  verifier can recognize success, or the goal is search, rejection sampling, or data generation.
+- **selected@k matters** when the product actually generates and ranks candidates. With a sound
+  exact verifier that always returns a passing candidate when one exists, it can approach pass@k;
+  with a learned selector, the gap can dominate.
+- **pass^k matters** when users require the system to succeed repeatedly rather than get lucky once,
+  especially for long-horizon agents and high-stakes workflows.
+
+**Evaluation discipline.**
+
+1. **Dependence, diversity, and temperature.** The IID formula does not describe coupled beam/tree
+   search, shared prefixes, adaptive retries, shared tool state, or correlated failures. Independent
+   seeds also do not guarantee useful semantic diversity: probability mass can stay concentrated on
+   semantically near-duplicate outputs, although that alone is not statistical dependence.
+   Temperature and top-$$p$$ change each task's success mass and output modes. Across a task suite,
+   a setting can lower average pass@1 yet raise large-$$k$$ coverage by giving more tasks reachable
+   successes; for one task under
+   true IID Bernoulli attempts, a lower $$p$$ cannot produce a higher pass@k at the same $$k$$.
+   Report the complete sampler and measure the curve rather than extrapolating from one point.
+2. **Selector gap.** Report pass@k beside selected@k. A selector may reward confidence, style, or a
+   familiar wrong mode, so more candidates can expose more opportunities to select badly. Evaluate
+   selection with a held-out trusted checker, not the score used to rank candidates alone.
+3. **Matched compute.** Equal $$k$$ is not equal cost when attempts have different lengths. Match or
+   plot **total generated tokens**, wall-clock time, monetary cost, tool calls, and selector/verifier
+   overhead; include p50 and p99 because parallel sampling can reduce mean latency while worsening
+   the tail.
+4. **Task-clustered uncertainty.** Attempts are nested inside tasks. Build confidence intervals by
+   resampling or clustering at the task level, preferably paired across models; treating every
+   rollout as an independent benchmark item produces intervals that are too narrow.
+5. **Verifier loopholes.** A deterministic checker is only as sound as its specification. Search
+   pressure finds weak tests, malformed-output shortcuts, reward hacks, and state leakage. Audit
+   verifier-passing samples manually, keep hidden tests, and report true-quality checks alongside
+   the nominal pass rate.
+
+A7.1 supplies the test-time sampling and search mechanisms; A11.3 supplies the evaluation rule:
+compare score-versus-budget curves, not isolated scores. This section names the distinct points on
+those curves and explains why oracle coverage, actual selection, and repeated-run reliability must
+not be collapsed into one number.
+
+#### Self-test · A11.13
+
+<a id="a11-13-1"></a>
+
+**Q A11.13.1** — Under one fixed stochastic protocol and per-attempt token cap, model A has pass@1
+64% and pass@32 78%; model B has pass@1 52%, pass@32 91%, and selected@32 60% with the available
+learned selector. Which model would you use for a one-answer product and for offline data generation
+with an exact checker, and what must the comparison control?
+
+For the one-answer product, A is the default because its matched single attempt succeeds more often;
+measure greedy accuracy separately if production is greedy. For offline generation with a sound
+exact checker, B's 91% coverage is more valuable because the checker can retain any passing sample.
+Without that checker, B's operational number is selected@32 at 60%, not its oracle 91%, so search
+does not rescue it.
+
+This is a cross-model ranking reversal, not A's pass@1 exceeding A's own pass@32. Before deciding,
+match total generated tokens, tool and checker cost, wall-clock and p99 latency; use paired
+task-clustered intervals; and audit the exact checker for loopholes under selection pressure.
 
 ---
 
@@ -9923,8 +10981,10 @@ information the tool never returned.
 > - *Why can directly optimising a CoT monitor backfire?* → The policy can learn which surface forms
 >   avoid the flag without removing the bad action. CoT is already incomplete, so use held-out
 >   monitors and behavioural outcomes, and keep hard controls at the action boundary.
-> - *MCP?* → A standardised tool interface so agents and tool providers do not need bespoke
->   integration per pair. It became the de-facto standard through broad adoption during 2025, and was
+> - *MCP (Model Context Protocol)?* → A standardised host-to-capability protocol so agent
+>   applications and tool/context providers do not need bespoke integration per pair; its roles,
+>   primitives, transports and security boundary are in [A12.15](#a12-15). It became the de-facto
+>   standard through broad adoption during 2025, and was
 >   then donated to the Linux Foundation's Agentic AI Foundation in December 2025 to keep governance
 >   neutral — that order matters if you are asked about it.
 >
@@ -10011,8 +11071,9 @@ of the way. It is the right first move and the standard cold start.
    guarantees the verifier captures the intended behaviour.
 
 **The standard recipe is therefore empirical:** start with SFT, including recovery trajectories when
-available; run RFT and failed-prefix SFT as strong baselines; add RL when exploration or trajectory
-trade-offs improve held-out outcomes at matched budget.
+available; run **rejection-sampling fine-tuning (RFT; A6.17)** and failed-prefix SFT as strong
+baselines; add RL when exploration or trajectory trade-offs improve held-out outcomes at matched
+budget.
 
 
 #### Self-test · A12.8
@@ -10047,9 +11108,11 @@ beyond both at matched budget, with no verifier exploitation. The experiment cho
 "SFT versus RL" is not a conclusion available from successful teacher data alone.
 
 > **Follow-ups**
-> - *What is rejection sampling fine-tuning (RFT / STaR)?* → The middle ground: sample from the current
->   policy, keep only verified-correct trajectories, SFT on those, repeat. On-policy data, SFT
->   machinery, no RL infrastructure. Very strong baseline and often what "we did RL" actually means.
+> - *What is RFT, and is it the same as STaR?* → RFT samples from a collection policy, filters or
+>   ranks candidates, then uses ordinary SFT on the selected trajectories. STaR (Self-Taught
+>   Reasoner) is one related iterative rationale-bootstrapping recipe, not a synonym. RFT avoids a
+>   policy-gradient learner but still needs rollout, verifier, deduplication, sandbox and evaluation
+>   infrastructure; see A6.17.
 > - *When is RL not worth it?* → When you have no verifier, when episodes are short enough that SFT
 >   covers the distribution, or when the infrastructure cost exceeds the marginal gain — which is
 >   often, and saying so is a sign of judgement.
@@ -10372,41 +11435,133 @@ This design handles the incremental failure—commit without acknowledgement—r
 <a id="a12-15"></a>
 ### A12.15 Protocol, identity and authorization boundaries
 
-**Classify interfaces by boundary, not by duration.**
+**Start by expanding it.** **MCP is the Model Context Protocol**, an open protocol for connecting an
+LLM application to external tools and context. It standardises the **host-managed
+client ↔ capability server** boundary. It does not specify how the model reasons, which context the
+host should reveal, whether a tool is safe, or who is authorised to run it.
 
-- **Function calling** is a model-facing schema for proposing a typed action. Your host still
-  validates arguments, executes it, handles identity and returns results. It is not by itself a
-  network transport, discovery system or authorization protocol.
-- **REST or gRPC** are general service contracts/transports. They are often the implementation
-  underneath an agent tool or agent-to-agent endpoint; they do not say who chose the call or how a
-  model sees capabilities.
-- **MCP** standardizes a host's access to tools and context-bearing resources across providers.
-  The [2026-07-28 specification](https://modelcontextprotocol.io/specification/2026-07-28) has a
-  stateless core, explicit version/capability metadata and a Tasks extension with durable handles,
-  polling, update and cancellation for long-running operations.
-- **A2A** standardizes discovery, delegation, messages, artifacts and task lifecycle between opaque
-  agent systems. [A2A 1.0](https://a2a-protocol.org/v1.0.0/specification/) supports synchronous,
-  streaming and asynchronous long-running work over bindings including JSON-RPC, gRPC and
-  HTTP+JSON.
+The exact revision matters. The
+[2026-07-28 specification](https://modelcontextprotocol.io/specification/2026-07-28) is a stateless
+JSON-RPC 2.0 protocol: each request carries its protocol version and client capability metadata.
+Unlike older revisions, it has no required `initialize` handshake or persistent protocol session.
+Servers implement `server/discover` to advertise versions and capabilities, but a client may call an
+operation directly and handle a version error.
+
+**Three participants, with one client per connection.**
+
+| Role | Owns | Does not automatically get |
+|---|---|---|
+| **Host** | LLM integration, UI, context aggregation, server configuration, consent and policy | Permission to trust every configured server |
+| **Client** | One dedicated connection from the host to one server; request metadata, discovery and subscriptions | Authority beyond credentials and policy granted by host/server |
+| **Server** | Focused tools, resources and prompts; local process or remote service | The full conversation, other servers, or unrestricted user data |
+
+The last row is an architecture goal, not cryptographic magic: the host enforces data minimisation by
+sending each server only what it needs.
+
+![MCP host-client-server architecture, primitives and host policy boundary](/assets/img/blog/interview-knowledge/qa14_mcp_en.png)
+
+*[Open the full-resolution figure](/assets/img/blog/interview-knowledge/qa14_mcp_en.png).*
+
+**Two layers.**
+
+| Layer | What it standardises | 2026-07-28 choices |
+|---|---|---|
+| **Data layer** | JSON-RPC request/response/notification shapes, version and capability discovery, primitives | Stateless self-contained requests |
+| **Transport layer** | Connection, framing and transport authentication | Local `stdio`; remote **Streamable HTTP** using POST and optional request-scoped SSE |
+
+`stdio` commonly launches a local server process and carries one JSON-RPC message per line; protocol
+messages use stdout and logs belong on stderr. Streamable HTTP uses one endpoint for POST requests
+and may stream a response with Server-Sent Events. “Local” is a deployment location, not a trust
+level—the stdio server is executable code running with some host privileges.
+
+**The primitives are the core mental model.**
+
+| Primitive | Exposed by | Intended controller | Typical operations | Meaning |
+|---|---|---|---|---|
+| **Tools** | Server | Model, mediated by host | `tools/list`, `tools/call` | Typed executable actions |
+| **Resources** | Server | Application/host | `resources/list`, `resources/read` | URI-addressed context and data |
+| **Prompts** | Server | User/application | `prompts/list`, `prompts/get` | Reusable message/workflow templates |
+| **Elicitation** | Client capability | Server asks; host/user decides | `elicitation/create` semantics | Request additional user input or consent |
+
+Those “controller” labels are design guidance, not protocol-enforced access control. JSON Schema
+checks argument **shape**, not semantic correctness, user intent, idempotency, or permission. In this
+revision, the older client-side **sampling** primitive is deprecated; do not copy an old architecture
+diagram without its protocol date.
+
+**A normal tool-call path has eight distinct decisions.**
+
+1. The user or administrator configures a server endpoint; the host decides whether to trust and
+   start/connect to it.
+2. The client discovers—or directly negotiates through per-request metadata—the protocol version and
+   supported capabilities.
+3. The client lists tools/resources/prompts. Listings may change with identity, scope, or time.
+4. The host chooses which descriptions and schemas to expose to the model and which resources to put
+   into context.
+5. The model emits a **function-call proposal**. This is model output, not yet tool execution.
+6. The host validates arguments, checks policy and current user intent, obtains risk-appropriate
+   approval, and selects credentials.
+7. The client sends `tools/call`; the server authenticates and authorises the principal again before
+   performing the operation.
+8. The result returns through MCP. The host treats result text as untrusted input, verifies effects,
+   records an audit event, and decides what enters model context.
+
+This separates function calling from MCP: function calling structures the **model → host proposal**;
+MCP structures the **host client → server exchange**. The host policy boundary sits between them.
+
+**Long-running work uses an optional extension, not a different protocol.** The
+[Tasks extension](https://modelcontextprotocol.io/extensions/tasks/overview) can augment
+`tools/call` with a durable task handle. The client can poll `tasks/get`, provide requested
+mid-flight input through `tasks/update`, and request `tasks/cancel`; optional notifications reduce
+polling. Important limits:
+
+- Tasks is opt-in and, in the current extension, applies to `tools/call`; it is not universal core
+  behaviour.
+- Handles are durable only within their TTL and may be bearer capabilities, so IDs must be
+  unguessable or separately authorised on every access.
+- Cancellation is cooperative. An acknowledgement does not prove work stopped, undo a committed
+  side effect, or guarantee eventual `cancelled`.
+- Stateless core and durable tasks are compatible: each RPC request is self-contained while server
+  state lives behind the handle.
+
+**Classify interfaces by boundary, not duration.**
+
+| Interface | Boundary | It standardises | It does not imply |
+|---|---|---|---|
+| Function calling | Model ↔ host | Typed action proposal | Execution, discovery, transport, auth or safety |
+| MCP | Host-managed client ↔ capability server | Tools/resources/prompts, metadata, elicitation, subscriptions and optional Tasks | Trusted metadata, user consent, sandboxing or delegation to an opaque agent |
+| REST / gRPC | Service ↔ service | General application API and transport | LLM-specific control semantics or who chose the call |
+| **A2A (Agent-to-Agent protocol)** | Agent client ↔ independent remote agent | Discovery, delegation, messages, artifacts and stateful task lifecycle | How the remote agent implements its tools or whether its Agent Card is trustworthy |
 
 Therefore “MCP for short calls, A2A for long calls” is false: both can represent long-running tasks.
-Ask instead whether the boundary is **host-to-capability** or **agent-to-agent delegation**, and
-whether plain service APIs already provide the smaller contract you need. Pin and negotiate protocol
-versions and capabilities; a silently changed tool schema is a correctness and security event.
+Ask whether the boundary is **host-to-capability integration** or **agent-to-agent delegation**, and
+whether a narrow ordinary API is sufficient. A model may propose a function call, the host may route
+it through MCP, and the MCP server may call a REST backend; an A2A remote agent may use its own MCP
+servers internally.
 
-**Identity must survive delegation.** Track the human or service principal (subject), the agent/host
-acting on its behalf (actor), the target resource, requested action and task. Do not pass one broad
-user token through every hop. Mint short-lived, task-scoped credentials with least privilege; bind
-them to audience, tenant and permitted actions; keep secrets out of prompts and sandboxes. Re-check
-consent immediately before risky external effects, propagate cancellation, and write an audit record
-that links delegation, approval, credential and result. NIST's
+**Identity and authority do not come from capability discovery.** Track the human or service
+principal (subject), the agent/host acting on its behalf (actor), server/resource, requested action,
+task, approval and outcome. Do not pass one broad user token through every hop. Use short-lived,
+audience-bound, task-scoped credentials; keep secrets outside prompts and sandboxes; re-check consent
+at the side-effect boundary.
+
+Discovery metadata, `clientInfo`, `serverInfo`, tool annotations, prompt templates, resource text and
+Agent Cards are **self-reported or untrusted input**, not authentication or authorization. Hosts and
+servers must still:
+
+- authenticate endpoints and authorise each operation and task handle;
+- expose least privilege and separate read from write capabilities;
+- sandbox local code, validate remote `Origin`, and keep local HTTP listeners on loopback where
+  appropriate;
+- defend model and judge context from prompt injection in tool/resource output;
+- add idempotency keys and reconcile uncertain side effects—JSON-RPC request IDs are only correlation
+  IDs;
+- pin protocol/extension revisions, detect schema/list changes, log approval and result, and test
+  cancellation/recovery.
+
+NIST's
 [AI Agent Standards Initiative](https://www.nist.gov/artificial-intelligence/ai-agent-standards-initiative)
-explicitly treats interoperability, authentication, identity infrastructure and security evaluation
-as joint focus areas for research and standards work; it is an initiative, not a protocol guarantee.
-
-Capability descriptions, Agent Cards and tool descriptions are **untrusted metadata**, not
-authorization. Validate schemas, constrain outputs, authenticate the endpoint and enforce policy in
-the host/proxy even if a description says “safe” or asks for more credentials.
+treats interoperability, authentication, identity infrastructure and security evaluation as joint
+research and standards priorities; it is an initiative, not a guarantee supplied by MCP.
 
 #### Self-test · A12.15
 
@@ -10420,7 +11575,9 @@ boundaries and design identity, consent, cancellation and audit; do not classify
 Use A2A for the opaque cross-company delegation and task lifecycle; its remote task ID survives
 disconnects. The local host may expose calendar access through MCP—or a narrow REST/gRPC API if that
 is the actual service contract—and MCP Tasks can represent a long calendar-side operation. Function
-calling is only how the model proposes these host actions.
+calling is only how the model proposes these host actions. The host creates a dedicated MCP client
+for the calendar server, exposes only the read operations needed, and does not forward the whole
+conversation.
 
 The delegating host sends a task-scoped identity assertion, not the user's reusable credentials.
 Calendar access is read-only and audience-bound; purchase authority is absent until the host presents
@@ -10428,6 +11585,25 @@ route, price and recipient to the user at the point of risk and mints a narrow, 
 capability. A cancel request propagates to the remote task and pending tools, while already committed
 effects are reconciled rather than assumed undone. The audit chain records protocol/schema versions,
 subject, each actor, task/action IDs, consent, credential scope and final artifact.
+
+<a id="a12-15-2"></a>
+
+**Q A12.15.2** — A remote MCP server advertises `read_mail` as read-only and `send_payment` as
+“safe.” The model proposes `send_payment`; the host calls it without approval. A Task later
+acknowledges cancellation after the provider has charged the card. Which guarantees were
+misunderstood, and what should the call path have done?
+
+Tool names and annotations are untrusted descriptions, not policy or authorisation. Discovery only
+says the server claims to support an operation; JSON Schema only validates shape. Before
+`tools/call`, the host should map the direct user's intent to a narrow payment capability, show
+recipient and amount at the point of risk, obtain approval, and send an idempotency key. The server
+must independently authenticate and authorise the operation.
+
+Task cancellation is cooperative control-plane intent, not rollback or exactly-once execution. After
+the ambiguous response, reconcile the idempotency/action ID with the payment provider. If committed,
+record the result and do not retry; if not, retry only under the same approved capability and
+idempotency key. Treat every returned message/resource as untrusted context, and audit model
+proposal, host decision, credential scope, RPC, external effect and reconciliation separately.
 
 ---
 
@@ -10493,6 +11669,241 @@ sequence would miss the real state and safety requirements.
 
 ---
 
+<a id="a12-17"></a>
+### A12.17 Multi-turn conversational and agent RL
+
+**The unit of optimisation is the interactive episode, but the policy only controls selected spans.**
+Write an episode as
+
+$$\tau=(o_1,a_1,o_2,a_2,\ldots,o_{T+1}),$$
+
+where an action $$a_t$$ can be an assistant message, tool call, or other structured model output,
+and $$o_{t+1}$$ is the next user, tool, or environment observation. After chat-template
+serialization into tokens $$z_{1:N}$$, define the actor-token set
+
+$$\mathcal A(\tau)=\{k:\ z_k\text{ was generated by the policy being updated}\}.$$
+
+The same role distinction from A6.2 now controls policy-gradient bookkeeping:
+
+| Span | Role in the episode | Policy log-probability / ratio / KL? |
+|---|---|---|
+| System prompt, tool schema | Initial observation and control contract | No; condition on it |
+| User or user-simulator turn | Environment observation | No for the assistant policy |
+| Assistant text | Policy action | Yes |
+| Assistant tool name and arguments | Structured policy action | Yes |
+| Tool result, browser state, compiler output | Environment observation | No; condition on it |
+| Padding or another packed episode | Neither | No, and block attention |
+
+Agent SFT collections such as [AgentBank](https://arxiv.org/abs/2410.07706) and tool-interleaved RL
+recipes such as [Search-R1](https://arxiv.org/abs/2503.09516) instantiate this policy-output versus
+environment-output distinction; the exact role tokens remain template-specific.
+
+If a second trainable policy controls the user or another agent, its tokens belong to **that**
+policy's action set—not to the assistant's. If an earlier assistant message was supplied as fixed
+demonstration context rather than sampled from the behaviour policy, it is visible context but must
+not be assigned the current policy's importance ratio.
+
+A useful KL-regularised episode objective is
+
+$$J(\theta)=
+\mathbb E_{\tau\sim\pi_\theta}\left[
+\sum_{t=1}^{T}\gamma^{t-1}r_t
+-\beta\sum_{k\in\mathcal A(\tau)}
+\log\frac{\pi_\theta(z_k\mid z_{<k})}
+{\pi_{\rm ref}(z_k\mid z_{<k})}
+\right].$$
+
+The second sum contains only actor-generated tokens. Adding tool outputs to it asks the optimiser to
+change the probability of text produced by a tool; it also corrupts old/current ratios because the
+behaviour policy never sampled those tokens. Tool results remain in the prefix for later actions,
+exactly as label-masked observations do in SFT.
+
+**Turn action versus token action is a factorisation choice.** The environment usually transitions
+after a complete assistant turn or structured tool call. The LM still factorises that action into
+token probabilities, so PPO can attach a turn-level advantage to each generated token. That does not
+make punctuation an independently observed environment action or give terminal reward genuine
+token-level credit.
+
+**Reward and credit can live at several resolutions.**
+
+- A **terminal trajectory reward** scores the final task outcome. REINFORCE can broadcast it to all
+  action tokens; PPO uses returns and a critic; outcome-GRPO normalises complete-trajectory rewards
+  within a group and broadcasts one group-relative advantage over each trajectory's action tokens.
+- A **turn reward** can score helpfulness, progress, or a user reaction after one exchange. It is
+  denser but can make the agent optimise local conversational smoothness instead of task completion.
+- A **process or branch reward** scores a prefix decision. It improves localisation only when its
+  semantics and labels support that claim; repeatedly adding a prefix quality score can reward long
+  traces. A6.13 gives the potential-shaping boundary.
+
+For group-relative training, sample several episodes from the same initial task and environment
+contract. If environment randomness differs, the group baseline mixes policy quality with luck;
+match seeds where valid or record and condition on the stochastic outcomes. All-tie trajectory
+rewards still give zero group-relative reward signal.
+
+**Conversational RL is truly multi-turn only when later observations react to earlier actions.**
+Training a new assistant answer against a frozen recorded user continuation does not estimate what
+that user would have said after the new answer. It is offline next-response learning under an
+inconsistent counterfactual suffix. Honest multi-turn RL needs a live human, user simulator,
+stateful environment, or replay system that transitions from the action actually taken.
+
+This is feasible but difficult:
+
+1. A simulator may be easier to please than a real user and can collude with the policy.
+2. One terminal preference over a long conversation has high-variance credit.
+3. Context truncation or compaction changes the policy state during the episode.
+4. Tool and user latency make rollout throughput much lower than ordinary completion RL.
+5. “Done,” user abandonment, timeout, and safety termination are different terminal states; a
+   time-limit truncation may require value bootstrapping rather than a zero terminal value.
+
+**The train–serve contract is part of the algorithm.** Actor and learner must use the same role
+serialization, tool schemas, stop rules, sampling transformations, context compaction, and action
+parser. Save behaviour-policy log-probabilities only for actor spans, plus policy/harness/environment
+versions and termination causes. A12.12 covers the additional mismatch from asynchronous policy lag.
+
+#### Self-test · A12.17
+
+<a id="a12-17-1"></a>
+
+**Q A12.17.1** — A support-agent RL run replaces each sampled assistant turn inside a saved human
+conversation, but keeps the original later human replies and gives one satisfaction score at the
+end. It also includes user and tool tokens in PPO ratios. What is wrong?
+
+The fixed suffix is counterfactually inconsistent: a different assistant turn could elicit a
+different reply, tool call, escalation, or termination. At best the data supports offline
+next-response training at prefixes that actually occurred; it is not an on-policy multi-turn
+episode. Use an interactive user/environment model, human continuation, or a transition replay
+system that consumes the sampled action, and validate that the simulator predicts held-out human
+responses and outcomes.
+
+The PPO mask is also wrong. Ratios, entropy, KL, and policy loss belong only to assistant-generated
+text and tool-call tokens. User and tool outputs are observations: keep them causally visible, but
+exclude them from the actor-token mask. Then decide whether the terminal score is broadcast, handled
+by a critic/GAE, or replaced with justified turn/process feedback; none of those choices recovers
+the missing counterfactual interaction by itself.
+
+> **Traps**
+> - Calling a long fixed transcript “multi-turn RL” when the environment never responds to the new
+>   policy action.
+> - Computing policy KL or importance ratios on tool results.
+> - Claiming trajectory-level GRPO supplies token-level credit because its scalar advantage is
+>   repeated on every actor token.
+
+---
+
+<a id="a12-18"></a>
+### A12.18 RLHF for non-verifiable and open-ended agent tasks
+
+**“Not exactly verifiable” does not mean “no reward”; it means reward is a measurement model rather
+than ground truth.** Coding and math often expose an executable terminal checker. Research,
+customer support, planning, negotiation, and many computer-use tasks mix hard facts with qualitative
+judgement. Treat RLVR and RLHF as a spectrum and use the strongest signal available for each
+dimension.
+
+| Signal | Agent example | Strength | Characteristic failure |
+|---|---|---|---|
+| Hard gate / verifier | Schema validity, permission check, exact side effect, cited source exists | Cheap and reproducible | Incomplete specification becomes a loophole |
+| Instrumented outcome | Issue resolved without repeat contact; user completed workflow | Measures real consequence | Confounding, delayed feedback, selection bias |
+| Human trajectory preference | Compare two complete sessions from the same initial task | Directly targets judgement | Expensive, noisy, inconsistent values |
+| Rubric + LLM judge | Grounding, completeness, safety, efficiency, communication | Scalable and decomposable | Bias, prompt injection, style/length shortcuts |
+| Process / branch preference | Compare two next actions after one shared prefix | Better local attribution | Myopic labels and high annotation cost |
+| Heuristic | Length, number of tool calls, format | Useful diagnostic or filter | Trivially gameable as an optimised reward |
+
+A hybrid score might be written
+
+$$R(\tau)
+=r_{\rm hard}(\tau)
++\sum_j w_j s_j(\tau)
+-\lambda_{\rm cost}C(\tau)
+-\lambda_{\rm risk}V(\tau).$$
+
+But some constraints should be **gates or lexicographic rules**, not compensating arithmetic. A
+polished answer must not earn enough style points to offset an unauthorised payment or fabricated
+source. Keep reward components separately logged so a rising aggregate cannot hide a safety or
+grounding regression.
+
+**How to collect trajectory preferences.**
+
+1. Sample multiple current-policy trajectories from the same task, initial state, permissions, and
+   budget. Include different checkpoints and samplers so the RM learns more than one model's style.
+2. Present observable actions, tool evidence, final state, costs, and termination—not hidden
+   chain-of-thought. Randomise pair order and blind policy identity.
+3. Ask for an overall preference **and** rubric dimensions such as factual grounding, task
+   completion, efficiency, safety, communication, and policy compliance. Allow ties, abstention,
+   and “both unsafe.”
+4. Prefer shared-prefix branch comparisons when local action quality matters: they hold history
+   fixed and reduce attribution ambiguity. Whole-trajectory pairs capture long-run consequences but
+   provide sparse credit.
+5. Split audits by task and initial state, and reserve human-labelled adversarial traces that neither
+   policy nor judge sees during optimisation.
+
+The pairs can train the Bradley–Terry outcome RM in A6.3 and feed PPO, or they can train DPO-like
+objectives directly. Those are different algorithms: preference data plus DPO is not “train an RM,
+then run RL.” [WebGPT](https://arxiv.org/abs/2112.09332) is a useful early example of human
+preferences over browser-assisted answers rather than executable math proofs.
+
+**Rubric reward is still learned reward.** Ground every criterion in evidence the judge can inspect.
+For a research agent, hard-check citation existence and retrieval provenance, then ask a calibrated
+judge or human whether the cited evidence supports the claim. For a support agent, measure actual
+resolution and prohibited actions before style. Tool outputs are untrusted: strip instructions that
+try to manipulate the judge, separate evidence from evaluator control text, and test prompt
+injection explicitly.
+
+An LLM judge should be calibrated against hidden human pairs, evaluated for pair-order consistency,
+length/style bias, language and domain slices, and allowed to abstain on disagreement. Judge
+ensembles help only when their errors are not copies of one another. Keep the policy from seeing the
+judge prompt, hidden rubric tests, or evaluator scratch state.
+
+**The practical online loop is:**
+
+1. bootstrap with high-quality conversational/agent SFT;
+2. generate trajectories from the current policy in a versioned environment;
+3. apply hard gates, then obtain human or calibrated AI preferences on the residual qualitative
+   dimensions;
+4. train/version an outcome or process RM, or a direct preference model;
+5. optimise conservatively with KL control and bounded rollout budgets;
+6. repeatedly compare reward with frozen human, outcome, safety, and cost evaluations, then collect
+   new preferences where the current policy has moved.
+
+This is classic RLHF's distribution-shift problem made harder by a stateful environment: the policy
+actively searches both the learned judge and the tool world. Reward-model score rising while human
+preference, grounded outcome, or safety worsens is the decisive Goodhart signal; the score alone is
+not.
+
+**Know when not to run RL.** If annotators cannot agree on the rubric, trajectories cannot be
+replayed or audited, judge errors are unknown, or harmful actions cannot be sandboxed, more policy
+optimisation will amplify an undefined proxy. Improve the task contract, collect demonstrations,
+use supervised preference learning, or keep the system behind human approval before adding an RL
+loop.
+
+#### Self-test · A12.18
+
+<a id="a12-18-1"></a>
+
+**Q A12.18.1** — Design reward for a research agent whose output must be useful, well grounded,
+efficient, and safe, but has no single exact answer. How do you stop a persuasive citation-heavy
+trajectory from winning without doing the research?
+
+Use hard gates first: sources must exist, retrieved passages must match cited documents, quoted spans
+must support their attached claims, permissions and tool budgets must hold, and prohibited
+side-effects fail the episode. Then use a decomposed rubric for coverage, synthesis, uncertainty,
+clarity, and efficiency, calibrated on hidden human trajectory pairs. Compare candidates from the
+same initial task and retrieval access; log each component rather than only a weighted total.
+
+Include adversarial traces with real but irrelevant citations, fabricated entailment, prompt
+injection in documents, verbosity, and repeated searches. Randomise pair order, blind model
+identity, let the judge abstain, and escalate disagreement/high-risk cases to humans. Optimise with a
+KL leash and cost penalties, while a frozen human/grounding audit tracks whether higher reward still
+means better research. If citation support cannot be measured reliably, do not compensate with a
+larger style model—the reward contract is not ready for RL.
+
+> **Traps**
+> - Treating an LLM judge score as ground truth rather than a calibrated, attackable measurement.
+> - Adding safety to a weighted sum where enough helpfulness can offset a hard violation.
+> - Inferring per-step credit from terminal trajectory preferences without step or branch
+>   supervision.
+
+---
+
 <a id="section-a13"></a>
 
 ## A13 · Alignment, calibration, continual learning
@@ -10521,14 +11932,18 @@ think about AI safety" questions live in Part III.
 
 **What has changed since:**
 
-- **Verifiable rewards** wherever possible. A checker beats a learned RM: shorter causal chain, not
-  hackable in the same way.
+- **Verifiable rewards** wherever possible. For the dimension its specification actually covers, a
+  checker has a shorter causal chain and is not hackable in the same statistical way as a learned
+  RM; incomplete tests still create loopholes.
 - **GRPO instead of PPO** in reasoning work — drops the critic, uses a group-mean baseline.
 - **DPO** where you have static preference data and want simplicity, at the cost of being off-policy.
 - **Iterated rounds** rather than one pass: generate, judge, retrain, repeat (Tülu-3 style recipes
   make this explicit).
 - **AI feedback** (RLAIF / Constitutional AI) replacing much of the human labelling, with humans
   writing the *principles* rather than the *labels*.
+
+The RM architecture, scalar score, and Bradley-Terry tensor contract are in [A6.3](#a6-3);
+multi-turn open-ended agent preferences and rubric rewards are in [A12.18](#a12-18).
 
 
 #### Self-test · A13.1
@@ -11580,6 +12995,9 @@ source. Every arXiv ID below was resolved against the arXiv API — see `refs.py
 - **Gradient checkpointing** — Training Deep Nets with Sublinear Memory Cost. [arXiv:1604.06174](https://arxiv.org/abs/1604.06174)
 - **Ring attention** — Ring Attention with Blockwise Transformers for Near-Infinite Context. [arXiv:2310.01889](https://arxiv.org/abs/2310.01889)
 - **Selective activation recomputation** — Reducing Activation Recomputation in Large Transformer Models. [arXiv:2205.05198](https://arxiv.org/abs/2205.05198)
+- **MegaBlocks / dropless MoE** — MegaBlocks: Efficient Sparse Training with Mixture-of-Experts. [arXiv:2211.15841](https://arxiv.org/abs/2211.15841)
+- **ST-MoE / router z-loss** — ST-MoE: Designing Stable and Transferable Sparse Expert Models. [arXiv:2202.08906](https://arxiv.org/abs/2202.08906)
+- **Sparse Upcycling** — Sparse Upcycling: Training Mixture-of-Experts from Dense Checkpoints. [arXiv:2212.05055](https://arxiv.org/abs/2212.05055)
 
 ### A6 · Post-training and RL
 
@@ -11593,6 +13011,8 @@ source. Every arXiv ID below was resolved against the arXiv API — see `refs.py
 - **KTO** — KTO: Model Alignment as Prospect Theoretic Optimization. [arXiv:2402.01306](https://arxiv.org/abs/2402.01306)
 - **SimPO** — SimPO: Simple Preference Optimization with a Reference-Free Reward. [arXiv:2405.14734](https://arxiv.org/abs/2405.14734)
 - **Distilling the knowledge** — Distilling the Knowledge in a Neural Network. [arXiv:1503.02531](https://arxiv.org/abs/1503.02531)
+- **Sequence-level knowledge distillation** — Sequence-Level Knowledge Distillation. [arXiv:1606.07947](https://arxiv.org/abs/1606.07947)
+- **DAgger** — A Reduction of Imitation Learning and Structured Prediction to No-Regret Online Learning. [arXiv:1011.0686](https://arxiv.org/abs/1011.0686)
 - **LoRA** — LoRA: Low-Rank Adaptation of Large Language Models. [arXiv:2106.09685](https://arxiv.org/abs/2106.09685)
 - **QLoRA** — QLoRA: Efficient Finetuning of Quantized LLMs. [arXiv:2305.14314](https://arxiv.org/abs/2305.14314)
 - **Reward model overoptimization** — Scaling Laws for Reward Model Overoptimization. [arXiv:2210.10760](https://arxiv.org/abs/2210.10760)
@@ -11602,6 +13022,10 @@ source. Every arXiv ID below was resolved against the arXiv API — see `refs.py
 - **R1-Zero-like training analysis** — Understanding R1-Zero-Like Training: A Critical Perspective. [arXiv:2503.20783](https://arxiv.org/abs/2503.20783)
 - **Limits of current RLVR** — Does Reinforcement Learning Really Incentivize Reasoning Capacity in LLMs Beyond the Base Model?. [arXiv:2504.13837](https://arxiv.org/abs/2504.13837)
 - **RLVR boundary debate** — The Debate on RLVR Reasoning Capability Boundary: Shrinkage, Expansion, or Both? A Two-Stage Dynamic View. [arXiv:2510.04028](https://arxiv.org/abs/2510.04028)
+- **Rejection sampling fine-tuning** — Scaling Relationship on Learning Mathematical Reasoning with Large Language Models. [arXiv:2308.01825](https://arxiv.org/abs/2308.01825)
+- **STaR** — STaR: Bootstrapping Reasoning With Reasoning. [arXiv:2203.14465](https://arxiv.org/abs/2203.14465)
+- **ReST** — Reinforced Self-Training (ReST) for Language Modeling. [arXiv:2308.08998](https://arxiv.org/abs/2308.08998)
+- **Llama 2 / rejection sampling** — Llama 2: Open Foundation and Fine-Tuned Chat Models. [arXiv:2307.09288](https://arxiv.org/abs/2307.09288)
 
 ### A7 · Reasoning and test-time compute
 
@@ -11669,6 +13093,7 @@ source. Every arXiv ID below was resolved against the arXiv API — see `refs.py
 - **Pretraining-data contamination** — Investigating Data Contamination for Pre-training Language Models. [arXiv:2401.06059](https://arxiv.org/abs/2401.06059)
 - **RewardBench** — RewardBench: Evaluating Reward Models for Language Modeling. [arXiv:2403.13787](https://arxiv.org/abs/2403.13787)
 - **Cross-lingual tokenizer unfairness** — Language Model Tokenizers Introduce Unfairness Between Languages. [arXiv:2305.15425](https://arxiv.org/abs/2305.15425)
+- **HumanEval / pass@k estimator** — Evaluating Large Language Models Trained on Code. [arXiv:2107.03374](https://arxiv.org/abs/2107.03374)
 
 ### A12 · Agentic RL
 
@@ -11677,6 +13102,10 @@ source. Every arXiv ID below was resolved against the arXiv API — see `refs.py
 - **tau-bench** — $$\tau$$-bench: A Benchmark for Tool-Agent-User Interaction in Real-World Domains. [arXiv:2406.12045](https://arxiv.org/abs/2406.12045)
 - **OSWorld** — OSWorld: Benchmarking Multimodal Agents for Open-Ended Tasks in Real Computer Environments. [arXiv:2404.07972](https://arxiv.org/abs/2404.07972)
 - **Reflexion** — Reflexion: Language Agents with Verbal Reinforcement Learning. [arXiv:2303.11366](https://arxiv.org/abs/2303.11366)
+- **Deep RL from human preferences** — Deep reinforcement learning from human preferences. [arXiv:1706.03741](https://arxiv.org/abs/1706.03741)
+- **WebGPT** — WebGPT: Browser-assisted question-answering with human feedback. [arXiv:2112.09332](https://arxiv.org/abs/2112.09332)
+- **AgentBank** — AgentBank: Towards Generalized LLM Agents via Fine-Tuning on 50000+ Interaction Trajectories. [arXiv:2410.07706](https://arxiv.org/abs/2410.07706)
+- **Search-R1** — Search-R1: Training LLMs to Reason and Leverage Search Engines with Reinforcement Learning. [arXiv:2503.09516](https://arxiv.org/abs/2503.09516)
 - **Communication-centric multi-agent survey** — Beyond Self-Talk: A Communication-Centric Survey of LLM-Based Multi-Agent Systems. [arXiv:2502.14321](https://arxiv.org/abs/2502.14321)
 - **AReaL** — AReaL: A Large-Scale Asynchronous Reinforcement Learning System for Language Reasoning. [arXiv:2505.24298](https://arxiv.org/abs/2505.24298)
 - **Agent-memory survey** — Memory in the Age of AI Agents. [arXiv:2512.13564](https://arxiv.org/abs/2512.13564)
@@ -11716,6 +13145,10 @@ source. Every arXiv ID below was resolved against the arXiv API — see `refs.py
   The loss-spike taxonomy and the data-sampler warning in A5.5 come from here.
 - John Schulman, *Approximating KL divergence* — [http://joschu.net/blog/kl-approx.html](http://joschu.net/blog/kl-approx.html)
   The k3 estimator used in the GRPO loss in A6.7.
+- OpenAI, *Reinforcement fine-tuning* — [https://developers.openai.com/api/docs/guides/reinforcement-fine-tuning](https://developers.openai.com/api/docs/guides/reinforcement-fine-tuning)
+  The distinct product use of the overloaded acronym RFT, disambiguated in A6.17.
+- Bradley & Terry, *Rank Analysis of Incomplete Block Designs* — [https://doi.org/10.1093/biomet/39.3-4.324](https://doi.org/10.1093/biomet/39.3-4.324)
+  The pairwise preference likelihood and score-difference identifiability in A6.3.
 - NVIDIA H100 datasheet — [https://resources.nvidia.com/en-us-hopper-architecture](https://resources.nvidia.com/en-us-hopper-architecture)
   The hardware anchors in A10.0: 989 TFLOP/s dense bf16, 3.35 TB/s HBM, 80 GB.
 - Glorot & Bengio, *Understanding the difficulty of training deep feedforward neural networks* — [https://proceedings.mlr.press/v9/glorot10a.html](https://proceedings.mlr.press/v9/glorot10a.html)
@@ -11745,7 +13178,11 @@ source. Every arXiv ID below was resolved against the arXiv API — see `refs.py
 - Anthropic, *Effective harnesses for long-running agents* — [https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents)
   The cross-session progress-artifact and end-to-end-testing practices in A12.14.
 - Model Context Protocol, *Version 2026-07-28* — [https://modelcontextprotocol.io/specification/2026-07-28](https://modelcontextprotocol.io/specification/2026-07-28)
-  The stateless core, negotiation metadata and long-running Tasks semantics in A12.15.
+  The stateless per-request core, metadata, primitives and security boundary in A12.15.
+- Model Context Protocol, *Architecture 2026-07-28* — [https://modelcontextprotocol.io/specification/2026-07-28/architecture/index](https://modelcontextprotocol.io/specification/2026-07-28/architecture/index)
+  The host/client/server roles, data layer and transport layer in A12.15.
+- Model Context Protocol, *Tasks extension* — [https://modelcontextprotocol.io/extensions/tasks/overview](https://modelcontextprotocol.io/extensions/tasks/overview)
+  The optional durable-handle, polling, input-update and cancellation semantics in A12.15.
 - A2A Protocol v1.0 specification — [https://a2a-protocol.org/v1.0.0/specification/](https://a2a-protocol.org/v1.0.0/specification/)
   The agent-delegation, task-lifecycle and protocol-binding semantics in A12.15.
 - NIST, *AI Agent Standards Initiative* — [https://www.nist.gov/artificial-intelligence/ai-agent-standards-initiative](https://www.nist.gov/artificial-intelligence/ai-agent-standards-initiative)

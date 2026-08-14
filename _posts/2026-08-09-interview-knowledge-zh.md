@@ -23,6 +23,9 @@ ai_assisted: true
 >
 > **每个概念的结构是**详细讲解 → 可选的 `自测`。即使某个概念不需要单独出题，有价值的
 > **追问**和**陷阱**仍然保留。面试真正容易出问题的是边界条件和 follow-up，而不是定义本身。
+>
+> **缩写规则。**LLM、GPU、API 这类通用词保持简洁；专用缩写在第一次进入正文解释时展开全称并
+> 给一句定义，目录为了便于扫描可以保留短写。
 
 **底本。**A1–A6 主要基于 Alisa Liu 公开的 LLM 笔记（她 2026 年从博士进入 OpenAI，
 把整个求职过程和学习材料都公开了），加上我自己补的量化、MoE、MFU、长上下文。
@@ -57,7 +60,7 @@ A9、A12、A13 压缩自我自己写过的长文：数据管线、环境扩展�
   - [A1.19 决策树](#a1-19)
   - [A1.20 k-means](#a1-20)
   - [A1.21 支持向量机](#a1-21)
-- **[A2 · Transformer 架构与实现](#section-a2)** — 19 题
+- **[A2 · Transformer 架构与实现](#section-a2)** — 20 题
   - [A2.1 三种架构范式](#a2-1)
   - [A2.2 一个 block 的解剖：残差流](#a2-2)
   - [A2.3 Self-attention 与 $$\sqrt{d_k}$$](#a2-3)
@@ -76,6 +79,7 @@ A9、A12、A13 压缩自我自己写过的长文：数据管线、环境扩展�
   - [A2.16 归一化架构变体](#a2-16)
   - [A2.17 扩散语言模型](#a2-17)
   - [A2.18 架构搜索与那些带着历史的常数](#a2-18)
+  - [A2.19 架构设计地图：按瓶颈选择](#a2-19)
 - **[A3 · 常见模型](#section-a3)** — 10 题
   - [A3.1 一张对照表](#a3-1)
   - [A3.2 Llama 3：把 Chinchilla 扔掉](#a3-2)
@@ -98,7 +102,7 @@ A9、A12、A13 压缩自我自己写过的长文：数据管线、环境扩展�
   - [A4.8 为什么训练与推理会数值不一致](#a4-8)
   - [A4.9 Model soup、task vector 与模型合并的边界](#a4-9)
   - [A4.10 如何读公开训练 logbook](#a4-10)
-- **[A5 · 训练基础设施](#section-a5)** — 8 题
+- **[A5 · 训练基础设施](#section-a5)** — 9 题
   - [A5.1 显存都花在哪](#a5-1)
   - [A5.2 并行策略：每种切什么](#a5-2)
   - [A5.3 混合精度](#a5-3)
@@ -110,7 +114,8 @@ A9、A12、A13 压缩自我自己写过的长文：数据管线、环境扩展�
   - [A5.9 用 SLURM 与 Kubernetes 编排训练](#a5-9)
   - [A5.10 故障检测、自动重启与弹性训练](#a5-10)
   - [A5.11 排查训练/推理数值不一致](#a5-11)
-- **[A6 · Post-training 与 RL](#section-a6)** — 15 题
+  - [A5.12 大规模训练 MoE](#a5-12)
+- **[A6 · Post-training 与 RL](#section-a6)** — 19 题
   - [A6.1 后训练阶梯](#a6-1)
   - [A6.2 SFT：细节比想象中多](#a6-2)
   - [A6.3 Reward model 与 Bradley-Terry](#a6-3)
@@ -121,12 +126,13 @@ A9、A12、A13 压缩自我自己写过的长文：数据管线、环境扩展�
   - [A6.8 DPO](#a6-8)
   - [A6.9 Reward hacking 与 KL 控制](#a6-9)
   - [A6.10 ★ 蒸馏](#a6-10)
-  - [A6.11 LoRA 与 PEFT](#a6-11)
+  - [A6.11 LoRA 与参数高效微调（PEFT）](#a6-11)
   - [A6.12 迭代式与在线 DPO](#a6-12)
-  - [A6.13 Process reward model](#a6-13)
+  - [A6.13 过程奖励模型（PRM）](#a6-13)
   - [A6.14 Self-play、AI feedback 与 self-rewarding](#a6-14)
   - [A6.15 测量 alignment tax](#a6-15)
   - [A6.16 从数据采集到部署：RLHF 完整口述版](#a6-16)
+  - [A6.17 拒绝采样微调（RFT）](#a6-17)
 - **[A7 · 推理模型与 test-time compute](#section-a7)** — 8 题
   - [A7.1 第三条扩展轴](#a7-1)
   - [A7.2 推理模型是怎么训出来的](#a7-2)
@@ -173,9 +179,9 @@ A9、A12、A13 压缩自我自己写过的长文：数据管线、环境扩展�
   - [A9.16 数据归因](#a9-16)
 - **[A10 · 估算题](#section-a10)** — 17 题
   - [A10.0 四个锚点数字与三条公式](#a10-0)
-- **[A11 · Scaling 与评测](#section-a11)** — 10 题
+- **[A11 · Scaling 与评测](#section-a11)** — 11 题
   - [A11.1 Kaplan 与 Chinchilla](#a11-1)
-  - [A11.2 muP](#a11-2)
+  - [A11.2 muP（maximal update parametrization，最大更新参数化）](#a11-2)
   - [A11.3 Test-time compute 对评测的影响](#a11-3)
   - [A11.4 困惑度](#a11-4)
   - [A11.5 无法验证答案时怎么评测](#a11-5)
@@ -186,7 +192,8 @@ A9、A12、A13 压缩自我自己写过的长文：数据管线、环境扩展�
   - [A11.10 Reward model 怎么评](#a11-10)
   - [A11.11 多语言与公平性评测](#a11-11)
   - [A11.12 A/B 测试与线上指标](#a11-12)
-- **[A12 · Agentic RL 与环境](#section-a12)** — 14 题
+  - [A11.13 pass@1、pass@k、selected@k 与 pass^k](#a11-13)
+- **[A12 · Agentic RL 与环境](#section-a12)** — 17 题
   - [A12.1 从 chat 到 agent：形式上变了什么](#a12-1)
   - [A12.2 环境的解剖](#a12-2)
   - [A12.3 难度 ≠ 可训练性](#a12-3)
@@ -203,6 +210,8 @@ A9、A12、A13 压缩自我自己写过的长文：数据管线、环境扩展�
   - [A12.14 Agent harness 与持久 runtime](#a12-14)
   - [A12.15 协议、身份与授权边界](#a12-15)
   - [A12.16 API 工具与 computer use](#a12-16)
+  - [A12.17 多轮对话与 agent RL](#a12-17)
+  - [A12.18 不可精确验证与开放式 agent task 的 RLHF](#a12-18)
 - **[A13 · 对齐、校准与持续学习](#section-a13)** — 15 题
   - [A13.1 完整的 RLHF 流程](#a13-1)
   - [A13.2 Constitutional AI 与 RLAIF](#a13-2)
@@ -502,7 +511,7 @@ $$\hat m_t=\frac{m_t}{1-\beta_1^t},\quad \hat v_t=\frac{v_t}{1-\beta_2^t},\qquad
 $$\theta_t=\theta_{t-1}-\alpha\frac{\hat m_t}{\sqrt{\hat v_t}+\epsilon}-\alpha\lambda\theta_{t-1}$$
 
 > **显存账。**Adam 每参数两份 fp32 状态 = 8 字节，占混合精度训练 16 字节/参数预算的**一半**。
-> 这就是 ZeRO 存在的全部理由。
+> 这就是 **ZeRO（Zero Redundancy Optimizer，零冗余优化器）**存在的全部理由。
 >
 > **LLM 常用超参：**$$\beta_1=0.9$$，$$\beta_2=0.95$$（低于 0.999 默认值，因为长程二阶矩会陈旧），
 > weight decay 0.1。
@@ -631,7 +640,8 @@ running statistics，batch=1 完全能跑。真正的问题是：
 实践后果是**结果依赖 batch 的组成**，复现和调试都变难。
 
 **理由三：分布式下你要在「统计量不准」和「多一次通信」之间二选一。**
-默认的 `nn.BatchNorm` 在 DDP 下**不做同步**，每张卡用自己本地的 batch 统计——
+默认的 `nn.BatchNorm` 在 **DDP（Distributed Data Parallel，分布式数据并行）**下
+**不做同步**，每张卡用自己本地的 batch 统计——
 而大模型训练时每卡 batch 可能只有 1–4 条序列，统计量噪声极大。
 换 `SyncBatchNorm` 能算准，但每个 BN 层每次前向都要一次 all-reduce，
 而一个 transformer block 里有两个归一化层。LayerNorm 两样都不需要。
@@ -892,7 +902,8 @@ forward KL 逼它去覆盖所有模态，结果是把质量摊在**模态之间*
 需要 REINFORCE 式的估计（离散分布下没法重参数化，见 A1.13）——本质上就是 policy gradient。
 
 > **实际 token 级蒸馏中，序列级 KL 方向与训练状态分布可以拆开。**上表描述精确的完整序列
-> KL 期望；GKD 也可以先从学生采样前缀，再在这些学生真正访问的历史 $$h$$ 上最小化
+> KL 期望；**GKD（Generalized Knowledge Distillation，广义知识蒸馏）**
+> 也可以先从学生采样前缀，再在这些学生真正访问的历史 $$h$$ 上最小化
 > $$\operatorname{KL}(p_T(\cdot\mid h)\|p_S(\cdot\mid h))$$。这属于
 > **on-policy 的 forward-KL 蒸馏**：它能处理曝光偏差，却不需要 reverse KL 的
 > score-function estimator。
@@ -920,7 +931,7 @@ forward KL 逼它去覆盖所有模态，结果是把质量摊在**模态之间*
 | Logit 蒸馏 | CE 对老师软标签 | forward | 老师 |
 | MiniLLM / GKD | reverse KL / on-policy | reverse | **学生** |
 | RLHF · PPO | reward 里减去 KL 惩罚 | $$\operatorname{KL}(\pi_\theta\|\pi_\text{ref})$$ | 策略自己 |
-| GRPO | loss 里的 per-token k3 项 | 同上 | 策略自己 |
+| GRPO | loss 里的 per-token **k3 KL 估计量** | 同上 | 策略自己 |
 | DPO | 隐式 KL（经 reference） | 同上 | 偏好数据 |
 
 **两个值得主动说出来的推论：**
@@ -1384,7 +1395,8 @@ attention/MLP 中间量，保留重算代价高的值。长序列、大 micro-ba
 - 被 detach 的输出不会因为 checkpoint 而重新长出梯度路径。
 - 「模型 checkpoint」（把权重存盘用于恢复）只是同名概念，和这里无关。
 
-它在训练基础设施里实现，可与 FlashAttention、FSDP/ZeRO、张量并行和序列并行组合；
+它在训练基础设施里实现，可与 FlashAttention、
+**FSDP（Fully Sharded Data Parallel，全分片数据并行）** / ZeRO、张量并行和序列并行组合；
 这些系统级显存权衡见 A5。
 
 #### 自测 · A1.17
@@ -1541,7 +1553,7 @@ $$K(x_i,x_j)$$，隐式地在另一特征空间拟合线性边界。RBF 核能�
 ## A2 · Transformer 架构与实现
 
 这一节是**手写轮的主场**：causal self-attention 会被问出六种问法。Alisa 的书在这一块最深，
-但她完全没写 MoE、分词、多模态和 SSM——那几块是新增的（标 ★）。
+但她完全没写 MoE、分词、多模态和**状态空间模型（SSM）**——那几块是新增的（标 ★）。
 
 **读法：**A2.1–A2.4 是骨架，必须能闭卷重建；A2.5–A2.8 是每个现代模型都会做的选择；
 A2.9–A2.13 是被追问时用来展示深度的。
@@ -1803,6 +1815,11 @@ mask、以及把 QKV 融成一次投影。
 <a id="a2-5"></a>
 ### A2.5 注意力变体：MHA → MQA → GQA → MLA
 
+全称分别是 **MHA（Multi-Head Attention，多头注意力）**、
+**MQA（Multi-Query Attention，多查询注意力）**、
+**GQA（Grouped-Query Attention，分组查询注意力）**与
+**MLA（Multi-head Latent Attention，多头潜变量注意力）**。
+
 令 $$L$$ 为层数、$$H_q$$ 为 query 头数、$$H_{kv}$$ 为 KV 头数、$$d_h$$ 为头维，
 $$b$$ 为每个缓存元素的字节数。唯一的驱动力是 **KV cache 大小**：
 
@@ -1903,7 +1920,8 @@ out = torch.stack([rx1, rx2], dim=-1).flatten(-2)
 <a id="a2-6-1"></a>
 
 **Q A2.6.1** — 一个只训到 8K 的模型要服务 32K。普通位置插值会把位置 32K 和相邻一格
-分别映射成什么？为什么 NTK-aware scaling 或 YaRN 更可能保住局部行为？
+分别映射成什么？为什么神经正切核（**NTK**）感知缩放或
+**YaRN（Yet another RoPE extensioN）**更可能保住局部行为？
 
 插值取 $$p'=p/4$$，因此把 32K 映回训练见过的最大坐标 8K；但一个 token 的局部距离也会变成
 0.25，所有频率上原本熟悉的短程相位都被压缩。NTK-aware 方法更多压低频/长程分量，
@@ -1956,17 +1974,23 @@ gates = F.softmax(x @ W_router, dim=-1)     # (T, E)
 gate, expert = gates.max(dim=-1)            # top-1
 ```
 
-**容量与 token dropping。**All-to-all 通信需要固定大小的缓冲区，所以每个专家有**容量上限**。
-热门专家溢出时，多出来的 token **整层跳过**，直接沿残差流通过。这就是为什么同一个 MoE 模型
-在不同 batch 组成下输出会略有不同。
+**容量、溢出与 dropless dispatch。**有容量限制的实现会为专家分配固定大小的缓冲区。
+热门专家溢出时，实现可以让多余 token **丢弃或跳过**专家分支，也可以改路由到其他专家，
+或用 padding/超额预留容量；具体策略取决于实现，也可能让输出受 batch 组成影响。
+
+这种行为并不普遍。**Dropless** 实现用 dynamic dispatch 和 grouped GEMM 处理每个专家数量可变的
+token，从而避免 token dropping。它的风险转移到了别处：峰值与碎片化显存、不规则或过小的 GEMM、
+随负载变化的 all-to-all 流量，以及拉高长尾延迟的 straggler。
 
 **Auxiliary loss。**先纠正一个流传很广的说法：**router 不是没有梯度**。门概率 $$p_e$$ 乘在
 被选专家的输出上，所以语言建模损失会经由它回传到 $$W_\text{router}$$——router 正是这样学会
 「哪个专家好」的。不可微的只有 top-$$k$$ 这个**选择**动作。
 
 问题在于这个梯度会自我强化：拿到更多 token 的专家训得更快，于是 router 更偏向它，
-形成富者愈富的**路由坍缩**。再加上专家容量和 expert 并行都要求负载均衡，才需要一个额外的均衡项。
-Switch Transformer 的损失把"路由到每个专家的 token 比例"$$f_e$$ 乘以"该专家的平均门概率"$$p_e$$：
+形成富者愈富的**路由坍缩**。再加上专家容量和 expert 并行都要求负载均衡，
+实际系统需要一个显式均衡机制——辅助目标、动态专家 bias 或其他控制——但不一定都使用同一种额外损失。
+例如 Switch Transformer 的损失把"路由到每个专家的 token 比例"$$f_e$$
+乘以"该专家的平均门概率"$$p_e$$：
 
 $$\mathcal L_\text{aux} = E\sum_{e=1}^{E} f_e \cdot p_e$$
 
@@ -1990,7 +2014,9 @@ $$\mathcal L_\text{aux} = E\sum_{e=1}^{E} f_e \cdot p_e$$
 容量按错 token 数时，均衡打分也会溢出；dispatch bug 则可能与前两者都不一致。
 
 均衡损失处理的是自我强化的负载动态，不是「没有梯度」。动态专家偏置是另一种控制机制。
-Token dropping 表示溢出 token 沿残差路径跳过专家分支，因此 batch 组成可能影响输出。
+在有容量限制的 drop/skip 策略里，溢出 token 会沿残差路径绕过专家分支，因此 batch 组成可能
+影响输出。改路由与 dropless 栈要看不同计数——例如改路由目的地或可变 dispatch 大小；
+只有负载不均，不能证明任何 token 真被丢弃。
 
 <a id="a2-8-2"></a>
 
@@ -2017,8 +2043,8 @@ Token dropping 表示溢出 token 沿残差路径跳过专家分支，因此 bat
 <a id="a2-9"></a>
 ### A2.9 ★ 分词
 
-**BPE 训练循环。**从字节序列开始，反复：统计所有相邻对，把最频繁的一对合并成新 token，
-记录这次合并。到目标词表大小停止。
+**BPE（Byte-Pair Encoding，字节对编码）训练循环。**从字节序列开始，
+反复统计所有相邻对，把最频繁的一对合并成新 token，记录这次合并；到目标词表大小停止。
 
 ```python
 for i in range(num_merges):
@@ -2492,6 +2518,61 @@ Query 头数是 32。KV 头取 8 很方便，每张 TP rank 都能分到整数�
 
 ---
 
+<a id="a2-19"></a>
+### A2.19 架构设计地图：按瓶颈选择
+
+**这是一张约束地图，不是论文名字目录。**先找真正卡住系统的瓶颈，再选能直接命中它的最小改动，
+最后测试完整组合。下面各行是设计轴，不是互斥菜单：SwiGLU 既可以是稠密 FFN，也可以放进专家；
+共享专家与路由专家并存；pre-LN 的放置方式也可以使用 RMSNorm。
+
+![按瓶颈组织的大模型架构选择](/assets/img/blog/interview-knowledge/qa10_architecture_map_zh.png)
+
+| 瓶颈 / 设计轴 | 选项 | 主要收益 | 真实成本或失败模式 | 何时选择 |
+|---|---|---|---|---|
+| **KV/状态显存** | MHA / MQA / GQA / MLA | MHA 保留独立 K/V 容量；MQA、GQA 减少 cache 字节与解码带宽；MLA 缓存压缩 latent | MHA 的 cache 增长很快；MQA 可能形成过窄的质量/稳定性瓶颈；GQA 是折中；MLA 增加重建、位置与 kernel 约束，也未必降低墙钟 | 短上下文或质量参照用 MHA；成熟服务折中用 GQA；极端 cache 压力才用 MQA；MLA 要在质量和目标 kernel 都验证后再选 |
+| **条件容量** | dense / SwiGLU / MoE / shared experts | 稠密 SwiGLU 提供可预测的常开容量；MoE 以大致固定的激活专家算术量提高总参数容量；共享专家承载公共特征 | SwiGLU 有三次投影；MoE 增加常驻权重显存、路由与 all-to-all 成本，并有坍塌、失衡和长尾风险；容量受限的栈还可能丢弃或改路由；共享专家增加常开计算 | 小模型或严格 p99 优先 dense/SwiGLU；质量收益能覆盖显存和通信时再选 MoE；公共知识不该争抢路由槽时加共享专家 |
+| **长上下文混合** | full / sliding / local-global / learned sparse | Full attention 让每个 query 都有到每个 key 的直接路径；sliding 限制局部工作与 cache；local-global 恢复间歇性长路径；学习型稀疏可按内容选择 key | Full attention 有平方级 prefill 工作和大状态；sliding 会漏掉旧证据；global 层可能主导成本；学习型稀疏会引入路由/召回错误和不规则 kernel | 中等上下文或直接检索占主导时用 full；重近因的流式任务用 sliding；长文档仍需远端证据时用 local-global；学习型稀疏只在召回与目标 kernel 都实测过时采用 |
+| **序列状态** | attention / SSM / linear attention / hybrid | Attention 保留可寻址历史；SSM 与线性注意力把历史压进有界状态并支持并行训练；混合方案把廉价混合与直接查找层结合 | Attention 状态与解码工作随上下文增长；固定状态有损，会忘掉精确事实；线性注意力常损失尖锐选择性；混合方案增加 kernel、schedule 与接口复杂度 | 精确证据任务保留 attention；流式与严格状态限制考虑 SSM/linear；长程效率和直接检索都重要时用 hybrid |
+| **优化几何** | pre-LN / RMSNorm / QK-norm / DeepNorm / nGPT | Pre-LN 配 RMSNorm 是稳健基线；QK-norm 处理 attention logit 增长；DeepNorm 处理超深残差累积；nGPT 约束更完整的几何 | 额外 norm 增加规约；DeepNorm 把残差缩放与初始化绑定；nGPT 改变整套参数化、优化器假设与 kernel，不是局部补丁 | 从 pre-LN/RMSNorm 开始；诊断出 logit 不稳再加 QK-norm；异常深的栈评估 DeepNorm；把 nGPT 当成需要重训的研究选择 |
+| **生成 / 目标** | AR / MTP / diffusion | AR 有成熟 cache 与工具调用语义；多 token 预测增加未来 token 监督，也可提供并行 proposal；扩散能修改多个位置并支持任意顺序填空 | AR 解码串行；MTP proposal 可能冲突，速度取决于接受/验证；扩散反复处理仍在变化的完整序列，无法使用标准 AR cache，也可能不一致 | 默认用 AR；端到端 accepted-token 吞吐确实获胜时用 MTP；只有修改/填空收益值得承担仍在研究的服务栈时才选 diffusion |
+| **多模态融合** | projector / cross-attention / native | Projector 能低成本复用冻结 encoder；cross-attention 让模态记忆独立且可查询；原生训练对齐更深，并可支持多模态生成 | Projector 会丢细节且消耗大量 token；cross-attention 增加 block、源 cache 与跨序列工作；原生融合是预训练量级的数据与系统投入，并有模态失衡风险 | 预算有限用 projector；需要持续查询独立 encoder memory 时用 cross-attention；深层跨模态生成值得完整预训练时选 native |
+
+**要把地图读成相互作用的组合。**压缩 K/V 可能把瓶颈从访存移到投影；MoE 可能减少激活专家算术量，
+却增加 collective；稀疏混合省掉 score matrix 工作，却引入不规则 gather；MTP 或 diffusion
+暴露更多并行性时，也可能做了更多总工作。**FLOPs 更少，不等于墙钟更短或 p99 更好。**
+完整组合必须在目标加速器、互连、编译器、batch size 与上下文分布上 benchmark，并一起报告质量、
+峰值/常驻显存、吞吐、prefill、decode 与长尾延迟。
+
+还要标注结论成熟度。AR、pre-LN/RMSNorm、MHA/GQA、稠密 SwiGLU 和 full/sliding attention
+是已经确立的基线。MoE、MLA、local-global attention、projector/cross-attention 和原生多模态训练
+也已有充分实践，但高度依赖工作负载与系统栈。至于学习型稀疏、SSM/linear state、nGPT、
+MTP serving 或 diffusion 能否普遍替代这些基线，仍属活跃研究；一套硬件和训练配方上的结果
+是证据，不是可直接搬走的默认值。
+
+#### 自测 · A2.19
+
+<a id="a2-19-1"></a>
+
+**Q A2.19.1** — 一个企业文档模型必须处理 256K-token 上下文，逐字引用任意位置的标识符，
+在 80-GB KV/状态显存预算内同时维持 8 个 session，并在目标加速器上把 p99 decode
+的 token 间延迟控制在 50 ms 内。先选一套组合，再说明哪些消融可能推翻它。
+
+起点选 **GQA + attention + local-global mixing + 稠密 SwiGLU + pre-LN/RMSNorm + AR**。
+大多数层可用 sliding window，但要周期性保留 full/global attention 层，为旧证据留下直接路径；
+任意位置精确召回让纯 SSM 或纯 linear 方案风险太高。GQA 是成熟的 cache 压缩，
+比 MQA 保留更多头容量。第一版用稠密 FFN，避免 MoE 的 all-to-all 与负载相关 p99；
+AR 则提供最可预测的 cache 与工具行为。只有长上下文 logit 诊断支持时才加 QK-norm。
+
+任何神经组合都不保证逐字复制，所以要单独评估引用/标识符保真度；若这是硬要求，
+系统还应配证据复制或精确检查路径。先在 GQA 不同 KV 头数、MHA 参照和 MLA 候选之间消融，
+测 cache 字节、质量与 decode 带宽；再相对 full-attention 参照扫描窗口大小及 global 层数量/间隔，
+用各个距离和干扰项下的 needle 测试。随后在状态显存与训练算力配平下，比 attention 基线、
+SSM/attention 与 linear/attention hybrid。最后才测 dense 对 MoE、AR 对 MTP，并记录常驻权重、
+all-to-all 时间、accepted token、prefill、p50/p99 decode 和精确检索准确率。
+任何只满足平均 FLOPs、却越过 80-GB 或 p99 实测约束的组合都应淘汰。
+
+---
+
 <a id="section-a3"></a>
 
 ## A3 · 常见模型
@@ -2588,7 +2669,8 @@ $$N_{\mathrm{serve}} > \frac{C_{\mathrm{train}}}{\Delta c}$$
 
 **3. FP8 混合精度训练。** 用 per-tile / per-block 缩放而不是全局 scale。
 
-**R1：RLVR 让长推理涌现。** R1-Zero 从基座模型直接做可验证奖励的 RL，**没有 SFT 冷启动**，
+**R1：RLVR（Reinforcement Learning with Verifiable Rewards，可验证奖励强化学习）
+让长推理涌现。** R1-Zero 从基座模型直接做可验证奖励的 RL，**没有 SFT 冷启动**，
 长链推理自己长了出来——包括"等一下，让我重新检查"这种回溯行为。这是很强的证据：
 推理能力可以从奖励中被**激发**，而不必被示范。发布的 R1 仍加了冷启动 SFT，主要是为了可读性。
 
@@ -3116,7 +3198,8 @@ Greedy decoding 可以用 token 相等做接受检查；随机精确采样必须
    **这一步定死之后极难改。**
 4. **建数据管线。**采集 → 抽取 → 过滤 → 去重 → 去污染 → 配比（见 A9）。
 5. **定架构。**层数/宽度比、注意力变体（GQA/MLA）、FFN 类型、位置编码、norm 位置。
-6. **用小 proxy 模型定超参。**muP 让最优 LR 与宽度无关，所以可以在小模型上扫。
+6. **用小 proxy 模型定超参。** **muP（maximal update parametrization，最大更新参数化；
+   读作 “mew-P”）**让最优学习率与宽度无关，所以可以在小模型上扫。
 7. **短跑验证。**几百步，检查 loss 下降、MFU、显存、checkpoint 能存能读。
 8. **开跑，并盯住仪表盘。**loss、梯度范数（裁剪前）、MFU、各 rank 的一致性。
 9. **Midtrain。**长上下文扩展 + 高质量数据退火（见 A9.3）。
@@ -3153,7 +3236,8 @@ $$C \approx 120P_{\text{act}}^2
 
 **第五步：检查它放不放得下。**61B 模型的训练状态是 $$61\times10^9 \times 16 = 976$$ GB。
 512 张卡共 40 TiB 显存，总量绰绰有余，问题在**分布**：
-节点内 8 卡 NVLink 走 TP=8，跨节点 PP，剩下的开 DP 并用 ZeRO 切优化器状态（见 A5.2）。
+节点内 8 卡 NVLink 走张量并行（**TP**）=8，跨节点走流水线并行（**PP**），
+剩余维度做数据并行（**DP**），再用 ZeRO 切优化器状态（见 A5.2）。
 
 **第六步：检查步数和 batch。**取全局 batch 为 4M token，则总步数是
 $$1.2\times10^{12}/4\times10^6 = 3\times10^5\ \text{steps}$$——约 30 万步，合理。
@@ -3790,8 +3874,9 @@ FlashAttention 把这一项消掉，是长上下文训练能存在的前提。
 增加 DP 会缩小 local micro-batch，激活也可能下降；那是 batch 分配变化，
 不是 DP 在切激活。
 
-能切激活的是另外几种并行：**TP** 切层内的激活、**序列/上下文并行**沿 $$S$$ 切、
-**PP** 让每个 stage 只持有自己那几层的激活（但要为在途的 micro-batch 留份额）。
+能切激活的是另外几种并行：**张量并行（TP）**切层内激活、
+**序列/上下文并行（CP）**沿 $$S$$ 切，**流水线并行（PP）**让每个 stage
+只持有自己那几层的激活（但要为在途的 micro-batch 留份额）。
 这也是为什么长上下文训练一定会用到 TP 或 CP，光靠 ZeRO 不够。
 
 ---
@@ -3832,7 +3917,8 @@ GPU 喂不饱、MFU 掉下来（见 A5.4）。所以激活是一个**同时**约
 固定模型、GPU 数与峰值分母时，MFU 只是 token/秒乘一个常数，两者同向。
 同一 micro-batch 下，重算通常让两者一起下降；只有释放显存后能把 micro-batch 放大，
 且 kernel 效率提升超过重算代价时，**净** token/秒与 MFU 才会一起上升。
-HFU 另行计入实际执行的重算工作，方向可能不同，应结合 profiler trace。
+**HFU（Hardware FLOPs Utilization，硬件 FLOPs 利用率）**另行计入实际执行的重算工作，
+方向可能不同，应结合 profiler trace。
 
 ---
 
@@ -3899,7 +3985,8 @@ operational headroom 仍有 $$17.625$$ GiB。这份 reserve 是显式的，
 重算或变小的局部矩阵谁主导暴露 step time，并比较 token/秒、MFU、HFU 与通信 overlap。
 
 > **追问**
-> - *怎么把 pipeline bubble 压小？* → 加 micro-batch 数、交错式 1F1B，或者把反向拆成
+> - *怎么把 pipeline bubble 压小？* → 加 micro-batch 数、交错式
+>   **1F1B（one-forward-one-backward，一前向一反向）**，或者把反向拆成
 >   输入梯度和权重梯度两半的 zero-bubble 调度。
 > - *为什么 ZeRO-1/2 的通信成本和 DDP 相当？* → 因为 all-reduce 本来就是
 >   reduce-scatter 接 all-gather。ZeRO-3 还多参数 gather，定量分析见 A5.7。
@@ -4082,8 +4169,9 @@ $$P_{\text{attainable}}\le
 加 GPU 还会把每卡矩阵切小，让原本高效的 kernel 重新跌到屋顶线下。
 
 **同一层级继续延伸到芯片外。**PCIe 连接设备与主机，有时也连接 peer；
-NVLink/NVSwitch 在高带宽域内提供 scale-up GPU 网络；InfiniBand 或 RoCE 常作为节点间
-支持 RDMA 的 scale-out 网络。名字不等于性能：链路代际、交换机超卖、GPU 到 NIC 的亲和性
+NVLink/NVSwitch 在高带宽域内提供 scale-up GPU 网络；InfiniBand 或
+**RoCE（RDMA over Converged Ethernet，基于聚合以太网的 RDMA）**
+常作为节点间支持 RDMA 的 scale-out 网络。名字不等于性能：链路代际、交换机超卖、GPU 到 NIC 的亲和性
 以及实际路径都重要。因此 TP 要放在最强的 scale-up 域，NCCL 拓扑必须实测，不能从节点数猜。
 
 > **LLM 联系。**Prefill 有大而可复用的矩阵乘，倾向计算屋顶；decode 的 token 并行度低，
@@ -4307,6 +4395,176 @@ cache 关时一致、开时不一致，指向 cache 内容、offset、mask 或 c
 
 ---
 
+<a id="a5-12"></a>
+### A5.12 大规模训练 MoE
+
+**不变量：MoE 训练与稠密训练使用相同的下一 token 预测目标。**变化发生在 FFN 路径：
+每个 token 只条件执行少量专家；训练器还可以加入面向路由或系统的辅助损失：
+
+$$\mathcal{L}=\mathcal{L}_{\mathrm{LM}}+\lambda_{\mathrm{bal}}\mathcal{L}_{\mathrm{bal}}+\lambda_z\mathcal{L}_z+\cdots$$
+
+LM 的学习目标没有改变，附加项是设计选择，不是普遍要求。模型侧动机与路由分类见
+[A2.8](#a2-8)；MoE 需要组合的并行维度见 [A5.2](#a5-2)。
+
+![跨 expert-parallel rank 的 MoE 训练数据流](/assets/img/blog/interview-knowledge/qa8_moe_training_zh.png)
+
+**精确的前向路径。**设 padding 后的残差流状态形状为 `B × S × D`，
+用 $$m_{b,s}$$ 标记有效 token。路由前排除 padding，按 block 定义做 normalization，
+再把有效 token 状态展平成 `X`。这里 $$N$$ 是一个专家并行路由组看到的有效 token 数，
+不一定是整个作业的全局 batch。一个代表性的线性 softmax router 计算：
+
+$$N=\sum_{b=1}^{B}\sum_{s=1}^{S}m_{b,s}\le BS,\qquad R=XW_r\in\mathbb{R}^{N\times E}$$
+
+$$p_{i,:}=\operatorname{softmax}(R_{i,:}),\qquad S_i=\operatorname{TopK}(p_{i,:},k)$$
+
+Top-k 返回专家索引 `S_i` 与 gate 权重。常见的重新归一化写法是
+
+$$g_{i,e}=\frac{p_{i,e}}{\sum_{j\in S_i}p_{i,j}}\quad(e\in S_i),\qquad
+m_i=\sum_{e\in S_i}g_{i,e}F_e(x_i),\qquad y_i=h_i+m_i$$
+
+其中 `h_i` 是残差流输入，`x_i` 是归一化后的 FFN 输入。有些变体使用 sigmoid score、
+不重新归一化的选中权重、共享专家或 combine 后缩放；面试回答应先声明口径，不能默认只有一种。
+
+系统路径按下面的顺序实现这条公式：
+
+1. 生成 `N*k` 条 assignment record。一个 token 对每个入选专家各出现一次；
+   记录源 token、目标专家/rank 与 gate 权重。
+2. 按目标专家并行 rank、再按本地专家做 permutation 或 sort。
+   具体实现可以在这里或接收端做 capacity admission。
+3. 执行一次专家并行 all-to-all，把 token 状态和路由 metadata 发给拥有相应专家的 rank。
+4. 为本地专家组成高度不等的矩阵，用 grouped 或 batched expert GEMM 执行专家的 FFN 投影。
+   为 kernel 对齐添加的 padding 是实现开销，不是模型 token。
+5. 执行反向的 all-to-all，把专家输出送回每个 token 的源 rank。
+6. 撤销 permutation，对选中输出做 gate 加权求和，再加 residual。
+   如果有共享专家，它会额外贡献一条始终执行的分支。
+
+在一个路由组内，每个专家的平均 assignment 数与常见的限容量 buffer 大小是
+
+$$\bar n_e=\frac{Nk}{E},\qquad C=\left\lceil\alpha\frac{Nk}{E}\right\rceil$$
+
+其中 `alpha` 是 capacity factor。这个平均值不是对每个专家的保证。
+**限容量实现**最多为每个专家保留 `C` 个 slot；超出的 assignment 必须按明确定义的策略
+drop、reroute 或走 fallback。「Drop」通常是去掉那条专家分支，残差里的 token 仍继续流动，
+不是从序列中删除 token。**Dropless 实现**，例如
+[MegaBlocks](https://arxiv.org/abs/2211.15841) 的 grouped-GEMM 路线，
+用 ragged 或变长 dispatch 处理全部 assignment，不强制执行 `C`；它仍可能为 kernel 做
+padding，而且显存与 step 时间必须按最大负载而不是均值准备。
+
+**反向传播沿通信图倒序执行。**Combine 先把任务损失的梯度传进 residual、选中的 gate 权重
+和返回的专家输出。返回 all-to-all 的 backward 把专家输出梯度从源 rank 送回专家 owner。
+每个 owner 对被选中的专家执行 backward GEMM，只从该专家实际处理的 assignment 累积参数梯度。
+Dispatch all-to-all 的 backward 再把输入状态梯度送回源 rank；撤销 permutation 并求和，
+合并最多 `k` 路贡献，然后继续经过 residual 和 normalization 路径。
+因此专家梯度在 token 维是稀疏的。如果某个专家沿 DP 维有副本，
+只在对应的同名专家副本之间归约该专家的梯度。
+
+**Router 梯度必须精确区分。**在选中集合固定时，选中的 gate 权重通过加权 combine
+收到任务损失梯度，选中专家的参数通过其输出收到梯度。离散 top-k membership 决策不可微，
+普通反向传播把它当常量；未选中的专家不会从这个 token 得到直接参数梯度。
+未选中的 *router logit* 是否得到间接梯度取决于 gate 口径：
+若保留完整 softmax 的值，分母会耦合各 logit；若只在选中 logit 间重新归一化，
+通常会去掉这种耦合。Router logit 梯度与专家参数梯度不是同一个命题。
+
+以下机制可以提供更广或更稳定的路由信号：
+
+- **负载均衡辅助损失**通常把平均 router probability 与实际 assignment 比例耦合起来，
+  让过载专家变贵。具体 estimator 与 stop-gradient 选择很重要；权重过大会用 LM 质量换均衡。
+- **Router z-loss 或其他 logit 控制**，例如
+  [ST-MoE](https://arxiv.org/abs/2202.08906) 中研究的方案，惩罚过大的
+  log-partition/logit，改善数值行为并抑制过度自信的 score；它本身不是负载守恒检查。
+- **动态专家 bias**可以根据实测过载或欠载来调整，从而改变未来选择，
+  又不把均衡目标直接写进任务梯度。
+- **共享专家**给每个 token 一条始终执行的路径，可以承载公共特征；
+  但它会消耗激活计算，也不会让 routed expert 的失衡变得无害。
+
+这些机制是一组工具。模型可以使用辅助损失、动态 bias、共享专家、它们的组合或其他 router；
+不能把任何一种描述成所有 MoE 的必选项。
+
+| 对比项 | 稠密 FFN 训练 | 稀疏 MoE FFN 训练 |
+|---|---|---|
+| 训练目标 | 下一 token 的 LM 损失 | 相同的下一 token LM 损失，可选加路由辅助项 |
+| 总参数与激活参数 | 几乎全部 FFN 参数都要存储，并对每个 token 激活 | 总参数包含全部专家；每个 token 只激活 `k` 个 routed expert 和可能存在的共享专家 |
+| 计算 | 每个 token 执行稠密 FFN | 激活专家计算由 `k` 和专家形状决定，而不是由总 `E` 决定；路由、padding、permutation 与 collective 都有开销 |
+| 显存 / 优化器状态 | 状态随稠密参数增长 | 所有专家权重与优化器状态都必须存放在某处；EP 只分散、不消除它们，dispatch buffer 还增加瞬时显存 |
+| 通信 | DP/TP/PP collective，没有 token 到专家的交换 | 前向增加 dispatch 与 return all-to-all，反向增加对应的逆向通信 |
+| 局部专家有效 batch | FFN 看到本地全部 `N` 个有效 token | 单个专家只看到以 `Nk/E` 为中心的变长 batch；EP degree 高或负载倾斜都会产生瘦 GEMM |
+| 梯度 | 每个 FFN 参数都接触每个本地 token | 只有选中的 routed expert 从该 token 得到直接任务梯度；闲置或饥饿专家可能几乎没有梯度 |
+| 失效模式 | 数值不稳定、坏数据、优化器与 collective 故障 | 除稠密训练故障外，还有路由坍缩、专家死亡/过载、overflow、dispatch 损坏与 straggler 放大 |
+| 服务含义 | 放置与计算可预测，但全部稠密参数都处于激活路径 | 低激活/总参数比可减少算术，但权重驻留、路由、跨设备流量与小 batch 意味着延迟不会自动更低 |
+
+**EP 是额外的 mesh 维度，不会取代 DP/TP/PP。**EP 把不同专家放到不同 rank；
+TP 可以继续切每个专家的 GEMM 和稠密层；PP 把 MoE block 分到各 stage；
+DP 则复制所得 mesh，并归约相应的稠密参数与专家参数。
+具体 process group 取决于框架，应从参数 ownership 推导，不能只按缩写习惯相乘。
+
+每个 routed MoE 层在前向引入一次 dispatch all-to-all 和一次 return all-to-all，
+反向还有对应的逆向流量。最慢目标 rank 决定关键路径：收到更多 token 的 rank
+要做更高的 grouped GEMM、发送更多字节；慢 GPU、NIC 或 network rail
+即使在负载均衡时也会拖住所有 peer。因此，真正主导的往往是 all-to-all 暴露时间与 straggler，
+而不是名义 FLOPs。高频通信的 TP 放在最强 scale-up 域内；
+EP group 放到 all-to-all 带宽均匀、GPU-to-NIC affinity 良好的位置；
+PP 与 DP 的流量还要避免压到同一组 rail。逻辑 mesh 不变，拓扑感知的 rank placement 仍然重要。
+
+**从零训练与 dense-to-MoE upcycling 的初始化风险不同。**
+从零训练时，router 与 expert 初始化、早期 capacity 和均衡机制决定专家能否在路由固化前
+收到足够且有差异的信号。[Sparse Upcycling](https://arxiv.org/abs/2212.05055)
+可以从一个稠密 FFN 初始化 routed expert，但只做 cloning 会保留函数与参数对称性：
+各专家输出相同时，任务损失几乎没有理由让 router 偏爱其中某个 clone。
+
+只有在 gate 已归一化、FFN 架构匹配且没有 route 被 drop 的狭窄条件下，
+相同 clone 的加权混合才可能在初始化时复现源 FFN 输出。这不代表训练过程或能力瞬间等价：
+路由、capacity、共享分支、数值顺序、优化器状态映射与后续稀疏更新都可能不同。
+需要有意扰动 router 和/或 expert，提供专家特有的多样化或数据暴露，并继续训练。
+不同 routed token 子集最终也可能打破对称，但只依赖 tie-breaking 是不可控的 upcycling 策略。
+转换后立即验证 held-out loss，并持续观察 continued-training 的过渡阶段。
+
+**监控清单，按 MoE 层、按 rank 记录：**
+
+1. 每个专家在 capacity 前与实际执行的 token assignment 数、变异系数、max-to-mean、
+   零负载专家，以及预期的 `Nk/E` 基线。
+2. Overflow、被 drop 的分支、reroute 与 fallback 比率，包括受影响的 token 和专家。
+3. Router entropy、logit 与 log-partition 范围、top-k margin 和选择稳定性；
+   均值会掩盖少数饱和专家。
+4. 每个专家的 activation、output、参数梯度与 update norm，并单独标记非有限值与长期为零的值。
+5. 各 peer 的 all-to-all 字节数、总 all-to-all 时间与**暴露**时间、逐 rank 长尾，
+   以及它同有效计算的 overlap。
+6. 各专家的 grouped-GEMM row 数、padding、tensor-core occupancy 与耗时；
+   汇总 GPU utilization 会掩盖瘦 kernel 或等待。
+7. 端到端 step 时间、token/秒、累计 token 账，以及 held-out LM loss。
+8. 按 domain、language、token type 或受控路由干预做 specialization audit。
+   有用的 specialization 不一定能被人类清楚命名；均衡路由与质量比给每个专家贴出漂亮标签更重要。
+
+#### 自测 · A5.12
+
+<a id="a5-12-1"></a>
+
+**Q A5.12.1** — 一个 MoE run 扩到更多节点后，held-out LM loss 仍正常，
+但吞吐下降，报告的专家负载越来越倾斜。如何区分 router collapse、capacity/dispatch bug
+以及 topology 或 straggler 问题？
+
+先冻结 checkpoint，在新旧 mesh 上重放完全相同的 token ID。按实际有效 `N`、`k`、`E`
+和 routing-group 边界做归一化：改变 EP mesh 本来就可能合理地缩小每个专家的有效 batch。
+必须同时记录 **capacity 前的 router 意图**与 **dispatch 后的真实执行**，
+不能只看一个叫作「load」的 counter。
+
+- **Router collapse：**capacity 前 assignment 的变异系数与 max-to-mean 上升，
+  router entropy 下降或 logit/top-k margin 饱和，而且重复 batch 总是同一批专家胜出。
+  比较逐专家 probability、hard selection、辅助损失各项与 router-gradient norm。
+- **Capacity/dispatch bug：**capacity 前的选择合理，但 accepted/executed count 与之分叉。
+  检查 capacity 前 assignment 总数是否为 `N*k`，accepted 加 dropped/rerouted record
+  是否满足所声明策略的守恒，`C` 是否使用有效 token 数和正确 routing group，
+  以及逐 peer send/receive count、token ID、padding mask 与 inverse permutation 是否一致。
+- **Topology/straggler：**意图与执行 count 可以闭合，但 all-to-all 暴露时间或逐 rank 长尾增长。
+  测量逐 peer byte matrix、各 rank 到达 collective 的时间与等待时间、
+  相同 row 数下的 grouped-GEMM 时间、GPU-to-NIC affinity、rail/switch counter、
+  transport fallback，以及慢 GPU 的时钟/错误。即使 router 健康，一个慢目标也会卡住所有 peer。
+
+LM loss 正常不能排除任何一类：residual/shared path 可能掩盖路由损伤，
+而纯 placement 问题可以完全不改变数学结果。先用这些 counter 分类，
+再调整 balance-loss weight 或 capacity factor。
+
+---
+
 <a id="section-a6"></a>
 
 ## A6 · Post-training 与 RL
@@ -4421,10 +4679,61 @@ advantage 为零；这不是普适的「不在 50% 就没有 policy gradient」�
 <a id="a6-2"></a>
 ### A6.2 SFT：细节比想象中多
 
-看起来 SFT 就是"继续做 next-token 预测"，但有四个实现细节会被问到。
+SFT 仍然是 causal next-token prediction，但 chat 或 agent 样本已经不再是一条不分角色的字符串。
+必须分别说明四个对象：
 
-**1. Loss masking。**只在**回答**的 token 上算损失，prompt 部分的标签设为 `-100`。
-不 mask 的话模型会花容量去学习建模 prompt 分布，而那不是你要的行为。
+1. **带类型的 transcript**——system、user、assistant、tool call、tool result；
+2. **序列化**——精确的 chat template 与控制 token；
+3. **因果注意力图**——每个 token 能读哪些更早 token；
+4. **loss mask**——哪些 next-token prediction 算作策略监督。
+
+设带角色 message 为 $$m_1,\ldots,m_K$$，部署 chat template 把它们序列化成
+$$z_{1:N}=S(m_1,\ldots,m_K)$$，策略 loss mask 为 $$w_i\in\{0,1\}$$。常见的
+assistant-only 目标是
+
+$$\mathcal L_{\rm SFT}
+=-\frac{\sum_{i=1}^{N}w_i\log p_\theta(z_i\mid z_{<i})}
+{\sum_{i=1}^{N}w_i}.$$
+
+**Agent 的默认 mask 按控制权划分：策略生成的要学，世界提供的只作为条件。**
+
+| 序列化 span | 部署时由谁产生 | 后续 assistant token 能否看到？ | 策略 loss mask |
+|---|---|---|---|
+| System instruction 与 tool schema | Harness / developer | 能 | `0` / label `-100` |
+| User message | 用户或 user simulator | 能 | `0` / label `-100` |
+| Assistant 自然语言回答 | 策略 | 能 | `1` |
+| Assistant 选择的 tool name 与 arguments | 策略动作 | 能 | `1` |
+| Tool 或 environment result | 环境 | 能，但按不可信输入处理 | `0` / label `-100` |
+| Padding | 无 | 不能 | `0` / label `-100` |
+
+控制 token 要有明确契约。若 serving harness 插入开头的 `<assistant>` 标记，它属于 prompt 侧，
+通常 mask；若模型必须发出 end-of-turn、end-of-tool-call 或 channel delimiter，就要监督这些
+delimiter。Hidden scratchpad、critic annotation 与特权环境状态不应成为 target——
+甚至不应成为 input——除非部署时 student 也会收到同一 channel。
+
+一条两轮工具轨迹可以示意为：
+
+```text
+<system> 安全使用给定工具                                labels: -100 ...
+<user> 预订最便宜且可退款的选项                           labels: -100 ...
+<assistant><tool_call>{"name":"search", ...}</tool_call> labels: token ids ...
+<tool>{"options":[...]}</tool>                            labels: -100 ...
+<assistant>A 选项可退款，价格是 ...</assistant>            labels: token ids ...
+```
+
+应先渲染 template，再按保存的 typed span provenance 赋 mask，并逐 token decode 检查它旁边的
+`label`。先分别 tokenize message 文本再拼接，会改变空格和边界 tokenization；
+靠 regex 从渲染文本里猜回 tool span 也很脆弱。
+
+![Agent 与对话 SFT mask，以及整轨迹和逐步训练的关系](/assets/img/blog/interview-knowledge/qa11_agent_sft_zh.png)
+
+*[打开高清原图](/assets/img/blog/interview-knowledge/qa11_agent_sft_zh.png)。*
+
+**Attention mask 不等于 loss mask。**User 与 tool-result token 虽然 label 为 `-100`，
+通常仍必须让后续 assistant 通过 causal attention 看见。Attention mask 改的是模型能读什么；
+`ignore_index=-100` 只改哪些 prediction 被计分。一个被 label-mask 的 prompt 位置，
+仍可能通过后续受监督 token 对其表示的注意力而收到梯度。反过来，loss mask 也阻止不了
+pack 在一起的两条样本互相读取。
 
 ```python
 labels = input_ids.clone()                    # input_ids: (B, T)
@@ -4437,16 +4746,38 @@ labels[attention_mask == 0] = -100            # padding 也要屏蔽
 > 那是在切 **batch 维**——把前几条样本整条屏蔽掉，而不是屏蔽每条的 prompt。
 > 单条无 batch 时才对。
 
-**2. Packing 与串扰。**把多条短样本拼进一个序列以提高利用率，但必须用
+对一般的多角色 transcript，`prompt_lens` 已经不够：要从 typed assistant-action span
+构造 label，保证两轮 assistant 之间的 tool observation 再次被 mask。
+
+**监督所有 assistant turn，还是只监督最后一轮？**设 $$h_t$$ 是 assistant 动作
+$$a_t$$ 之前的历史，两种合法目标是
+
+$$\mathcal L_{\rm all}=-\sum_{t=1}^{T}\log\pi_\theta(a_t\mid h_t),
+\qquad
+\mathcal L_{\rm last}=-\log\pi_\theta(a_T\mid h_T).$$
+
+这里每轮的 log-probability 还会在它生成的 token 上继续求和。若每个 assistant turn 都是
+可信专家动作，**all-turn supervision** 是自然的行为克隆目标：数据利用率高，也会教工具选择、
+恢复与停止。若之前的 assistant message 只是输入 context、来自另一个或较弱策略，
+或者没有被许可成为 target，**last-turn-only supervision** 更合适；否则它会丢掉有效示范。
+
+还要声明 reduction。全局 token mean 会给长 turn 和长 trajectory 更高权重；
+先在 turn 内、再在 conversation 间平均，会变成不同目标。若一条 100-step 轨迹不该压过
+100 条单步样本，常需要 per-conversation weighting。
+
+**Packing 与串扰。**把多条短样本拼进一个序列以提高利用率，但必须用
 block-diagonal/segment mask **阻断跨样本注意力**。如果模型的位置方案要求每段从零开始，
 还要另行重置 `position_ids`；但只重置位置并不会阻断注意力。
 否则样本 B 能看到样本 A，形成静默数据污染。
 
-**3. Epoch 数。**SFT 数据通常很小，**1–3 个 epoch**。再多就开始死记硬背，
-多样性和校准都会掉。
+**Epoch 与质量。**对于小而高质量的 SFT 集，1–3 个 epoch 是常见起点，不是定律。
+应根据按 prompt 隔离的 held-out 行为、精确格式合法率、多样性、校准与遗忘来选，
+不能只看 training loss。LIMA 说明小而精选的数据能强力塑造行为；
+它没有证明数量永远无用，也没有证明 SFT 教不会示范中真实出现的步骤。
 
-**4. 质量远胜数量。**LIMA 那条结论——1000 条精心挑选的样本可以打过数万条噪声样本——
-在这一阶段成立，因为你调的是**格式和行为**，不是知识。
+最重要的训服不变量是精确序列化：system contract、role token、tool schema、assistant prefix、
+停止 delimiter、context 截断，以及每个 span 由谁发出，都要与部署一致。
+在错误 chat template 上做出正确 mask，训练的仍是错误策略。
 
 #### 自测 · A6.2
 
@@ -4463,30 +4794,120 @@ block-diagonal/segment mask **阻断跨样本注意力**。如果模型的位置
 还要确认快速 attention backend 真支持传入的 segment mask；
 静默 fallback 或忽略 mask 会让数据管线看似正确，而实际执行的 kernel 不对。
 
+<a id="a6-2-2"></a>
+
+**Q A6.2.2** — 一条训练轨迹是 `system → user → assistant tool call → tool result →
+assistant answer`。哪些 span 算策略 loss？Mask tool result 是否意味着它没有任何梯度，
+或者最终答案无法以它为条件？
+
+System 与 user span 要 mask；assistant 发出的 tool name/arguments 要监督；tool result 要 mask；
+最终 assistant answer 和每个要求策略发出的 delimiter 要监督。Padding 同时不可见且 label-mask。
+Tool result 仍通过 causal attention 可见，因为最终回答必须把它当 observation。
+
+Label mask 去掉的是 tool span **自己的 next-token cross-entropy**，不是把该 span detach。
+后续 answer loss 仍可经过 attention，把梯度传入处理 observation 的表示与共享参数。
+把 tool span 的 attention mask 置零是另一个、通常会破坏任务的操作。
+
 > **追问**
 > - *有没有在 prompt 上训反而有用的情况？* → 数据极少时略有帮助，起正则作用。大多数配方还是 mask。
+>   Assistant-only masking 是常见策略目标，但这是经验选择，不是定理。
 > - *Packing 会坏在哪？* → 没有块对角 mask 时会串扰。
 >   位置方案可能还要求重置 `position_ids`，但它不是注意力屏障。
+> - *推理 token 要不要监督？* → 只有该 channel 本来就是预期策略输出，
+>   且部署时遵守同一契约，才监督它。Tool action 是可观察策略动作；
+>   私有推理与环境状态是不同对象。
+>
+> **陷阱**
+> - 只该 mask label 时，却用 attention mask 删除 system/user/tool observation。
+> - 认为 `label=-100` 就代表该 token 不可能收到间接梯度。
+> - 监督 tool result，让策略去模仿部署时并不由它控制的环境文本。
 
 ---
 
 <a id="a6-3"></a>
 ### A6.3 Reward model 与 Bradley-Terry
 
-在偏好对上训一个标量头：
+**先把数据契约定清。**对同一个 prompt 或交互状态 $$x$$，收集被选回答/轨迹 $$y_w$$
+与被拒的 $$y_l$$。候选应来自相关且多样的策略 checkpoint 与 sampler；
+展示顺序随机，对标注者隐藏模型身份，保留 tie/分歧；
+评测按 prompt、用户、任务和时间切分，不能按 response row 切分。
+比较不同 prompt 的输出，会把回答质量和 prompt 难度混在一起。
 
-$$\mathcal L = -\log\sigma\big(r_\theta(x,y_w) - r_\theta(x,y_l)\big)$$
+**一种常见 RM 架构。**把 `prompt + response` 或完整可观察轨迹序列化，
+通过预训练 transformer，取最后一个非 padding/EOS 表示，再接标量头：
 
-这就是 Bradley-Terry 模型：假设人更偏好 $$y_w$$ 的概率是 $$\sigma(r_w - r_l)$$。
+$$H_\phi=f_\phi(S(x,y))\in\mathbb R^{B\times L\times D},
+\qquad
+h_{\rm end}\in\mathbb R^{B\times D},
+\qquad
+r_\phi(x,y)=w^\top h_{\rm end}+b\in\mathbb R^B.$$
 
-**三件必须能说出来的事：**
+一批 $$B$$ 个 pair 可以把 chosen/rejected 分别作为 `[B,L]` 前向，
+也可以拼成 `[2B,L]`；同一个模型给每个候选输出一个无界标量。
+Padding 用 attention mask。除非另加 language-model auxiliary loss，否则这里没有 token 级
+LM label mask。Final-state pooling 很常见，却不是 Bradley–Terry 的要求；
+token head、双向 encoder 与生成式 judge 都是其他 scoring model。
 
-1. **奖励只在相差一个常数的意义下被确定。**BT 约束的是**差**，不是绝对值，
-   所以跨 run 比较原始奖励值没有意义。因此要做 per-batch 归一化。
-2. **它在窄分布上训练，然后被查询在远离该分布的地方**——因为策略在移动。
-   这是教科书式的 Goodhart 设置，也正是 KL 惩罚存在的全部理由。
-3. **能拿到 verifier 的地方，verifier 胜过学出来的奖励。**单元测试是一个函数，不是一个网络，
-   没法用同样的方式被钻空子。从"这个答案对"到梯度的因果链短得多。
+原始 [Bradley–Terry 模型](https://doi.org/10.1093/biomet/39.3-4.324)
+把两个标量 score 变成 pairwise probability 和二元交叉熵：
+
+$$P_\phi(y_w\succ y_l\mid x)
+=\sigma\!\left(\frac{r_w-r_l}{\tau}\right),
+\qquad
+\mathcal L_{\rm BT}
+=-\log P_\phi(y_w\succ y_l\mid x)
+=\operatorname{softplus}\!\left(-\frac{r_w-r_l}{\tau}\right).$$
+
+所以「这是 regression 吗？」的准确回答是：**不是通常意义上的有监督回归。**
+网络确实输出连续 score，但没有人提供「这个答案质量是 3.7」的 target；
+训练是在 score **差值**上做 pairwise logistic classification。
+预测时，一次前向得到 ranking score；两个 score 做差再过 sigmoid，
+才得到拟合 BT 模型下的偏好概率。Raw score 既不是概率，也不是质量的绝对单位。
+
+![Bradley-Terry reward-model 数据流与开放式 agent 奖励栈](/assets/img/blog/interview-knowledge/qa12_reward_model_zh.png)
+
+*[打开高清原图](/assets/img/blog/interview-knowledge/qa12_reward_model_zh.png)。*
+
+**可识别性要说准确。**
+
+- 对同一 prompt 的每个候选都加 $$c(x)$$，pair probability 不变，所以绝对零点不可识别；
+  不连通的比较图有各自独立漂移的 offset。
+- 在 $$\tau$$ 固定时，任意缩放**不是**不变量，它会改变偏好概率。
+  但数据、正则、head 或可学习温度变化后，不同 RM 版本的尺度仍可能不可比。
+- 完全可分的 pair 会把无正则 margin 推向无穷。
+  Weight decay、label smoothing、tie 与多样 hard comparison 不是装饰。
+- PPO 里做 reward whitening/normalisation 可能让优化更稳，
+  但不会把 reward 变成可识别的物理量。
+
+标量模型还假定偏好可由一个传递的 utility 表示。现实标注者会分歧或循环；
+长度、风格、身份与展示顺序都可能成为捷径。只有 binary label 的 Bradley–Terry
+不会自动建模 tie、标注者群体或多元目标。
+
+**对 conversation 与 agent，要主动选择 scoring unit。**
+
+| 模型 | 输入 | 输出 | 监督与局限 |
+|---|---|---|---|
+| Response RM | 共享对话前缀加下一条回答 | 一个标量 | 对该 turn 的 pair preference；看不到后续后果 |
+| Full-trajectory outcome RM | 初始任务加所有可见动作与 observation | 一个 terminal scalar | 整个 episode 偏好；虽然看见过程，但只有 outcome supervision |
+| Process / step RM | 第 $$t$$ 步的 prefix 或 branch point | Step score、$$V(h_t)$$ 或局部偏好 | 需要 step/branch label 或结构假设；见 A6.13 |
+
+若只有 terminal pair label，却定义分解
+
+$$R_\phi(\tau)=\sum_{t=1}^{T}r_{\phi,t},$$
+
+各步 reward 不可识别：无穷多种分摊都给出同一总分。
+一个 full-trajectory transformer 即使 attend 到每个动作，只要没有逐步或共享前缀 branch label，
+仍然是 **outcome** RM。对随机 agent 世界，应比较相同初始状态的轨迹，
+并尽可能匹配环境随机性；工具恰好返回简单结果，不应冒充更好的策略。
+
+**收集与使用形成闭环。**先在 prompt-matched pair 上训初始 RM，评 pair accuracy、log loss、
+校准、切片和分歧，再优化策略。策略会主动搜索 RM 漏洞并离开原候选分布，
+所以必须收集当前策略的新 pair，并保留冻结的人类或独立 judge audit。
+A11.10 讲 RM 评测；A12.18 讲开放式 agent 轨迹。
+
+若某个维度确实有精确 verifier，就优先用它。单元测试并非在所有意义上都「优于」learned RM——
+它也可能覆盖不足——但它声明的 pass condition 更便宜、统计歧义更少。
+开放式质量仍需要人、rubric 或 learned feedback。
 
 #### 自测 · A6.3
 
@@ -4503,6 +4924,25 @@ $$\mathcal L = -\log\sigma\big(r_\theta(x,y_w) - r_\theta(x,y_l)\big)$$
 按长度、风格、任务切片并读样本；测相对 reference 的 KL；
 在当前策略输出上收集新偏好。修法是改进/重训 RM 并收紧策略约束，
 不是把曲线重新归一化到看起来健康。
+
+<a id="a6-3-2"></a>
+
+**Q A6.3.2** — 一个 decoder-only RM 收到 8 对长度 512、hidden width 4096 的
+chosen/rejected 样本。描述 tensor、输出和 loss。它的 scalar output 是 regression prediction 吗？
+
+可以跑两个 `[8,512]` batch，也可以拼成一个 `[16,512]` batch。
+Hidden tensor 是 `[16,512,4096]`；取最后一个有效或 EOS state 得到 `[16,4096]`；
+通过一个 scalar head 得到 `[16]`；再切成形状 `[8]` 的 `r_chosen` 与 `r_rejected`，
+组成 8 个 margin。平均 `softplus(-(r_chosen-r_rejected)/tau)` 就是 BT loss。
+
+Head 输出虽然连续，但训练是 pairwise classification，不是对绝对质量 label 做 regression。
+只有 score difference 进入 likelihood。Padding 由 attention 与 pooling mask 去掉；
+prompt/response token 的 `-100` label 在这里无关，除非另有显式 LM auxiliary objective。
+
+> **陷阱**
+> - 把 raw scalar 叫作偏好概率；概率来自两个 prompt-matched score 做差后过 sigmoid。
+> - 声称任意 monotone transform 都不改变 BT model。它保留排序，不保留拟合 likelihood。
+> - 因为 encoder 看见每一步，就把 whole-trajectory score 叫作「process supervision」。
 
 ---
 
@@ -4606,16 +5046,81 @@ surrogate 的样本，ratio 越过 $$1\pm\epsilon$$ 相应边界后，被 clip �
 应监控经验 KL、ratio 分布与 clip fraction；KL 超过预注册目标时减小步长或提前停止本轮 epoch。
 `min` 只是对估计出的改善取悲观值，不是可行域约束。
 
-**GAE。**Advantage 在一步 TD（有偏、低方差）和蒙特卡洛（无偏、高方差）之间插值：
+**GAE（Generalized Advantage Estimation，广义优势估计）。**Advantage 在一步
+TD（temporal difference，时序差分；有偏、低方差）和蒙特卡洛（无偏、高方差）之间插值：
 
 $$\delta_t = r_t + \gamma V(s_{t+1}) - V(s_t),\qquad \hat A_t = \sum_{l\ge0}(\gamma\lambda)^l\delta_{t+l}$$
 
 $$\lambda=1$$ 退化为蒙特卡洛，$$\lambda=0$$ 退化为一步 TD。实现时**断言这两个极限**——
 最便宜的正确性检查。
 
-**显存里有四个模型：**policy、冻结的 reference、reward model、critic。
+**五种逻辑角色，不是五份必须常驻的完整模型。**设 $$B$$ 为提示词数量，$$T$$ 为填充后的回答长度，
+$$V$$ 为词表大小。典型 RLHF PPO 循环中有以下角色：
 
-**KL 放在哪：**PPO 里按惯例是**从 reward 里减掉**，再算 advantage。
+| 逻辑角色 | 输入 | 输出张量或语义输出 | 是否以及如何更新 | 确切用途 |
+|---|---|---|---|---|
+| **当前策略/行动者** $$\pi_\theta$$ | 提示词、每一步已生成的回答前缀及其掩码 | 下一词元未归一化分数 `[B,T,V]`；所选词元的对数概率 `[B,T]` | 可训练；在固定的轨迹批次上进行若干轮 PPO 小批次更新 | 被改进的策略；提供 PPO 重要性概率比的分子 |
+| **旧策略/行为策略** $$\pi_{\theta_{\rm old}}$$ | 相同的前缀；生成时的自回归状态 | 采样出的回答词元以及所选词元的对数概率 `[B,T]` | 在一次采样与更新循环内冻结；下一轮采样前从当前行动者同步 | 收集近似同策略批次，并提供 PPO 重要性概率比中固定的分母 |
+| **冻结的参考策略** $$\pi_{\rm ref}$$ | 已采样的提示词与回答词元 | 参考策略对所选词元的对数概率 `[B,T]` | 通常从 SFT 初始化，并在整个强化学习阶段保持冻结；不接受策略梯度更新 | 通过 KL 惩罚锚定行动者，防止奖励优化任意偏离 SFT 策略 |
+| **奖励模型或验证器** | 通常是完整的提示词与回答；有时还包括中间状态或工具输出 | 完成级分数 `[B]`、逐词元或过程分数 `[B,T]`，或通过/失败等语义结果 | PPO 阶段通常固定；学习式奖励模型另行训练。验证器也可以是测试、编译器或其他程序 | 提供任务、偏好、安全或正确性信号 |
+| **价值模型** $$V_\psi$$ | 每个回答前缀对应的状态 | 状态价值 `[B,T]`；若把最终自举状态放在同一张量中，则为 `[B,T+1]` | 对轨迹回报做回归训练；可以是独立网络，也可以与行动者共享主干并另接价值输出头 | 提供 GAE 所需的状态相关基线和自举价值 |
+
+**旧策略不是参考策略。**每轮开始时，轨迹采样引擎从当前行动者复制或同步参数。
+这个行为策略快照生成批次，然后在行动者进行多步优化期间保持不变。所选词元的旧对数概率只缓存一次，
+之后反复用作 PPO 的分母；若用已经更新过的行动者重新计算分母，它就不再代表数据收集策略。
+下一轮采样时，旧策略会从新行动者刷新。参考策略则通常一直是固定的 SFT 锚点，用于 KL 控制。
+二者在初始化时数值上可能完全相同，但逻辑角色和刷新周期不同。
+
+![DeepSeekMath 中的 PPO 与 GRPO 模型拓扑](/assets/img/blog/interview-knowledge/qa7_ppo_grpo_deepseekmath.png)
+
+*[打开高清原图](/assets/img/blog/interview-knowledge/qa7_ppo_grpo_deepseekmath.png)。来源：[《DeepSeekMath：把开放语言模型的数学推理推向极限》](https://arxiv.org/abs/2402.03300)的图 4。黄色表示可训练组件，蓝色表示冻结组件。旧策略快照或其缓存的旧对数概率是隐含的，而不是图中第五个单独方框。*
+
+以上是五种**逻辑**角色，并不要求五份完整模型同时常驻。优化期间，缓存的旧对数概率可以替代旧策略前向；
+轨迹采样引擎可以调出显存或与训练进程共置；参考策略和奖励模型可以分片并错时执行；
+行动者与价值模型可以共享主干、使用不同输出头；验证器也可能只是程序而非神经网络。
+回答时应先分清逻辑角色，再说明实际部署方式。
+
+**张量约定。**对于可变回答长度 $$T_b\le T$$，回答词元掩码的形状为 `[B,T]`。
+下列张量只覆盖生成的回答位置，不包含提示词位置或完整词表：
+
+- 回答词元编号和掩码均为 `[B,T]`。
+- 当前、旧、参考策略对所选词元的对数概率均为 `[B,T]`。每次更新行动者时重新计算当前对数概率；
+  旧对数概率是固定的轨迹数据；参考对数概率是固定目标，也可以缓存。
+- 终局奖励为 `[B]`，通常放到最后一个有效回答词元上；过程奖励或稠密奖励为 `[B,T]`。
+  放置奖励并应用掩码之后，GAE 消费的奖励为 `[B,T]`。一种典型的 RLHF 塑形约定是
+
+$$r^{\text{shaped}}_{b,t}=r^{\text{task}}_{b,t}-\beta\big(\log p_{\text{old},b,t}-\log p_{\text{ref},b,t}\big)$$
+
+收集轨迹时，当前行动者与行为策略快照相同。使用缓存的旧对数概率，可以让这份塑形后的轨迹奖励，
+以及由它算出的优势，在随后的多轮 PPO 更新中保持固定。
+
+- 若 $$s_t$$ 是执行动作 $$a_t$$ 前的前缀状态，那么 $$T$$ 个回答动作需要
+  $$s_0,\ldots,s_{T-1}$$ 的价值，还需要动作后的状态 $$s_T$$ 用于自举。
+  因此实现可以存 `[B,T]` 的价值外加一个 `[B]` 的独立自举值，也可以直接存 `[B,T+1]`。
+  优势和回报仍为 `[B,T]`，每个动作各一项。真正终止后自举值为零；仅因长度上限被截断时，
+  则不能自动置零。
+
+**KL 放在哪里。**在典型 RLHF PPO 中，采样得到的逐词元 KL 惩罚会在计算价值、回报和优势**之前从奖励中减去**。
+这是本文这类 PPO 形式的约定，并非所有 PPO 实现都必须如此。
+
+**一轮 PPO 的端到端数据流：**
+
+1. **冻结行为策略快照并采样。**抽取 $$B$$ 条提示词，把轨迹采样策略与行动者同步，
+   生成每条回答，并保存词元编号、掩码、终止标记，以及所选词元的精确旧对数概率。
+   这些缓存值必须对应真正生成词元的采样器版本和分数处理规则。
+2. **给完整轨迹评分。**运行奖励模型或验证器，得到标量奖励或过程奖励；
+   再让冻结的参考策略处理已采样词元，得到参考对数概率。
+3. **构造逐词元奖励。**把标量分数放到最后一个有效动作上，或保留过程奖励原本的位置；
+   减去参考策略 KL 塑形项，并遮掉填充位置。
+4. **计算价值、GAE 与回报。**让价值模型评估回答前缀状态，正确处理终止或截断时的自举，
+   沿有效词元反向计算 GAE，并形成固定的回报目标。
+5. **更新行动者。**进行若干轮打乱的小批次优化：重新计算当前对数概率，
+   除以缓存的旧策略概率，再优化截断替代目标。截断只会移除越过某一分支阈值后的改善动力，
+   并不会硬性约束最终概率比或 KL，因此仍须监控经验 KL 和截断比例。
+6. **更新价值模型。**在掩码下，让状态价值回归到轨迹回报目标。
+   这可以是独立的优化步骤，也可以是共享主干上的价值输出头损失。
+7. **为下一轮刷新。**丢弃或归档已消费的同策略批次，把新行动者同步到行为策略或采样引擎，
+   再收集新轨迹；参考策略保持不变。
 
 #### 自测 · A6.6
 
@@ -4636,11 +5141,15 @@ Clipping 限制的是沿改善方向走出的概率比，不是梯度范数，�
 
 > **追问**
 > - *为什么 LLM 的价值函数难训？* → 奖励稀疏（每条回答只有一个标量）；策略在提升导致分布漂移，
->   critic 永远滞后；再加上它是显存里又一个全尺寸模型。这三条理由都指向 GRPO。
+>   价值模型总会滞后；此外还增加前向、反向、参数与优化器状态开销。共享主干可以减少增量占用；
+>   这些问题会推动无价值模型的方法，但不能据此断言其总成本必然更低。
+> - *旧策略和参考策略能是同一个模型吗？* → 初始权重可以完全相同，但更新周期和逻辑角色不能混为一谈：
+>   旧策略每轮采样都刷新并定义 PPO 分母；参考策略通常固定并定义 KL 锚点。
 >
 > **陷阱**
 > - 说 clipping 限制梯度大小、KL 或最终实际概率比。它只会让采样 surrogate incentive
 >   的一个分支饱和。
+> - 混淆 $$\pi_{\theta_{\rm old}}$$ 与 $$\pi_{\rm ref}$$，或把每个逻辑角色都算作一份常驻的完整模型。
 
 ---
 
@@ -4654,11 +5163,37 @@ $$\mu_g=\frac1G\sum_{j=1}^{G}r_j,\qquad
 \sigma_g=\sqrt{\frac1G\sum_{j=1}^{G}(r_j-\mu_g)^2},\qquad
 \hat A_i=\frac{r_i-\mu_g}{\sigma_g+\varepsilon}$$
 
+**角色与张量约定。**在下面代码实现的结果监督约定中，对 $$B$$ 条提示词，每条生成 $$G$$ 个完成，
+并把每个回答填充到 $$T$$ 个词元：
+
+| 逻辑角色 | 主要张量 | 更新方式与用途 |
+|---|---|---|
+| **当前行动者** | 当前策略对所选词元的对数概率 `[B,G,T]` | 典型 GRPO 策略更新中唯一可训练的网络；提供重要性概率比的分子 |
+| **旧策略/行为策略** | 生成的词元和缓存的旧对数概率 `[B,G,T]` | 在本轮更新内冻结，下一轮分组采样前从行动者刷新；提供采样分布和概率比分母 |
+| **冻结的参考策略** | 参考对数概率 `[B,G,T]` | 通常保持固定；在原始 GRPO 中提供直接的逐词元 KL 正则项 |
+| **奖励模型或验证器** | 每个完成一个奖励 `[B,G]` | 策略优化期间通常固定；在同一提示词组内比较结果，可以是学习式模型，也可以是可执行程序 |
+| **价值模型** | **不存在** | 不做价值预测，不构造价值回报目标，不训练价值回归，也不使用 GAE |
+
+词元编号与掩码都是 `[B,G,T]`。完成级奖励为 `[B,G]`，组均值与组标准差为 `[B,1]`，
+归一化后的组优势为 `[B,G,1]`，再沿词元轴广播为 `[B,G,T]`。
+当前、旧、参考策略对所选词元的对数概率均为 `[B,G,T]`；广播后，概率比以及逐词元策略项和 KL 项
+也都是 `[B,G,T]`。这里没有价值张量，所以也没有 $$T+1$$ 的自举约定。
+下面的代码把前两维展平为大小为 $$B G$$ 的完成批次。
+
+`[B,G]` 奖励和广播后的 `[B,G,1]` 优势专指结果监督形式。DeepSeekMath 原文也描述了过程监督 GRPO：
+分步奖励会产生随词元变化的累计优势。这是另一套奖励与优势张量约定；
+不能因此认为完成级标量形式暗含逐词元信用分配。
+
+相对 PPO，明确消失的是**学习式价值模型、它的回归损失，以及 GAE 与价值自举**。
+当前行动者、行为策略快照或缓存的旧对数概率、典型形式中的冻结参考策略、奖励模型或验证器、
+同策略生成、重要性概率比和截断都仍然存在。因此，“没有价值模型的 PPO”只说出了删掉的部分，
+没有说出用来替代它的分组采样和组相对基线。
+
 ```python
 r = rewards.view(-1, G)
 spread = r.std(dim=1, keepdim=True, correction=0)
 adv = (r - r.mean(dim=1, keepdim=True)) / (spread + 1e-4)
-adv = adv.reshape(B, 1)                    # 每条完成一个标量
+adv = adv.reshape(-1, 1)                   # 每条完成一个标量
 
 ratio  = (logp - logp_old).exp()
 policy = -torch.min(ratio * adv, ratio.clamp(1-eps, 1+eps) * adv)
@@ -4699,13 +5234,34 @@ $$L_{\rm global\ token}
    代码里 `log_ratio = logp_ref - logp` 就是 $$\log r$$，所以 `log_ratio.exp() - log_ratio - 1`。
    用它而不是朴素的 $$-\log r$$，是因为 k3 既无偏**又**逐样本非负——
    朴素 log-ratio 差在单个样本上可能为负，那是没有意义的 KL 估计。
-2. **Advantage 是 bandit 式的**：每条完成一个标量，广播到每个 token。**完全没有 per-token
-   的信用分配。**这是真实局限，值得主动说。
+2. **在结果监督形式中，优势是赌博机式的**：每条完成一个标量，广播到每个词元。
+   **这套约定本身没有逐词元信用分配。**过程监督 GRPO 是另一套明确的约定，
+   不能用它来声称标量形式会按词元归因。
 3. **单样本组或全打平组没有 reward 驱动的 policy 信号。**分子精确为零；
    `correction=0` 让 singleton 的 spread 有定义，$$\varepsilon$$ 防止除零。
    非零 KL 正则仍可能有贡献，但 reward 不提供相对更新。
 4. **Reduction 会改变长度权重。**按 sequence 求 mean 时，每条完成总权重相同、长完成的
    单 token 权重更小；global-token mean 则让长完成权重更大。必须说清自己用的是哪个 objective。
+
+**PPO 与 GRPO 对照。**
+
+| 维度 | PPO | GRPO |
+|---|---|---|
+| **基线与优势** | 学习式状态价值配合 GAE，得到逐词元索引的优势 | 在同一提示词内归一化完成奖励；一个 `[B,G,1]` 优势沿词元轴广播 |
+| **可训练网络** | 行动者和价值模型，二者可以共享主干 | 只有行动者；没有学习式价值模型 |
+| **生成** | 收集新的同策略轨迹，不要求为每条提示词固定生成一组样本 | 对 $$B$$ 条提示词中的每一条，都要同策略生成 $$G$$ 个完成，才能比较相对结果 |
+| **奖励** | 完成奖励或过程奖励都可放到词元位置，再与价值自举结合 | 典型形式为每个完成一个标量奖励 `[B,G]`，并依赖组内差异 |
+| **本文典型形式中的 KL 放置** | 采样得到的逐词元参考策略 KL 在 GAE 前并入塑形奖励 | 原始 DeepSeekMath GRPO 把逐词元参考策略 KL 直接加到损失中 |
+| **信用分配** | 回报和优势带有词元索引；过程奖励可使信号更稠密，但终局分数仍然延迟 | 在标量结果形式中，同一个完成级优势广播到回答的每个词元；过程监督变体采用另一套随词元变化的约定 |
+| **显存与计算** | 承担价值模型推理、训练、参数和优化器状态开销；共享主干可减少参数增量 | 省去价值模型开销，但仍有行动者、参考策略、奖励角色，以及 $$G$$ 次生成和评分 |
+| **样本成本** | 不强制每条提示词生成 $$G$$ 个同组样本；学习式基线可跨提示词摊销 | 每批使用 $$B G$$ 个完成；全打平组会消耗生成与评分算力，却没有奖励驱动梯度 |
+| **适用场景** | 学习式状态基线和 GAE 回报很有价值、生成昂贵，或能够承担价值模型训练时 | 结果验证和并行采样较便宜、组内奖励有差异，且价值模型的显存或训练是瓶颈时 |
+
+此表比较的是本文所述典型结果监督形式。DeepSeekMath 原文还研究了过程监督和迭代式变体；
+后续 GRPO 家族方法也可能去掉参考策略、更换 KL 估计量、修改截断或改变词元归约方式。
+这些约定或目标变化都应明确点名，不能静默归到所有 GRPO 名下。
+在 DeepSeekMath 的迭代式算法中，外层迭代会用当前策略重置参考策略，随后在内层更新期间冻结；
+所以此处“冻结”描述的是那段优化窗口，并不表示所有 GRPO 系统都永远使用不可变的 SFT 检查点。
 
 #### 自测 · A6.7
 
@@ -4727,8 +5283,8 @@ global-token objective；它会提高长完成的总权重，**不是**一个仅
 process reward 是另一项建模选择。
 
 > **追问**
-> - *什么时候 GRPO 不是好选择？* → 有稠密的逐 token 奖励时；采不起 $$G$$ 条样本时；
->   以及组内方差很低时。
+> - *什么时候 GRPO 不是好选择？* → 任务需要细粒度信用分配、却只有标量结果奖励时；
+>   采不起 $$G$$ 条样本时；以及组内方差很低时。
 > - *DAPO 修了什么？* → 四件事。**Clip-Higher**（非对称的截断区间，让低概率 token 仍然能被
 >   抬起来，避免熵坍缩）；**动态采样**（丢掉全打平的组——正是上面那个零梯度问题）；
 >   **global-token loss reduction**，而不是原始 GRPO 的 per-completion token mean，
@@ -4738,6 +5294,7 @@ process reward 是另一项建模选择。
 > **陷阱**
 > - 说 GRPO"就是没有 critic 的 PPO"就停。
 > - 把 per-completion 与 global-token reduction 叫作同一个 objective。
+> - 声称 GRPO 一定更便宜：它省掉价值模型，却可能在 $$G$$ 次轨迹采样、验证器调用和全打平组上花费更多。
 
 ---
 
@@ -4861,6 +5418,79 @@ $$T^2$$ 补偿温度升高导致的梯度缩小。软标签携带"暗知识"—�
 它会把质量摊到自己表示不了的模式上。反向 KL 让它 mode-seeking——挑一个模式做好。
 对一个表示不了老师完整分布的小学生，反向 KL 常常生成质量更好。
 
+**Agent trajectory 又增加一条轴：把完整轨迹序列化，还是每个 decision 拆一条样本。**
+把可观察轨迹和历史写成
+
+$$\tau=(o_1,a_1,o_2,a_2,\ldots,o_{T+1}),
+\qquad
+h_t=(o_1,a_1,\ldots,o_t).$$
+
+在共享 environment dynamics 下，
+
+$$P_\pi(\tau)
+=\rho(o_1)\prod_{t=1}^{T}
+\pi_\theta(a_t\mid h_t)\,
+P(o_{t+1}\mid h_t,a_t),$$
+
+而 environment term 不依赖 policy parameter：
+
+$$-\log P_\pi(\tau)
+=C(\tau)-\sum_{t=1}^{T}\log\pi_\theta(a_t\mid h_t).$$
+
+这条式子直接回答核心问题：**把一条完整 trajectory 放进 causal sequence，
+对其中所有 teacher action span 求 loss，与为每一步构造一条 `history → teacher action`
+样本，在数学上是同一个行为克隆目标**——前提是每个 target 恰好出现一次，
+每个动作看到完全相同的序列化 history 与 position semantics，没有 context 被截断，
+而且 reduction 给 token/turn/trajectory 相同权重。每个语言动作内部还会继续按 token 分解。
+这里相等的是期望目标，不承诺逐位相同的 optimizer step；batching、dropout mask、padding
+与数值顺序会改变 gradient noise。
+
+| 选择 | 收益 | 可能静默改变的东西 |
+|---|---|---|
+| 一条完整 trajectory | 前缀计算共享；精确保留交错顺序与长时程连贯性 | Token mean 让长轨迹主导；context 截断可能删掉早期状态；超长样本浪费 padding |
+| 逐步 `h_t → a_t` 样本 | 易于重加权 turn 位置、失败、branch 与 action type；batch 更短 | 前缀重复；漏 history 会造成状态混叠；逐 row 平均会重加权 trajectory |
+
+所以「拆成一步一步」不能变成「删掉 dependence」。在部分可观测任务里，
+student 通常需要完整可用历史 $$h_t$$，或由部署时同一个 memory system 产生的**充分**
+belief/state summary。若相同 screen 或用户话语会因为之前的承诺而要求不同动作，
+只给当前 observation 就不够。也不能给 student 看推理时拿不到的 simulator privileged state
+或 teacher scratchpad。
+
+下一条 observation 还依赖 action。Student 若改了 tool call，不能把这个新 action
+塞进 teacher 的旧 suffix，再假装旧 tool result 是反事实世界；
+要么重新执行环境，要么保留 teacher 原 action 与原 observation 的配对。
+
+**更重要的区别，是训练 history 由谁产生。**
+
+- **Offline trajectory SFT / 行为克隆：**$$h_t\sim d_E^t$$，之前动作来自 teacher/expert。
+  它便宜且稳定，但 student 几乎看不到自己的错误。
+- **Learner-history relabelling：**先 rollout student，再让 teacher 或人给访问到的状态标下一步动作，
+  并把数据聚合起来——即 **DAgger（Dataset Aggregation，数据集聚合）**思路
+  （[arXiv:1011.0686](https://arxiv.org/abs/1011.0686)）。
+- **On-policy logit distillation：**从 student 分布采 history，再匹配 teacher distribution：
+
+$$\mathcal L_{\rm on}
+=\sum_t\mathbb E_{h_t\sim d_{\pi_\theta}^{t}}
+\left[D\!\left(q(\cdot\mid h_t)\,\|\,\pi_\theta(\cdot\mid h_t)\right)\right].$$
+
+对采样 history stop gradient；还要声明 divergence 方向，
+以及 teacher 返回 logits、纠正 action，还是只有 scalar。
+Teacher relabelling 可以修 bad prefix；把 student 自己的失败动作原样 SFT 回去不行。
+
+**训推不一致从这些地方进入：**
+
+1. expert history $$d_E$$ 对 student history $$d_{\pi_\theta}$$；
+2. 训练专用 system prompt、tool schema、hidden state 或 scratchpad；
+3. 记录的 teacher tool result 对 student 使用的 environment version；
+4. 训练完整 history 对部署时 truncation、compaction 或 external memory；
+5. 不同 role token、assistant prefix、sampling rule 或 stop condition；
+6. per-step row 或长轨迹平均时改变 objective weighting。
+
+Teacher forcing 仍是 demonstration 上正确的 maximum-likelihood estimator；
+「exposure bias」不代表 chain rule 在数学上错了。它说的是 student 早期犯错后，
+部署会访问不同 occupancy distribution。应按成本和风险混合 offline expert coverage、
+learner rollout、failed-prefix repair 与 environment replay。
+
 #### 自测 · A6.10
 
 <a id="a6-10-1"></a>
@@ -4880,10 +5510,34 @@ test-time compute 才能产出的东西。你做的是**把 test-time compute �
 > **陷阱**
 > - 只讲 Hinton 那套 soft target。LLM 圈里绝大多数"蒸馏"其实是序列级行为克隆。
 
+<a id="a6-10-2"></a>
+
+**Q A6.10.2** — 一个团队把每条成功的 20-step teacher trajectory 拆成 20 行，
+但每行只保留当前 screenshot 和 teacher action。离线 accuracy 上升；
+部署时模型忘记早先约束，第一次错误 tool call 后也不会恢复。
+问题是 step-wise training 本身吗？
+
+不是。只有每一行保留相同充分 history 与相同 weighting 时，逐步 BC 才与整轨迹 BC 等价。
+Screenshot 把早先用户约束、文件、动作与 tool result 不同的状态混叠了，
+于是看似相同输入对应互相冲突的 action。应恢复完整、可部署的 history，
+或使用 production 同版本 memory/ledger summary，并防止 context truncation 删除承重事实。
+
+恢复失败是另一层 occupancy shift：所有 row 都来自 teacher history。
+应在真实环境 rollout student，让 teacher 或人标 student 实际访问的 failure prefix，
+再与 expert trajectory 混合。绝不能给一个不同 student action 接上 teacher 的旧 post-action
+observation；必须执行环境得到真实后继状态。
+
+> **追问**
+> - *之前的 teacher action 要留在 history 吗？* → 若部署策略会看到自己的历史动作，
+>   且它们影响状态，就必须留。对后一动作而言它们是 context；
+>   是否也对其 label 训练，则是 A6.2 的 all-turn 与 last-turn 选择。
+> - *Per-step row 能不能更好？* → 可以有意重加权稀有 recovery 或 late-turn decision。
+>   这是 objective change，不是免费的存储重构。
+
 ---
 
 <a id="a6-11"></a>
-### A6.11 LoRA 与 PEFT
+### A6.11 LoRA 与参数高效微调（PEFT）
 
 $$W' = W + \frac{\alpha}{r}BA,\qquad A\in\mathbb R^{r\times d_\text{in}},\; B\in\mathbb R^{d_\text{out}\times r}$$
 
@@ -4922,7 +5576,8 @@ def forward(self, x):
 激活基本没变——你仍然要走完整个网络的前向——所以 gradient checkpointing 依然值得开。
 
 > **追问**
-> - *QLoRA 呢？* → 把冻结的基座量化到 4-bit（NF4），适配器保持较高精度，
+> - *QLoRA（Quantized LoRA，量化 LoRA）呢？* → 把冻结的基座量化成
+>   **NF4（4-bit NormalFloat）**，适配器保持较高精度，
 >   再加上分页优化器和双重量化。原论文是在单张 48GB GPU 上微调 **65B**，不是 70B。
 > - *挂在哪些层上？* → 默认挂注意力的投影矩阵；更难的任务上再加 MLP 的矩阵会有帮助。
 >   rank 更高并不可靠地更好——$$r=8$$–$$64$$ 覆盖大部分情况。
@@ -4989,7 +5644,7 @@ judge 与 reference 同时变化则失去归因。保留冻结的外部评测、
 ---
 
 <a id="a6-13"></a>
-### A6.13 Process reward model
+### A6.13 过程奖励模型（PRM）
 
 **心智模型：outcome reward 告诉你旅程终点是否正确；process reward 标出路线从哪一步开始失效。**
 把推理轨迹切成 $$z_1,\ldots,z_T$$ 步，在逐步标签 $$\ell_t$$ 上训练 $$q_\phi$$：
@@ -5072,7 +5727,8 @@ shaping bug。取 $$\Phi(s_T)=0$$ 时，每个变体都应在容差内等于 $$-
   把上一轮策略的样本当作对照，迭代训练新策略去区分目标分布和自己的旧分布。
 - **Self-rewarding** 采多条候选，让模型自己按 LLM-as-a-judge rubric 排序，
   再对合成偏好做迭代式 DPO。
-- **Constitutional/RLAIF** 循环使用人写的显式原则集，
+- **Constitutional/RLAIF（reinforcement learning from AI feedback，基于 AI 反馈的强化学习）**
+  循环使用人写的显式原则集，
   常由另一个模型批评、改写或排序输出。人的判断被移到了 constitution 与审计里，并没有消失。
 
 对候选 $$y_a,y_b\sim\pi_{\theta_k}$$，judge
@@ -5260,6 +5916,180 @@ Held-out 人类结果优先级高于被优化的 reward；
 
 ---
 
+<a id="a6-17"></a>
+### A6.17 拒绝采样微调（RFT）
+
+**听众背景不一致时，每次都应展开这个缩写。**本节的 **RFT 指 rejection-sampling
+fine-tuning（拒绝采样微调）**：生成候选、筛选好样本，再在所选轨迹上做普通监督微调。
+这个缩写有重载：OpenAI 产品文档也用 **RFT 表示 reinforcement fine-tuning（强化微调）**，
+后者是 policy-gradient 服务；它还不同于表示微调 **ReFT**。
+
+**RFT 是数据构造流程，不是新 optimizer。**对 prompt $$x_i$$、冻结的 collection policy
+$$\mu_t$$、score 或 verifier $$S$$、阈值 $$\tau$$ 与 $$N$$ 个候选，
+
+$$y_{ij}\sim\mu_t(\cdot\mid x_i),
+\qquad
+\mathcal A_t=\{(x_i,y_{ij}):S(x_i,y_{ij})\ge\tau\}.$$
+
+Best-of-$$N$$ 变体则保留
+
+$$y_i^\star=\arg\max_{1\le j\le N}S(x_i,y_{ij}).$$
+
+去重、赋权之后，训练目标仍是与 SFT 相同的 masked next-token cross-entropy：
+
+$$\mathcal L_{\rm RFT}(\theta)
+=-\frac{
+\sum_{(i,j)\in\mathcal A_t}w_{ij}
+\sum_{k=1}^{|y_{ij}|}m_{ijk}
+\log\pi_\theta(y_{ij,k}\mid x_i,y_{ij,<k})
+}{
+\sum_{(i,j)\in\mathcal A_t}w_{ij}
+\sum_{k=1}^{|y_{ij}|}m_{ijk}
+}.$$
+
+Response mask $$m_{ijk}$$ 沿用 A6.2：assistant action 计入，prompt 与 environment observation
+不计入。做完一次 generate–select–train 就可以停。**Iterative RFT** 把微调后的 checkpoint
+提升为下一轮 collection policy 再重复；每个 SFT phase 本身仍是对固定 selected set 的
+offline fit。
+
+![拒绝采样微调流程及其与 RL 的边界](/assets/img/blog/interview-knowledge/qa13_rft_zh.png)
+
+*[打开高清原图](/assets/img/blog/interview-knowledge/qa13_rft_zh.png)。*
+
+**它拟合的是什么分布？**对于二元 verifier $$V$$，筛选把 collection policy 变成
+成功条件分布：
+
+$$q_\mu(y\mid x,V=1)
+=\frac{\mu(y\mid x)V(x,y)}{Z_\mu(x)},
+\qquad
+Z_\mu(x)=\Pr_{y\sim\mu}[V(x,y)=1].$$
+
+在 accepted trace 上做 maximum likelihood，近似把这个分布投影进新模型：
+
+$$\theta^\star
+=\arg\min_\theta
+\mathbb E_x\left[
+D_{\rm KL}\!\left(q_\mu(\cdot\mid x,V=1)\,\|\,\pi_\theta(\cdot\mid x)\right)
+\right].$$
+
+所以 RFT 能把「偶尔成功」变成「第一条样本里经常成功」。它不会直接从 rejected trajectory
+学习：失败只通过「该行没有进入数据集」起作用，不产生负 token gradient。
+
+**RFT 在实践中买到什么。**
+
+1. **放大稀有成功。**若 policy 已能解决一部分数学、代码、工具或 agent task，
+   RFT 用稳定的 SFT 管线把训练集中到这些成功 mode。
+2. **把 search 摊进权重。**Best-of-$$N$$ 每次推理花 $$N$$ 次生成；
+   可以离线生成和筛选，再训练单样本 policy 模仿 selected distribution。
+   这与序列蒸馏的「把 test-time compute 蒸进 weights」是同一思路。
+3. **让数据跟上当前 policy。**Current-policy sample 暴露模型自己的风格、格式与可达策略，
+   缩小静态 teacher dataset 的差距；但随后在冻结 accepted set 上做多个 SFT epoch，
+   已经不是 on-policy update。
+4. **固化某个管线阶段。**Llama 2 在 PPO 前使用 reward-model-ranked rejection sampling；
+   DeepSeek-R1 在 RL 与后续 SFT/RL 阶段之间使用过滤后的 reasoning trace。
+   RFT 可以稳定或蒸馏昂贵 search/RL 的产物。
+5. **做 RL 之前的强 baseline。**对 agent task，若完整 recovery 本来就偶尔发生，
+   accepted recovery 能改善恢复。A12.8 在相同 rollout 预算下把它与 failed-prefix repair data
+   和 verifier RL 比较。
+
+**Yield 决定这个方法是否可行。**若独立 sample 以概率 $$p_x$$ 通过，$$N$$ 条中有
+$$K_x$$ 条通过，则
+
+$$K_x\sim\operatorname{Binomial}(N,p_x),
+\qquad
+\mathbb E[K_x]=Np_x,
+\qquad
+\Pr(K_x\ge1)=1-(1-p_x)^N.$$
+
+要以概率 $$\alpha$$ 为某个 prompt 至少找到一条成功，
+
+$$N_\alpha=
+\left\lceil
+\frac{\log(1-\alpha)}{\log(1-p_x)}
+\right\rceil.$$
+
+| 单次成功率 $$p_x$$ | 达到 90% prompt coverage 所需样本 | 达到 95% |
+|---:|---:|---:|
+| 1% | 230 | 299 |
+| 5% | 45 | 59 |
+| 10% | 22 | 29 |
+| 25% | 9 | 11 |
+
+这里假设条件独立；相关 decoding 与重复 mode 会降低有效 yield。保留**所有**成功时，
+prompt 权重大约是 $$Np_x$$；每个 prompt 最多留一个时，权重是 $$1-(1-p_x)^N$$。
+两者都会偏向简单 prompt，除非用 prompt quota、curriculum 或 inverse-yield weighting 修正。
+
+**RFT、STaR、蒸馏与 RL 相关，但不是同义词。**
+
+| 方法 | 候选从哪来 | 训练使用什么 | Rejected sample 做什么 |
+|---|---|---|---|
+| 普通 SFT | 人、teacher 或静态数据 | Demonstration 上的 token NLL | 通常不存在 |
+| RFT | Collection policy，常是当前 checkpoint | Selected trajectory 上的 token NLL | 丢弃 |
+| 蒸馏 | 更强 teacher 的 trace 或 logit | Token NLL 或 distribution KL | 取决于配方 |
+| DPO | Chosen/rejected pair | 相对 reference 的 preference loss | 显式负对比 |
+| RLVR | Fresh policy rollout 加 verifier | Reward-weighted policy-gradient objective | 可得到负 relative advantage |
+
+[STaR](https://arxiv.org/abs/2203.14465) 的全称是 **Self-Taught Reasoner**。
+它是一种具体的迭代 reasoning bootstrap 配方：生成 rationale、保留最终答案正确的样本；
+对没做对的问题，还可以把正确答案当 hint 做 rationalization，再重新训练。
+它属于 RFT 家族，但「RFT = STaR」过窄。Learned-reward top-$$N$$ selection、
+exact-verifier filtering 与跨模型 filtered distillation，是同一更大设计空间里的不同点。
+
+**重要失效模式。**
+
+- **它不是经典 rejection sampling。**LLM RFT 通常只用阈值或 ranker，
+  没有 density-ratio correction，因此没有精确目标分布保证；
+  不能与 speculative decoding 的 accept/correct 算法混淆。
+- **零 yield 仍是零。**若 collection policy 下 $$p_x=0$$，增加 SFT epoch 造不出成功 trace。
+  要加入 teacher、hint、decomposition、search、curriculum 或探索式 RL。
+- **Verifier precision 决定数据质量。**若真实成功 prevalence 为 $$p$$，
+  verifier true-positive rate 为 $$a$$、false-positive rate 为 $$b$$，
+
+$$\Pr(\text{true}\mid\text{accepted})
+=\frac{ap}{ap+b(1-p)}.$$
+
+  当 $$p=1\%$$、$$a=95\%$$、$$b=1\%$$ 时，accepted sample 中只有约 49% 真正确。
+  候选越多，也越会搜索 false positive：
+  $$\Pr(\text{at least one false pass})=1-(1-b)^N$$。
+- **答案正确不代表 trace 正确。**重新执行计算、测试与 final state；
+  按语义策略去重，不能只按字符串。
+- **迭代会产生优化压力。**即使没有 policy-gradient learner，
+  后续 checkpoint 仍会适应 verifier 漏洞。要保留 hidden test、独立 audit、sandbox 与防篡改控制。
+- **筛选可能奖励运气、长度与单一 mode。**随机环境要跨 seed 重评；
+  限制每 prompt 样本数、保留多样解、混入可信 anchor data，并监控 calibration、entropy 与能力保留。
+
+> **决策规则。**当有效成功已经有可用 yield、selection precision 很高，
+> 且稳定 offline SFT 足够时，用 RFT。只有 fresh exploration、显式利用失败，
+> 或 trajectory-level reward trade-off 在等预算下超过 RFT 与 recovery-data SFT，
+> 才值得支付 RLVR 成本。
+
+#### 自测 · A6.17
+
+<a id="a6-17-1"></a>
+
+**Q A6.17.1** — 一个 policy 对每个 prompt 的独立成功率是 2%，采样 $$N=32$$ 次。
+预期能得到多少 accepted data 和 prompt coverage？为什么「保留每条成功」会扭曲下一轮训练分布？
+
+每个 prompt 的预期 accepted count 是
+
+$$\mathbb E[K]=32(0.02)=0.64$$
+
+而至少成功一次的概率是
+
+$$1-0.98^{32}\approx47.6\%.$$
+
+对 10,000 个 prompt，保留每条成功约得到 6,400 条 accepted trajectory，
+却只覆盖约 4,760 个 prompt。简单 prompt 会贡献很多行，难 prompt 一行没有；
+全局 token mean 因而把训练推向已经解决的 mode。应设置 per-prompt cap 或 weight、
+对策略语义去重、过采样有信息的 frontier prompt，并同时报告 accepted-trace count
+与 unique-prompt coverage。
+
+若增加次数或提高采样多样性后，重要 bucket 仍没有 yield，RFT 在那里就没有正 target。
+应加入 teacher/search/recovery data，或测试更丰富信号的 RL，
+不能反复 fine-tune 同一批简单成功。
+
+---
+
 <a id="section-a7"></a>
 
 ## A7 · 推理模型与 test-time compute
@@ -5372,7 +6202,7 @@ $$1-(1-0.01)^{16}\approx 0.149.$$
 
 | 代价 | 具体表现 |
 |---|---|
-| **延迟与成本** | 一个答案可能烧几千到几万 token；首 token 延迟不变但完成时间大增 |
+| **延迟与成本** | 一个答案可能烧几千到几万 token；**TTFT（Time To First Token，首 token 延迟）**不变，但完成时间大增 |
 | **KV cache** | 长推理链把 cache 撑大，并发数直接下降（见 A10-08） |
 | **过度思考** | 简单问题也生成长推理——这是 RL 学到的"长=好"的副产品 |
 | **校准变差** | 长链上的置信度往往更差，而不是更好（见 A13） |
@@ -5506,7 +6336,8 @@ $$\hat V(x,z_{\le t})=\frac{1}{K}\sum_{k=1}^{K}
 不是证明检查器；领域允许时必须配可执行或符号化的结果验证。
 
 **LLM 实践。**先报 first-error 定位与校准，再报最终准确率相对生成及验证 token 数的前沿。
-在完全相同的候选集上比较只用 ORM、只用 PRM 和两者结合；否则更强的 generator
+在完全相同的候选集上比较只用 **ORM（Outcome Reward Model，结果奖励模型）**、
+只用 PRM 和两者结合；否则更强的 generator
 会被误认成更好的 verifier。
 
 #### 自测 · A7.5
@@ -5713,7 +6544,7 @@ $$\frac{1.41\times10^{11}\ \text{bytes}}{3.35\times10^{12}\ \text{bytes/s}} = 42
 | Batching | 把权重读取摊到多条序列上 → decode 的主要杠杆 |
 | Continuous batching | 静态 batch 在等最长序列时浪费尾部 |
 | Paged KV cache | Cache 才是 batch 大小的限制；连续分配碎片严重 |
-| Chunked prefill | 一个超长 prompt 会独占 GPU、毁掉所有人的 TPOT |
+| Chunked prefill | 一个超长 prompt 会独占 GPU、毁掉所有人的 **TPOT（Time Per Output Token，每输出 token 时延）** |
 | Prefix caching | 共享的系统提示否则每次请求都要重算 |
 | 投机解码 | Decode 有闲置 FLOPs；拿去验证草稿 token |
 | P/D 分离 | 两个阶段想要的硬件配比不同 |
@@ -5739,7 +6570,8 @@ $$\operatorname{TPOT}_{B=1}\ge
 真实值会更差，因为还要读 KV、启动 kernel 和做 collective。这个计算也说明张量并行为什么能降延迟：
 它并行读取权重分片，只要 all-reduce 延迟没有吃掉收益。
 
-> **边界。**算术强度会随 batch 增长，但往往还没到计算受限，KV 容量和延迟 SLO 就先卡住了。
+> **边界。**算术强度会随 batch 增长，但往往还没到计算受限，
+> KV 容量和延迟 **SLO（Service-Level Objective，服务等级目标）**就先卡住了。
 > 「加算力不能帮忙」说得太宽；增加总显存带宽可以，包括把权重切到多卡后得到的并行带宽。
 
 ---
@@ -6045,8 +6877,10 @@ QAT 在训练中模拟量化，能挽回更多质量，但要一次训练。
 - **LLM.int8()**——离群通道保持 fp16，其余量化。
 - **SmoothQuant**——通过 per-channel 重缩放把难度从激活迁移到权重，
   该缩放在数学上被吸收进前一层。
-- **GPTQ**——逐层的二阶（Hessian）舍入，最小化输出误差而不是权重误差。
-- **AWQ**——保护由激活幅度识别出的、最重要的约 1% 权重。
+- **GPTQ**——一种 Hessian-aware 训练后权重量化方法；逐层二阶舍入，
+  最小化输出误差而不是权重误差。
+- **AWQ（Activation-aware Weight Quantization，激活感知权重量化）**——
+  保护由激活幅度识别出的、最重要的约 1% 权重。
 
 **真正退化什么取决于模型和方法。**好的 INT8 配方往往很少改变困惑度，INT4 更敏感。
 长上下文行为、推理和长尾知识可能已经回归，通用语料困惑度却还看不明显。
@@ -6613,6 +7447,8 @@ rubric judge 和过程奖励是在覆盖面与继承偏差之间做交换。
 它会泛化到字面示例之外，但对模型自己犯错后到达的状态没有直接监督。
 这种**曝光偏差**让恢复和长时程探索很弱；
 on-policy 训练或专门构造的错误前缀数据，补的是继续添加干净示范补不了的缺口。
+精确的 role serialization、assistant/tool loss mask，以及 all-turn 对 last-turn 选择见
+[A6.2](#a6-2)；整轨迹对逐步蒸馏与 learner-history relabelling 见 [A6.10](#a6-10)。
 
 #### 自测 · A9.4
 
@@ -6698,6 +7534,8 @@ $$P(\text{全平局})=\hat p^{16}+(1-\hat p)^{16}.$$
 
 **经验法则：**领域允许的话尽量往上爬；爬不上去时，用几个**失效方式互不相关**的弱信号，
 而不是一个看起来很强的单一信号。
+对有状态、开放式 agent trajectory，[A12.18](#a12-18) 把这条阶梯展开成完整的
+preference/rubric 收集与 RLHF loop。
 
 **每一级都有的陷阱：推理无效但答案正确。**结果验证看不见它。
 这就是 process reward model 存在的原因。
@@ -8268,7 +9106,10 @@ schedule 和混合方式而变；常被引用的少数 epoch 结果是特定经�
 ---
 
 <a id="a11-2"></a>
-### A11.2 muP
+### A11.2 muP（maximal update parametrization，最大更新参数化）
+
+它写作 **muP** 或 **μP**，读作 “mew-P”；这里的 “mu” 指 maximal update，
+不是另一个全大写缩写 “MUP”。
 
 **问题。**标准参数化下，最优学习率**随宽度移动**。所以你在 1B proxy 上调好的超参
 对 70B 是错的——而 70B 你调不起。
@@ -8586,6 +9427,8 @@ membership 启发式也提供不了干净的真值。
 
 **心智模型。**Reward model 不只是偏好分类器。它是策略将要**主动优化**的代理，
 所以评测既要测普通排序，也要测选择压力下会发生什么。
+Prompt/response tensor 如何变成 scalar score 与 Bradley-Terry loss，见
+[A6.3](#a6-3)；本节评的是这套 learned measurement 建好之后是否可信。
 
 **机制——四层证据：**
 
@@ -8694,6 +9537,124 @@ translationese，而压低地道母语文本。Demographic parity 在基础率�
 确认 sticky user-level assignment、sample ratio 正常，并留足 follow-up 时间。
 如果 verified resolution 下降或任何 guardrail 越界，即使最容易涨的 engagement 指标提高，
 treatment 也输了。
+
+---
+
+<a id="a11-13"></a>
+### A11.13 pass@1、pass@k、selected@k 与 pass^k
+
+**先固定协议，再给指标命名。**对一道任务，固定模型、prompt、采样分布、温度、
+token/工具上限、harness 与 verifier。记第 i 次尝试的成功指示量为 $$Y_i$$，
+单次成功概率为 $$p$$。在各次尝试 IID 时，pass@k 表示 $$k$$ 个采样结果中**至少一个**
+通过 verifier 的概率：
+
+$$
+\mathrm{pass@}k
+=\Pr\!\left(\sum_{i=1}^{k}Y_i\ge1\right)
+=1-(1-p)^k.
+$$
+
+这是相对于 verifier 的覆盖率，不自动等于语义正确性。只要改了 prompt、温度、工具预算、
+停止规则或 checker，就换了一套协议，也换了一条曲线。
+
+**标准有限样本估计量。**[HumanEval](https://arxiv.org/abs/2107.03374)
+推广的估计方式是：对一道任务生成 $$n$$ 个样本，其中 $$c$$ 个正确。当 $$n\ge k$$ 时，使用
+
+$$
+\widehat{\mathrm{pass@}k}
+=1-\frac{\binom{n-c}{k}}{\binom{n}{k}},
+\qquad n\ge k.
+$$
+
+其中的比值表示从这个**有限的已生成样本池中无放回**均匀抽取 $$k$$ 个样本时，
+一个正确样本也没抽到的概率。再对这个样本池的 IID 生成过程取平均，其补集就是底层
+pass@k 的无偏估计。Plug-in `1-(1-c/n)^k` 是从经验成功率反复采样得到的表达式，
+在某些区间可作近似，但它**不是**标准的无偏有限样本估计量。
+
+| 指标 | 成功事件 | 测量对象 |
+|---|---|---|
+| pass@1 | 一次采样尝试通过 | 同一采样协议在 $$k=1$$ 时的点 |
+| pass@k | $$k$$ 个候选中至少一个通过 | 真值式/verifier 覆盖率，尚未经过实际选择决策 |
+| selected@k | 实际 selector 或 verifier 返回的候选通过可信评测 | 真实 best-of-$$k$$ 系统准确率；它与 pass@k 的差距是选择遗憾 |
+| majority@k | 多数票或聚合后的答案正确 | 自洽性聚合；相关错误可能被它放大 |
+| pass^k | 重复运行 $$k$$ 次全部通过 | 重复运行的可靠性或一致性 |
+
+对重复运行，
+
+$$
+\mathrm{pass}^{k}
+=\Pr(Y_1=\cdots=Y_k=1),
+\qquad
+\mathrm{pass}^{k}=p^k\quad(\mathrm{IID}).
+$$
+
+不同 benchmark 的符号约定并不统一：有些套件会换用这些名字，或先在任务级做聚合。
+不要从排版猜含义，要检查 benchmark 文档与计分代码。尤其要注意，**greedy accuracy
+不等于 pass@1**，除非声明的一次尝试协议本身就是 greedy decoding；贪心解码与随机单次
+采样是两个不同系统。
+
+![Pass@k、实际选择准确率与重复运行可靠性](/assets/img/blog/interview-knowledge/qa9_pass_at_k_zh.png)
+
+**单个固定系统内部才谈单调性。**模型和协议固定时，pass@k 随 $$k$$ 单调不减，
+因为“前 $$k$$ 次中至少一次通过”会随着新增尝试形成嵌套事件。因此同一个系统的 pass@1
+不可能在字面上高于它自己的 pass@k。真正有意义的问题是 pass@1 在业务上是否更重要，
+或**两个模型的排名是否交叉**：A 可以在 pass@1 胜过 B，而 B 在很大的 $$k$$ 上反超 A。
+这正是 A6.1 所讨论的概率质量集中与覆盖率之间的 pass@k 交叉。
+
+**该看哪个 operating point，取决于产品。**
+
+- **pass@1 更重要**：只发布一个答案，延迟或成本只允许一次尝试，没有可信 selector，
+  或动作不可逆。首个样本上的概率质量更高，是部署系统的真实能力，不是搜索的低配版。
+- **pass@k 更重要**：目标是覆盖与探索，可以离线生成，并且有精确 verifier 识别成功，
+  或者用途是搜索、拒绝采样和数据生成。
+- **selected@k 更重要**：产品确实会生成多个候选再排序。有健全的精确 verifier，
+  且只要存在通过项就一定返回它时，selected@k 可以逼近 pass@k；若 selector 是学习出来的，
+  两者差距可能主导结果。
+- **pass^k 更重要**：用户要求系统反复都成功，而不是偶尔撞对，尤其是长时程 agent
+  与高风险工作流。
+
+**评测纪律。**
+
+1. **相关性、多样性与温度。**耦合的 beam/tree search、共享前缀、自适应重试、
+   共享工具状态和相关失败都不满足 IID 公式。Seed 独立也不保证有用的语义多样性：
+   概率质量仍可能挤在近重复答案上，不过这件事本身不等于统计相关。
+   温度与 top-$$p$$ 会改变每道任务的成功概率质量和输出模式。在整套任务上，
+   某个设置可能降低平均 pass@1，却因为让更多任务出现可达成功而提高大 $$k$$ 覆盖；
+   但对单道任务的真正 IID Bernoulli 尝试，较低的 $$p$$ 不可能在同一个 $$k$$ 上得到更高 pass@k。
+   要报告完整 sampler 并实测整条曲线，不能从一个点外推。
+2. **Selector gap。**pass@k 必须与 selected@k 一起报。Selector 可能奖励自信、风格或熟悉的
+   错误模式；候选更多时，反而给了它更多选错机会。选择结果应由留出的可信 checker 评测，
+   不能只看排序时使用的分数。
+3. **配平算力。**候选长度不同时，相同 $$k$$ 并不等成本。应配平或绘制**总生成 token 数**、
+   墙钟、金额、工具调用以及 selector/verifier 开销；还要给 p50 与 p99，因为并行采样可能
+   降低平均延迟，却恶化长尾。
+4. **按任务聚类的不确定性。**多次尝试嵌套在任务内。置信区间应在任务级重采样或聚类，
+   模型间最好做 paired 比较；把每条 rollout 当成独立 benchmark 样本，会得到过窄区间。
+5. **Verifier 漏洞。**确定性 checker 的可信度不超过它的规格。搜索压力会挖出弱测试、
+   畸形输出捷径、reward hack 与状态泄漏。要人工审计通过样本，保留隐藏测试，
+   并把真实质量检查与名义 pass rate 一起报告。
+
+A7.1 给出 test-time sampling 与搜索机制；A11.3 给出评测规则：比较 score-versus-budget
+曲线，而不是孤立分数。本节则把曲线上的不同点命名清楚，并说明真值式覆盖、实际选择结果和
+重复运行可靠性为什么不能压成一个数字。
+
+#### 自测 · A11.13
+
+<a id="a11-13-1"></a>
+
+**Q A11.13.1** — 在同一套随机协议和单次 token 上限下，模型 A 的 pass@1 为 64%、
+pass@32 为 78%；模型 B 的 pass@1 为 52%、pass@32 为 91%，但现有学习型 selector
+只能做到 selected@32 为 60%。只发布一个答案的产品与配有精确 checker 的离线数据生成
+分别选谁？比较时还必须控制什么？
+
+单答案产品默认选 A，因为配平后的单次尝试成功率更高；如果生产使用 greedy，
+其准确率要另测。离线生成若真有健全的精确 checker，B 的 91% 覆盖更有价值，
+因为任何通过样本都能被保留。没有这个 checker 时，B 的业务数字是 60% 的 selected@32，
+不是 91% 的真值式覆盖，搜索并没有救回它。
+
+这是跨模型的排名反转，不是 A 的 pass@1 高于 A 自己的 pass@32。决策前还要配平总生成
+token、工具与 checker 成本、墙钟和 p99 延迟；使用 paired 的任务级聚类区间；
+并审计精确 checker 在选择压力下是否存在漏洞。
 
 ---
 
@@ -9056,8 +10017,10 @@ Generate → Build → Verify → Filter → Evolve 循环；现有良率说明 
 > - *为什么直接优化 CoT monitor 可能适得其反？* → 策略可以学会哪些表面形式不会触发标记，
 >   而坏动作没有消失。CoT 本来就不完整；要用 held-out monitor 与行为结果，
 >   并在动作边界保留硬约束。
-> - *MCP 呢？* → 一个标准化的工具接口，让 agent 和工具提供方不必两两做定制集成。
->   它在 2025 年通过广泛采用成为事实标准，随后于 2025 年 12 月捐给 Linux Foundation 的
+> - *MCP（Model Context Protocol，模型上下文协议）呢？* → 一套标准化的 host-to-capability
+>   协议，让 agent 应用与工具/context provider 不必两两定制集成；角色、原语、transport
+>   与安全边界见 [A12.15](#a12-15)。它在 2025 年通过广泛采用成为事实标准，
+>   随后于 2025 年 12 月捐给 Linux Foundation 的
 >   Agentic AI Foundation 以保持治理中立——被问到时，这个先后顺序是有讲究的。
 >
 > **陷阱**
@@ -9139,8 +10102,8 @@ Agent Y 用 best-of-8、200 次调用和另一套 scaffold 解决 68%。能给�
    但它们也不保证 verifier 就代表真正意图。
 
 **所以标准配方应由实验决定：**先做 SFT，有条件时加入 recovery trajectory；
-把 RFT 与 failed-prefix SFT 当强 baseline；只有探索或轨迹取舍在等预算 held-out
-结果上继续增益时，再加 RL。
+把**拒绝采样微调（RFT；见 A6.17）**与 failed-prefix SFT 当强 baseline；
+只有探索或轨迹取舍在等预算 held-out 结果上继续增益时，再加 RL。
 
 
 #### 自测 · A12.8
@@ -9171,9 +10134,11 @@ Agent Y 用 best-of-8、200 次调用和另一套 scaffold 解决 68%。能给�
 才挣回基础设施成本。实验负责选方法；成功教师数据本身推不出"SFT 还是 RL"。
 
 > **追问**
-> - *什么是 rejection sampling fine-tuning（RFT / STaR）？* → 中间地带：从当前策略采样，
->   只留验证正确的轨迹，在这些上面做 SFT，然后重复。on-policy 的数据、SFT 的机器、
->   不需要 RL 基础设施。非常强的 baseline，也常常就是"我们做了 RL"的实际含义。
+> - *RFT 是什么，和 STaR 一样吗？* → RFT 从 collection policy 采样，
+>   过滤或排序候选，再在 selected trajectory 上做普通 SFT。
+>   STaR（Self-Taught Reasoner）是一种相关的迭代 rationale bootstrap 配方，不是同义词。
+>   RFT 不需要 policy-gradient learner，但仍需要 rollout、verifier、去重、sandbox 与评测设施；
+>   详见 A6.17。
 > - *什么时候 RL 不值得做？* → 没有 verifier 的时候；episode 短到 SFT 就能覆盖分布的时候；
 >   或者基础设施成本超过边际收益的时候——这种情况其实很常见，能说出这一点是有判断力的表现。
 >
@@ -9459,37 +10424,122 @@ cross-task memory 不写入付款事实。候选 retry/stop policy 要在 hidden
 <a id="a12-15"></a>
 ### A12.15 协议、身份与授权边界
 
+**先展开缩写。MCP 是 Model Context Protocol（模型上下文协议）**，用于把 LLM 应用连接到
+外部工具与 context。它标准化的是 **host 管理的 client ↔ capability server** 边界；
+它不规定模型怎么 reasoning、host 应暴露哪些 context、tool 是否安全，也不决定谁有权执行。
+
+协议版本很重要。
+[2026-07-28 规范](https://modelcontextprotocol.io/specification/2026-07-28)
+是一套 stateless JSON-RPC 2.0 protocol：每个 request 都携带 protocol version 与
+client capability metadata。不同于旧版，它没有必须执行的 `initialize` handshake，
+也不依赖持久 protocol session。Server 必须实现 `server/discover` 来公布版本与 capability，
+但 client 可以直接调用操作，再处理版本错误。
+
+**三个参与者，每条连接一个 client。**
+
+| 角色 | 负责什么 | 不会自动得到什么 |
+|---|---|---|
+| **Host** | LLM 集成、UI、context 聚合、server 配置、consent 与 policy | 信任所有已配置 server 的权限 |
+| **Client** | Host 到一个 server 的专属连接；request metadata、discovery 与 subscription | 超出 host/server 授予 credential 与 policy 的 authority |
+| **Server** | 聚焦的 tool、resource 与 prompt；可以是本地进程或远端服务 | 完整 conversation、其他 server 或无限制用户数据 |
+
+最后一行是架构目标，不是密码学保证：由 host 做 data minimization，只向每个 server
+发送它真正需要的内容。
+
+![MCP host-client-server 架构、原语与 host policy 边界](/assets/img/blog/interview-knowledge/qa14_mcp_zh.png)
+
+*[打开高清原图](/assets/img/blog/interview-knowledge/qa14_mcp_zh.png)。*
+
+**两层结构。**
+
+| 层 | 标准化什么 | 2026-07-28 的选择 |
+|---|---|---|
+| **Data layer** | JSON-RPC request/response/notification 形状、版本和 capability discovery、原语 | Stateless self-contained request |
+| **Transport layer** | 连接、framing 与 transport authentication | 本地 `stdio`；远端基于 POST、可选 request-scoped SSE 的 **Streamable HTTP** |
+
+`stdio` 常由 client 启动本地 server process，每行一个 JSON-RPC message；
+protocol message 写 stdout，日志写 stderr。Streamable HTTP 使用一个 endpoint 接受 POST，
+response 可以通过 Server-Sent Events streaming。「本地」只说明部署位置，不代表可信；
+stdio server 仍是带某种 host 权限执行的代码。
+
+**原语是 MCP 最重要的心智模型。**
+
+| 原语 | 谁暴露 | 预期 controller | 常见操作 | 含义 |
+|---|---|---|---|---|
+| **Tools** | Server | Model，经 host mediation | `tools/list`、`tools/call` | 有类型的可执行动作 |
+| **Resources** | Server | Application/host | `resources/list`、`resources/read` | URI-addressed context 与 data |
+| **Prompts** | Server | User/application | `prompts/list`、`prompts/get` | 可复用 message/workflow template |
+| **Elicitation** | Client capability | Server 提问；host/user 决定 | `elicitation/create` 语义 | 请求额外用户输入或 consent |
+
+这些「controller」只是设计指导，不是 protocol 强制的 access control。
+JSON Schema 只检查 argument **形状**，不证明语义正确、用户意图、幂等性或权限。
+这个版本里旧的 client-side **sampling** primitive 已 deprecated；
+不能复制一张旧架构图却不注明 protocol date。
+
+**一次普通 tool call 有八个不同决策。**
+
+1. 用户或管理员配置 server endpoint；host 决定是否信任并启动/连接。
+2. Client 通过 discovery，或直接依靠逐 request metadata，协商 protocol version 与 capability。
+3. Client 列出 tool/resource/prompt；列表可能随 identity、scope 或时间变化。
+4. Host 决定向 model 暴露哪些 description/schema、把哪些 resource 放进 context。
+5. Model 发出 **function-call proposal**；这只是 model output，还没有执行工具。
+6. Host 校验参数、检查 policy 与当前用户意图、取得与风险相称的 approval，并选择 credential。
+7. Client 发送 `tools/call`；server 在执行前再次认证并授权 principal。
+8. Result 经 MCP 返回；host 把 result text 当作不可信输入，验证 effect、写 audit，
+   再决定什么进入 model context。
+
+这就区分了 function calling 与 MCP：function calling 结构化 **model → host proposal**；
+MCP 结构化 **host client → server exchange**；host policy boundary 位于两者之间。
+
+**长任务使用可选 extension，不是另一套 protocol。**
+[Tasks extension](https://modelcontextprotocol.io/extensions/tasks/overview)
+可以让 `tools/call` 返回 durable task handle。Client 可轮询 `tasks/get`，
+用 `tasks/update` 提供运行中请求的输入，并请求 `tasks/cancel`；可选 notification 减少 polling。
+边界要说清：
+
+- Tasks 是 opt-in；当前 extension 只增强 `tools/call`，不是普适 core behavior。
+- Handle 只在 TTL 内 durable，而且可能本身就是 bearer capability；
+  ID 要不可猜，或每次访问都另做 authorization。
+- Cancellation 是 cooperative。收到 acknowledgement 不证明工作已停，
+  不会撤销已 commit side effect，也不保证最终一定是 `cancelled`。
+- Stateless core 与 durable task 不冲突：每个 RPC request 仍自包含，
+  server state 则藏在 handle 后面。
+
 **按边界分类接口，不按时长。**
 
-- **Function calling** 是给模型看的 typed action schema。Host 仍要验证参数、执行、处理身份并返回结果；
-  它本身不是网络 transport、发现机制或授权协议。
-- **REST 或 gRPC** 是通用 service contract/transport。它们常常位于 agent tool 或 agent-to-agent
-  endpoint 下面，但不说明谁选择了调用，也不规定模型如何看到能力。
-- **MCP** 把 host 跨 provider 访问工具和携带 context 的 resource 标准化。
-  [2026-07-28 规范](https://modelcontextprotocol.io/specification/2026-07-28)
-  采用 stateless core、显式版本/capability metadata，并用 Tasks extension 为长任务提供
-  durable handle、poll、update 与 cancellation。
-- **A2A** 标准化不透明 agent 系统之间的发现、委派、message、artifact 与 task lifecycle。
-  [A2A 1.0](https://a2a-protocol.org/v1.0.0/specification/)
-  同时支持同步、streaming 和异步长任务，binding 包括 JSON-RPC、gRPC 与 HTTP+JSON。
+| 接口 | 边界 | 标准化什么 | 不意味着什么 |
+|---|---|---|---|
+| Function calling | Model ↔ host | Typed action proposal | 执行、发现、transport、auth 或 safety |
+| MCP | Host-managed client ↔ capability server | Tool/resource/prompt、metadata、elicitation、subscription 与可选 Tasks | Metadata 可信、用户已 consent、已有 sandbox 或委派给不透明 agent |
+| REST / gRPC | Service ↔ service | 通用 application API 与 transport | LLM-specific control semantic 或谁选择了调用 |
+| **A2A（Agent-to-Agent protocol）** | Agent client ↔ 独立远端 agent | Discovery、delegation、message、artifact 与 stateful task lifecycle | 远端 agent 怎么实现 tool，或 Agent Card 自动可信 |
 
 所以「MCP 管短调用、A2A 管长调用」是错的：两者都能表示 long-running task。
-真正该问的是边界属于 **host-to-capability** 还是 **agent-to-agent delegation**，
-以及普通 service API 是否已经是更小的合适 contract。协议版本和 capability 必须钉住并协商；
-tool schema 静默变化既是正确性事件，也是安全事件。
+真正该问的是 **host-to-capability integration** 还是 **agent-to-agent delegation**，
+以及一条窄普通 API 是否已经足够。Model 可以提出 function call，host 经 MCP 路由，
+MCP server 再调用 REST backend；A2A 远端 agent 也可以在内部使用自己的 MCP server。
 
-**身份必须穿过委派链。**要跟踪人或 service principal（subject）、代其行动的 agent/host（actor）、
-目标资源、请求动作与 task。不能把一枚宽权限用户 token 一路传过每个 hop。
-应签发短期、task-scoped、least-privilege credential，绑定 audience、tenant 与允许动作，
-并让 secret 远离 prompt 和 sandbox。高风险外部副作用前重新确认 consent，传播 cancellation，
-审计记录要串起 delegation、approval、credential 与 result。NIST 的
+**Identity 与 authority 不来自 capability discovery。**要跟踪人或 service principal
+（subject）、代其行动的 agent/host（actor）、server/resource、请求 action、task、approval
+与 outcome。不能把一枚宽权限 user token 传过每个 hop。使用短期、audience-bound、
+task-scoped credential；secret 留在 prompt 与 sandbox 外；在 side-effect boundary 重查 consent。
+
+Discovery metadata、`clientInfo`、`serverInfo`、tool annotation、prompt template、resource text
+与 Agent Card 都是**自报或不可信输入**，不是 authentication/authorization。
+Host 与 server 仍必须：
+
+- 认证 endpoint，并授权每个 operation 与 task handle；
+- 暴露 least privilege，把 read capability 与 write capability 分开；
+- sandbox 本地代码、校验远端 `Origin`，适用时让本地 HTTP listener 只绑定 loopback；
+- 防止 tool/resource output 中的 prompt injection 进入 model 与 judge context；
+- 添加 idempotency key 并对账不确定副作用——JSON-RPC request ID 只是 correlation ID；
+- 钉住 protocol/extension revision，检测 schema/list change，记录 approval/result，
+  并测试 cancellation/recovery。
+
+NIST 的
 [AI Agent Standards Initiative](https://www.nist.gov/artificial-intelligence/ai-agent-standards-initiative)
-明确把互操作、认证、身份基础设施与安全评测列为联合研究和标准化重点；
-它是一项倡议，不是协议层保证。
-
-Capability description、Agent Card 与 tool description 都是**不可信 metadata**，不是授权。
-即使描述自称「安全」或索要更多 credential，host/proxy 仍必须校验 schema、约束输出、
-认证 endpoint 并执行政策。
+把互操作、认证、身份基础设施与安全评测列为联合研究和标准化重点；
+它是一项倡议，不是 MCP 提供的保证。
 
 #### 自测 · A12.15
 
@@ -9502,13 +10552,34 @@ Capability description、Agent Card 与 tool description 都是**不可信 metad
 跨公司的不透明委派和 task lifecycle 用 A2A，remote task ID 可跨断线保留。
 本地 host 可以通过 MCP 暴露日历——如果实际服务 contract 就是一条窄 REST/gRPC API，
 直接用它也行；日历侧长操作同样可以由 MCP Tasks 表达。Function calling 只负责让模型提出
-这些 host action。
+这些 host action。Host 为 calendar server 建一个专属 MCP client，只暴露必要的 read operation，
+不转发完整 conversation。
 
 委派方发送 task-scoped identity assertion，不发送用户可复用 credential。日历权限只读且
 绑定 audience；购买权限一开始不存在。只有 host 在风险点向用户展示路线、价格和收款方并获得
 同意后，才签发窄且短期的支付 capability。Cancel 要传播到 remote task 与 pending tool；
 已经 commit 的副作用靠对账，不能假装撤销。Audit chain 记录协议/schema 版本、subject、
 每个 actor、task/action ID、consent、credential scope 与最终 artifact。
+
+<a id="a12-15-2"></a>
+
+**Q A12.15.2** — 一个 remote MCP server 把 `read_mail` 标为 read-only，
+把 `send_payment` 描述成「safe」。Model 提出 `send_payment`，host 未经 approval 就调用；
+之后 Task 在支付方已扣款后才确认 cancellation。这里误解了哪些 guarantee？
+正确 call path 应是什么？
+
+Tool name 与 annotation 是不可信 description，不是 policy 或 authorization。
+Discovery 只说明 server 声称支持某 operation；JSON Schema 只校验形状。
+在 `tools/call` 前，host 应把用户直接意图映射到窄 payment capability，
+在风险点展示收款方和金额、取得 approval，并发送 idempotency key；
+server 还必须独立认证并授权该 operation。
+
+Task cancellation 是 cooperative control-plane intent，不是 rollback 或 exactly-once execution。
+遇到含糊 response 后，应拿 idempotency/action ID 与 payment provider 对账：
+若已 commit，记录结果且不重试；若未 commit，也只能在同一 approved capability 与
+idempotency key 下重试。所有返回 message/resource 都按不可信 context 处理；
+model proposal、host decision、credential scope、RPC、external effect 与 reconciliation
+分别审计。
 
 ---
 
@@ -9564,6 +10635,223 @@ Hidden evaluator 从版本化 snapshot 启动，检查最终 invoice/payment 关
 
 ---
 
+<a id="a12-17"></a>
+### A12.17 多轮对话与 agent RL
+
+**优化单位是交互 episode，但策略只控制其中特定 span。**把 episode 写成
+
+$$\tau=(o_1,a_1,o_2,a_2,\ldots,o_{T+1}),$$
+
+其中动作 $$a_t$$ 可以是 assistant message、tool call 或其他结构化模型输出，
+$$o_{t+1}$$ 是下一条用户、工具或环境 observation。用 chat template 序列化成
+token $$z_{1:N}$$ 后，定义 actor-token 集合
+
+$$\mathcal A(\tau)=\{k:\ z_k\text{ was generated by the policy being updated}\}.$$
+
+A6.2 的角色区分，现在直接决定 policy-gradient 的记账方式：
+
+| Span | 在 episode 里的角色 | 是否计算 policy log-probability / ratio / KL？ |
+|---|---|---|
+| System prompt、tool schema | 初始 observation 与控制契约 | 不算；只作为条件 |
+| User 或 user-simulator turn | 环境 observation | 对 assistant policy 不算 |
+| Assistant 文本 | 策略动作 | 算 |
+| Assistant tool name 与 arguments | 结构化策略动作 | 算 |
+| Tool result、browser state、compiler output | 环境 observation | 不算；只作为条件 |
+| Padding 或 pack 里的另一 episode | 都不是 | 不算，而且要阻断注意力 |
+
+[AgentBank](https://arxiv.org/abs/2410.07706) 一类 agent SFT 数据集和
+[Search-R1](https://arxiv.org/abs/2503.09516) 一类 tool-interleaved RL 配方，
+都体现了 policy output 与 environment output 的区分；精确 role token 仍取决于 template。
+
+若第二个可训练 policy 控制用户或另一个 agent，它的 token 属于**那个**策略的 action set，
+不属于 assistant。若之前的 assistant message 是固定 demonstration context，
+而不是 behaviour policy 采样出来的，它可以作为可见 context，
+但不能拿当前策略的 importance ratio。
+
+一个实用的 KL-regularized episode objective 是
+
+$$J(\theta)=
+\mathbb E_{\tau\sim\pi_\theta}\left[
+\sum_{t=1}^{T}\gamma^{t-1}r_t
+-\beta\sum_{k\in\mathcal A(\tau)}
+\log\frac{\pi_\theta(z_k\mid z_{<k})}
+{\pi_{\rm ref}(z_k\mid z_{<k})}
+\right].$$
+
+第二个求和只含 actor 生成 token。把 tool output 加进去，相当于让 optimizer 改变工具产生文本的
+概率；还会破坏 old/current ratio，因为 behaviour policy 从未采样这些 token。
+Tool result 仍留在 prefix 里作为后续动作条件，正如 SFT 里 label-mask 的 observation。
+
+**Turn action 与 token action 是 factorization 选择。**环境通常在一整条 assistant turn
+或结构化 tool call 后才 transition。LM 仍把这个 action 分解成 token probability，
+所以 PPO 可以把一个 turn-level advantage 挂到每个生成 token 上。
+这不会让标点变成被环境单独观察的动作，也不会让 terminal reward 获得真正 token-level credit。
+
+**Reward 与 credit 可以位于多种粒度。**
+
+- **Terminal trajectory reward** 给最终任务结果打分。REINFORCE 可把它 broadcast 给全部 action
+  token；PPO 使用 return 与 critic；outcome-GRPO 在 group 内归一化完整 trajectory reward，
+  再把一个 group-relative advantage broadcast 到该轨迹全部 action token。
+- **Turn reward** 可以在一次交换后打 helpfulness、progress 或用户反应。
+  它更稠密，但可能让 agent 优化局部对话顺滑度，而不是最终任务完成。
+- **Process 或 branch reward** 给 prefix decision 打分。只有其语义和 label 真能支持局部归因时，
+  才改善 localization；反复累加 prefix quality 还会奖励长轨迹。A6.13 给出 potential-shaping 边界。
+
+Group-relative 训练应从相同初始 task 与 environment contract 采多条 episode。
+如果环境随机性不同，group baseline 会把策略质量和运气混合；
+合理时匹配 seed，否则记录随机结果并把它作为条件。Trajectory reward 全打平时，
+group-relative reward signal 仍为零。
+
+**只有后续 observation 会对前面 action 作出反应，conversational RL 才真的多轮。**
+拿一条冻结的已记录 user continuation，替换前面的 assistant answer，
+无法估计用户看到新 answer 后会说什么；这只是带不一致反事实 suffix 的 offline
+next-response learning。诚实的 multi-turn RL 需要 live human、user simulator、
+stateful environment，或能从真实所选 action 继续 transition 的 replay system。
+
+它可以做，但困难在于：
+
+1. Simulator 可能比真实用户更容易讨好，甚至与 policy 串通；
+2. 一条长 conversation 只有一个 terminal preference，credit 方差很高；
+3. Context truncation 或 compaction 会在 episode 中途改变 policy state；
+4. Tool 与用户 latency 让 rollout throughput 远低于普通 completion RL；
+5. 「完成」、用户放弃、timeout 与安全终止是不同 terminal state；
+   纯 time-limit truncation 可能要 value bootstrap，而不是 terminal value 归零。
+
+**训服契约本身就是算法的一部分。**Actor 与 learner 必须使用相同的 role serialization、
+tool schema、stop rule、sampling transformation、context compaction 与 action parser。
+只为 actor span 保存 behaviour-policy log-probability，同时记录 policy/harness/environment
+版本与 termination cause。A12.12 讨论异步 policy lag 带来的额外 mismatch。
+
+#### 自测 · A12.17
+
+<a id="a12-17-1"></a>
+
+**Q A12.17.1** — 一个客服 agent RL run 替换已保存人工 conversation 里的每条 assistant turn，
+却保留原本后续 human reply，最后给一个 satisfaction score；
+它还把 user 与 tool token 都放进 PPO ratio。哪里错了？
+
+固定 suffix 在反事实上不一致：不同 assistant turn 可能引出不同 reply、tool call、escalation
+或 termination。最多只能把原数据用于在真实出现 prefix 上做 offline next-response learning，
+不能叫 on-policy multi-turn episode。应使用能消费实际 sampled action 的交互 user/environment
+model、人工 continuation 或 transition replay system，并验证 simulator 对 held-out
+human response 与 outcome 的预测。
+
+PPO mask 也错了。Ratio、entropy、KL 与 policy loss 只属于 assistant 生成文本和 tool-call token。
+User 与 tool output 是 observation：保持 causal visibility，但从 actor-token mask 排除。
+之后再选择 terminal score 是 broadcast、交给 critic/GAE，还是换成有依据的 turn/process feedback；
+这些选择都不能单独补回缺失的反事实交互。
+
+> **陷阱**
+> - 环境从不响应新 policy action，却把一条长固定 transcript 叫作「multi-turn RL」。
+> - 在 tool result 上计算 policy KL 或 importance ratio。
+> - 因为 scalar advantage 被复制到每个 actor token，就声称 trajectory-level GRPO
+>   提供了 token-level credit。
+
+---
+
+<a id="a12-18"></a>
+### A12.18 不可精确验证与开放式 agent task 的 RLHF
+
+**「不能精确验证」不等于「没有 reward」；它表示 reward 是 measurement model，而不是真值。**
+Coding 与 math 常有可执行 terminal checker。Research、客服、规划、谈判和许多 computer-use
+任务，则把硬事实与定性判断混在一起。应把 RLVR 与 RLHF 看成一条连续谱，
+每个维度都使用能拿到的最强信号。
+
+| 信号 | Agent 例子 | 优点 | 典型失效 |
+|---|---|---|---|
+| Hard gate / verifier | Schema 合法、权限检查、精确 side effect、引用来源存在 | 便宜、可复现 | 不完整 specification 会变成漏洞 |
+| Instrumented outcome | 问题解决且无重复联系；用户完成 workflow | 测真实后果 | 混淆、延迟反馈、选择偏差 |
+| 人类 trajectory preference | 从相同初始 task 比较两段完整 session | 直接针对人类判断 | 贵、噪声大、价值不一致 |
+| Rubric + LLM judge | Grounding、完整性、安全、效率、沟通 | 可扩展、可分解 | 偏差、prompt injection、风格/长度捷径 |
+| Process / branch preference | 相同 prefix 后比较两个 next action | 局部归因更好 | 标注贵且可能短视 |
+| Heuristic | 长度、tool call 数、格式 | 适合诊断或过滤 | 一旦优化就极易被玩弄 |
+
+一种 hybrid score 可以写成
+
+$$R(\tau)
+=r_{\rm hard}(\tau)
++\sum_j w_j s_j(\tau)
+-\lambda_{\rm cost}C(\tau)
+-\lambda_{\rm risk}V(\tau).$$
+
+但有些约束应是 **gate 或 lexicographic rule**，不能做可补偿加法。
+一条文风漂亮的回答，不能靠 style 分抵消未授权付款或伪造来源。
+每个 reward component 要单独记录，避免总分上升掩盖 safety 或 grounding 回归。
+
+**Trajectory preference 怎么收。**
+
+1. 从相同 task、初始状态、权限与预算，采当前策略的多条 trajectory；
+   候选要混合不同 checkpoint 与 sampler，避免 RM 只学到一个模型的风格。
+2. 给标注者看可观察 action、tool evidence、最终状态、成本与 termination，
+   不展示 hidden chain-of-thought；pair 顺序随机，对 policy identity 做盲化。
+3. 同时收 overall preference 与 factual grounding、任务完成、效率、安全、沟通和政策合规等
+   rubric dimension；允许 tie、abstention 和「两者都不安全」。
+4. 需要局部 action 质量时，优先同 prefix 的 branch comparison：
+   它固定历史，减少归因歧义。整轨迹 pair 捕捉长期后果，但 credit 稀疏。
+5. Audit 按 task 与 initial state 切分，并保留 policy 和 judge 都看不到的人类标注对抗轨迹。
+
+这些 pair 可以训练 A6.3 的 Bradley–Terry outcome RM 再交给 PPO，
+也可以直接训练 DPO 类目标。两者算法不同：preference data 加 DPO，
+不能描述成「先训 RM，再做 RL」。[WebGPT](https://arxiv.org/abs/2112.09332)
+是一个早期代表：它收集 browser-assisted answer 的人类偏好，而不是可执行数学证明。
+
+**Rubric reward 仍然是 learned reward。**每条 criterion 都要 ground 到 judge 可检查的 evidence。
+Research agent 可以 hard-check 引用存在性与 retrieval provenance，
+再让经校准的人或 judge 判断证据是否支持 claim；客服 agent 应先测真实 resolution
+与禁止动作，再测风格。Tool output 是不可信输入：去掉试图操纵 judge 的指令，
+把 evidence 与 evaluator control text 分开，并显式测试 prompt injection。
+
+LLM judge 要在隐藏 human pair 上校准，测试 pair-order consistency、长度/风格 bias、
+语言与领域 slice，并允许在分歧时 abstain。Judge ensemble 只有在错误不互相复制时才有帮助。
+Policy 不能看到 judge prompt、hidden rubric test 或 evaluator scratch state。
+
+**实用 online loop 是：**
+
+1. 用高质量 conversational/agent SFT 冷启动；
+2. 在版本化 environment 里从当前策略生成 trajectory；
+3. 先过 hard gate，再为剩余定性维度收 human 或 calibrated-AI preference；
+4. 训练并版本化 outcome/process RM，或 direct preference model；
+5. 用 KL control 与有界 rollout budget 做保守优化；
+6. 反复用冻结 human、outcome、safety 与 cost eval 对照 reward，
+   并在当前策略移动到的新区域补 preference。
+
+这就是 classic RLHF 的 distribution-shift 问题，再叠加 stateful environment：
+policy 会同时主动搜索 learned judge 与 tool world 的漏洞。
+Reward-model score 上升，而 human preference、grounded outcome 或 safety 变差，
+才是关键 Goodhart 信号；score 本身不是。
+
+**要知道什么时候不该做 RL。**如果标注者无法对 rubric 达成一致，trajectory 不能 replay/audit，
+judge error 未知，或有害 action 无法 sandbox，更多 policy optimization 只会放大未定义 proxy。
+应先改 task contract、收 demonstration、做 supervised preference learning，
+或把系统留在人类 approval 后面，再考虑 RL loop。
+
+#### 自测 · A12.18
+
+<a id="a12-18-1"></a>
+
+**Q A12.18.1** — 为一个没有单一精确答案、但必须有用、grounded、高效且安全的
+research agent 设计 reward。如何阻止一条很有说服力、引用很多、却没有真正做研究的 trajectory 胜出？
+
+先做 hard gate：来源必须真实存在，retrieved passage 必须对应 cited document，
+引用 span 必须支持相连 claim，权限与 tool budget 必须满足，禁止 side effect 直接判失败。
+再使用 coverage、synthesis、uncertainty、clarity 与 efficiency 的分解 rubric，
+并在隐藏 human trajectory pair 上校准。只比较相同初始 task 与 retrieval access 的候选；
+每个 component 分开记录，不能只留 weighted total。
+
+加入真实但无关引用、伪造 entailment、文档内 prompt injection、verbosity 与重复搜索等
+adversarial trace。随机 pair 顺序，对 model identity 盲化，允许 judge abstain，
+把分歧与高风险 case 升级给人。用 KL leash 与 cost penalty 优化，
+同时由冻结的 human/grounding audit 检查更高 reward 是否仍代表更好的 research。
+若 citation support 无法可靠测量，不能换一个更大的 style model 来补偿——
+reward contract 还没有准备好做 RL。
+
+> **陷阱**
+> - 把 LLM judge score 当成 ground truth，而不是经校准、可被攻击的 measurement。
+> - 把 safety 放进可补偿 weighted sum，让足够 helpfulness 抵消 hard violation。
+> - 没有 step 或 branch supervision，却从 terminal trajectory preference 推断逐步 credit。
+
+---
+
 <a id="section-a13"></a>
 
 ## A13 · 对齐、校准与持续学习
@@ -9590,11 +10878,15 @@ Hidden evaluator 从版本化 snapshot 启动，检查最终 invoice/payment 关
 
 **此后变了什么：**
 
-- 只要可能就用**可验证奖励**。checker 胜过学出来的 RM：因果链更短，也不会以同样的方式被钻空子。
+- 只要可能就用**可验证奖励**。对其 specification 真正覆盖的维度，checker 的因果链更短，
+  也不会以 learned RM 那种统计方式被钻空子；但不完整测试仍会制造漏洞。
 - 推理方向上**用 GRPO 取代 PPO**——去掉 critic，改用组均值做 baseline。
 - 有静态偏好数据、又想要简单时用 **DPO**，代价是 off-policy。
 - **迭代多轮**而不是一次过：生成、评判、重训、再来一遍（Tülu-3 那类配方把这点写得很明确）。
 - **AI 反馈**（RLAIF / Constitutional AI）替代了大部分人工标注，人来写*原则*而不是写*标签*。
+
+RM 架构、scalar score 与 Bradley-Terry tensor contract 见 [A6.3](#a6-3)；
+多轮开放式 agent preference 与 rubric reward 见 [A12.18](#a12-18)。
 
 
 #### 自测 · A13.1
@@ -10550,6 +11842,9 @@ arXiv API 核验，见 `refs.py`。
 - **Gradient checkpointing** — Training Deep Nets with Sublinear Memory Cost. [arXiv:1604.06174](https://arxiv.org/abs/1604.06174)
 - **Ring attention** — Ring Attention with Blockwise Transformers for Near-Infinite Context. [arXiv:2310.01889](https://arxiv.org/abs/2310.01889)
 - **Selective activation recomputation** — Reducing Activation Recomputation in Large Transformer Models. [arXiv:2205.05198](https://arxiv.org/abs/2205.05198)
+- **MegaBlocks / dropless MoE** — MegaBlocks: Efficient Sparse Training with Mixture-of-Experts. [arXiv:2211.15841](https://arxiv.org/abs/2211.15841)
+- **ST-MoE / router z-loss** — ST-MoE: Designing Stable and Transferable Sparse Expert Models. [arXiv:2202.08906](https://arxiv.org/abs/2202.08906)
+- **Sparse Upcycling** — Sparse Upcycling: Training Mixture-of-Experts from Dense Checkpoints. [arXiv:2212.05055](https://arxiv.org/abs/2212.05055)
 
 ### A6 · Post-training 与 RL
 
@@ -10563,6 +11858,8 @@ arXiv API 核验，见 `refs.py`。
 - **KTO** — KTO: Model Alignment as Prospect Theoretic Optimization. [arXiv:2402.01306](https://arxiv.org/abs/2402.01306)
 - **SimPO** — SimPO: Simple Preference Optimization with a Reference-Free Reward. [arXiv:2405.14734](https://arxiv.org/abs/2405.14734)
 - **Distilling the knowledge** — Distilling the Knowledge in a Neural Network. [arXiv:1503.02531](https://arxiv.org/abs/1503.02531)
+- **Sequence-level knowledge distillation** — Sequence-Level Knowledge Distillation. [arXiv:1606.07947](https://arxiv.org/abs/1606.07947)
+- **DAgger** — A Reduction of Imitation Learning and Structured Prediction to No-Regret Online Learning. [arXiv:1011.0686](https://arxiv.org/abs/1011.0686)
 - **LoRA** — LoRA: Low-Rank Adaptation of Large Language Models. [arXiv:2106.09685](https://arxiv.org/abs/2106.09685)
 - **QLoRA** — QLoRA: Efficient Finetuning of Quantized LLMs. [arXiv:2305.14314](https://arxiv.org/abs/2305.14314)
 - **Reward model overoptimization** — Scaling Laws for Reward Model Overoptimization. [arXiv:2210.10760](https://arxiv.org/abs/2210.10760)
@@ -10572,6 +11869,10 @@ arXiv API 核验，见 `refs.py`。
 - **R1-Zero-like training analysis** — Understanding R1-Zero-Like Training: A Critical Perspective. [arXiv:2503.20783](https://arxiv.org/abs/2503.20783)
 - **Limits of current RLVR** — Does Reinforcement Learning Really Incentivize Reasoning Capacity in LLMs Beyond the Base Model?. [arXiv:2504.13837](https://arxiv.org/abs/2504.13837)
 - **RLVR boundary debate** — The Debate on RLVR Reasoning Capability Boundary: Shrinkage, Expansion, or Both? A Two-Stage Dynamic View. [arXiv:2510.04028](https://arxiv.org/abs/2510.04028)
+- **Rejection sampling fine-tuning** — Scaling Relationship on Learning Mathematical Reasoning with Large Language Models. [arXiv:2308.01825](https://arxiv.org/abs/2308.01825)
+- **STaR** — STaR: Bootstrapping Reasoning With Reasoning. [arXiv:2203.14465](https://arxiv.org/abs/2203.14465)
+- **ReST** — Reinforced Self-Training (ReST) for Language Modeling. [arXiv:2308.08998](https://arxiv.org/abs/2308.08998)
+- **Llama 2 / rejection sampling** — Llama 2: Open Foundation and Fine-Tuned Chat Models. [arXiv:2307.09288](https://arxiv.org/abs/2307.09288)
 
 ### A7 · 推理模型与 test-time compute
 
@@ -10639,6 +11940,7 @@ arXiv API 核验，见 `refs.py`。
 - **Pretraining-data contamination** — Investigating Data Contamination for Pre-training Language Models. [arXiv:2401.06059](https://arxiv.org/abs/2401.06059)
 - **RewardBench** — RewardBench: Evaluating Reward Models for Language Modeling. [arXiv:2403.13787](https://arxiv.org/abs/2403.13787)
 - **Cross-lingual tokenizer unfairness** — Language Model Tokenizers Introduce Unfairness Between Languages. [arXiv:2305.15425](https://arxiv.org/abs/2305.15425)
+- **HumanEval / pass@k estimator** — Evaluating Large Language Models Trained on Code. [arXiv:2107.03374](https://arxiv.org/abs/2107.03374)
 
 ### A12 · Agentic RL
 
@@ -10647,6 +11949,10 @@ arXiv API 核验，见 `refs.py`。
 - **tau-bench** — $$\tau$$-bench: A Benchmark for Tool-Agent-User Interaction in Real-World Domains. [arXiv:2406.12045](https://arxiv.org/abs/2406.12045)
 - **OSWorld** — OSWorld: Benchmarking Multimodal Agents for Open-Ended Tasks in Real Computer Environments. [arXiv:2404.07972](https://arxiv.org/abs/2404.07972)
 - **Reflexion** — Reflexion: Language Agents with Verbal Reinforcement Learning. [arXiv:2303.11366](https://arxiv.org/abs/2303.11366)
+- **Deep RL from human preferences** — Deep reinforcement learning from human preferences. [arXiv:1706.03741](https://arxiv.org/abs/1706.03741)
+- **WebGPT** — WebGPT: Browser-assisted question-answering with human feedback. [arXiv:2112.09332](https://arxiv.org/abs/2112.09332)
+- **AgentBank** — AgentBank: Towards Generalized LLM Agents via Fine-Tuning on 50000+ Interaction Trajectories. [arXiv:2410.07706](https://arxiv.org/abs/2410.07706)
+- **Search-R1** — Search-R1: Training LLMs to Reason and Leverage Search Engines with Reinforcement Learning. [arXiv:2503.09516](https://arxiv.org/abs/2503.09516)
 - **Communication-centric multi-agent survey** — Beyond Self-Talk: A Communication-Centric Survey of LLM-Based Multi-Agent Systems. [arXiv:2502.14321](https://arxiv.org/abs/2502.14321)
 - **AReaL** — AReaL: A Large-Scale Asynchronous Reinforcement Learning System for Language Reasoning. [arXiv:2505.24298](https://arxiv.org/abs/2505.24298)
 - **Agent-memory survey** — Memory in the Age of AI Agents. [arXiv:2512.13564](https://arxiv.org/abs/2512.13564)
@@ -10686,6 +11992,10 @@ arXiv API 核验，见 `refs.py`。
   A5.5 里 loss 尖峰的分类和 data sampler 那条警告出自这里。
 - John Schulman，*Approximating KL divergence* — [http://joschu.net/blog/kl-approx.html](http://joschu.net/blog/kl-approx.html)
   A6.7 的 GRPO loss 里用的 k3 估计量。
+- OpenAI，*Reinforcement fine-tuning* — [https://developers.openai.com/api/docs/guides/reinforcement-fine-tuning](https://developers.openai.com/api/docs/guides/reinforcement-fine-tuning)
+  A6.17 用它区分 RFT 这个重载缩写在产品文档中的另一种含义。
+- Bradley 与 Terry，*Rank Analysis of Incomplete Block Designs* — [https://doi.org/10.1093/biomet/39.3-4.324](https://doi.org/10.1093/biomet/39.3-4.324)
+  A6.3 的成对偏好 likelihood 与 score-difference 可识别性来源。
 - NVIDIA H100 datasheet — [https://resources.nvidia.com/en-us-hopper-architecture](https://resources.nvidia.com/en-us-hopper-architecture)
   A10.0 的硬件锚点：989 TFLOP/s dense bf16、3.35 TB/s HBM、80 GB。
 - Glorot 与 Bengio，*Understanding the difficulty of training deep feedforward neural networks* — [https://proceedings.mlr.press/v9/glorot10a.html](https://proceedings.mlr.press/v9/glorot10a.html)
@@ -10715,7 +12025,11 @@ arXiv API 核验，见 `refs.py`。
 - Anthropic，*Effective harnesses for long-running agents* — [https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents)
   A12.14 的跨 session 进度工件与端到端测试实践。
 - Model Context Protocol，*Version 2026-07-28* — [https://modelcontextprotocol.io/specification/2026-07-28](https://modelcontextprotocol.io/specification/2026-07-28)
-  A12.15 的 stateless core、协商 metadata 与长时程 Tasks 语义。
+  A12.15 的无状态逐请求 core、metadata、原语与安全边界。
+- Model Context Protocol，*Architecture 2026-07-28* — [https://modelcontextprotocol.io/specification/2026-07-28/architecture/index](https://modelcontextprotocol.io/specification/2026-07-28/architecture/index)
+  A12.15 的 host/client/server 角色、data layer 与 transport layer。
+- Model Context Protocol，*Tasks extension* — [https://modelcontextprotocol.io/extensions/tasks/overview](https://modelcontextprotocol.io/extensions/tasks/overview)
+  A12.15 的可选 durable handle、polling、input update 与 cancellation 语义。
 - A2A Protocol v1.0 specification — [https://a2a-protocol.org/v1.0.0/specification/](https://a2a-protocol.org/v1.0.0/specification/)
   A12.15 的 agent 委派、task lifecycle 与 protocol binding 语义。
 - NIST，*AI Agent Standards Initiative* — [https://www.nist.gov/artificial-intelligence/ai-agent-standards-initiative](https://www.nist.gov/artificial-intelligence/ai-agent-standards-initiative)
