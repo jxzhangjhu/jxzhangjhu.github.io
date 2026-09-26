@@ -953,11 +953,272 @@ progress {
   }
 }
 
-// Printing / PDF export: Chrome's print path does not fall back per-glyph through
-// the font stack the way the screen renderer does, so a Latin-first stack drops
-// Chinese glyphs. Put a CJK-capable font first for printing only (screen is
-// unchanged). MathJax (mjx-*) is intentionally not targeted so math keeps its fonts.
+// Print / PDF export is a compact, ink-friendly reading edition. The site uses a
+// fixed footer on screen; fixed elements repeat on every printed page and can cover
+// article text, so all navigation and site chrome are removed from paged media.
+@page {
+  size: A4 portrait;
+  margin: 14mm 13mm 15mm;
+}
+
 @media print {
+  html,
+  body {
+    width: auto !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    color: #111 !important;
+    background: #fff !important;
+    -webkit-print-color-adjust: economy;
+    print-color-adjust: economy;
+  }
+
+  body > header,
+  body > footer,
+  progress,
+  .progress-container,
+  .ai-disclaimer,
+  .lang-switch,
+  .post-tags,
+  #giscus_thread {
+    display: none !important;
+  }
+
+  // Bootstrap's .mt-5 is !important, so the printable article needs an equally
+  // specific reset. This also releases the narrow screen reading column.
+  body > .container.mt-5 {
+    width: auto !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .post,
+  .post .post-header,
+  .post .post-content {
+    width: auto !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    overflow: visible !important;
+  }
+
+  .post .post-header {
+    break-inside: avoid-page;
+    margin-bottom: 6mm;
+  }
+
+  .post .post-header .post-title {
+    margin: 0 0 2.5mm !important;
+    font-size: 22pt !important;
+    line-height: 1.14 !important;
+  }
+
+  .post .post-meta {
+    margin: 0 !important;
+    color: #444 !important;
+    font-size: 9pt !important;
+  }
+
+  .post .post-content {
+    font-size: 10.5pt !important;
+    line-height: 1.5 !important;
+  }
+
+  .post .post-content h1,
+  .post .post-content h2,
+  .post .post-content h3,
+  .post .post-content h4,
+  .post .post-content h5,
+  .post .post-content h6 {
+    color: #111 !important;
+    break-after: avoid-page;
+    page-break-after: avoid;
+  }
+
+  .post .post-content h2 {
+    margin: 8mm 0 3mm !important;
+    padding-top: 0 !important;
+    font-size: 16.5pt !important;
+    line-height: 1.22 !important;
+  }
+
+  .post .post-content h3 {
+    margin: 5mm 0 2.2mm !important;
+    font-size: 13pt !important;
+    line-height: 1.25 !important;
+  }
+
+  .post .post-content h4,
+  .post .post-content h5,
+  .post .post-content h6 {
+    margin: 4mm 0 2mm !important;
+    font-size: 11pt !important;
+  }
+
+  .post .post-content p,
+  .post .post-content li {
+    orphans: 3;
+    widows: 3;
+  }
+
+  .post .post-content p {
+    margin-top: 0 !important;
+    margin-bottom: 3.2mm !important;
+  }
+
+  .post .post-content li {
+    margin-bottom: 1.1mm;
+  }
+
+  .post .post-content a,
+  .post .post-content a:visited {
+    color: #111 !important;
+    text-decoration: none !important;
+    overflow-wrap: anywhere;
+  }
+
+  .post .post-content hr {
+    border-color: #aaa !important;
+    margin: 6mm 0 !important;
+  }
+
+  .post .post-content blockquote,
+  .post .post-content p.qa-question,
+  .post .post-content p.qa-question + p.qa-answer {
+    color: #111 !important;
+    background: #fff !important;
+    border-color: #555 !important;
+    box-shadow: none !important;
+    break-inside: avoid-page;
+    page-break-inside: avoid;
+  }
+
+  .post .post-content blockquote {
+    margin: 4mm 0 !important;
+    padding: 2.5mm 3.5mm !important;
+    font-size: 10pt !important;
+  }
+
+  // Screen tables scroll horizontally. In print they must become true tables so
+  // the browser can paginate them, repeat headers, and wrap every cell inside A4.
+  .post .post-content table {
+    display: table !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 4mm 0 5mm !important;
+    overflow: visible !important;
+    table-layout: fixed !important;
+    border-collapse: collapse !important;
+    border-top: 1.2pt solid #111 !important;
+    border-bottom: 1.2pt solid #111 !important;
+    font-size: 8.35pt !important;
+    line-height: 1.32 !important;
+  }
+
+  .post .post-content table thead {
+    display: table-header-group;
+  }
+
+  .post .post-content table tfoot {
+    display: table-footer-group;
+  }
+
+  .post .post-content table tr {
+    break-inside: avoid-page;
+    page-break-inside: avoid;
+  }
+
+  .post .post-content table th,
+  .post .post-content table td {
+    padding: 1.7mm 1.8mm !important;
+    color: #111 !important;
+    background: #fff !important;
+    border-color: #aaa !important;
+    font-size: inherit !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere;
+    word-break: normal;
+    hyphens: auto;
+  }
+
+  .post .post-content table thead th {
+    border-bottom: 1pt solid #111 !important;
+  }
+
+  // Markdown emits each image and its italic caption as adjacent paragraphs.
+  // Keep them together when :has() is supported, while all images remain bounded
+  // for browsers that do not implement it in paged media.
+  .post .post-content p:has(> img) {
+    margin-bottom: 1.5mm !important;
+    break-inside: avoid-page;
+    page-break-inside: avoid;
+    break-after: avoid-page;
+    page-break-after: avoid;
+  }
+
+  .post .post-content p:has(> img) + p {
+    break-before: avoid-page;
+    page-break-before: avoid;
+  }
+
+  .post .post-content img,
+  .post .post-content svg {
+    display: block !important;
+    max-width: 100% !important;
+    max-height: 225mm !important;
+    width: auto !important;
+    height: auto !important;
+    margin: 4mm auto 1.5mm !important;
+    object-fit: contain;
+    filter: grayscale(100%);
+    break-inside: avoid-page;
+    page-break-inside: avoid;
+  }
+
+  .post .post-content pre,
+  .post .post-content code,
+  .post .post-content .highlight {
+    color: #111 !important;
+    background: #fff !important;
+    border-color: #bbb !important;
+    box-shadow: none !important;
+    white-space: pre-wrap !important;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .post .post-content pre {
+    break-inside: avoid-page;
+    page-break-inside: avoid;
+    font-size: 8.6pt !important;
+    line-height: 1.35 !important;
+  }
+
+  .post .post-content pre * {
+    color: #111 !important;
+    background: #fff !important;
+  }
+
+  .post .post-content mjx-container[display="true"] {
+    max-width: 100% !important;
+    overflow: visible !important;
+    font-size: 90% !important;
+    break-inside: avoid-page;
+    page-break-inside: avoid;
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  // Chrome's print path does not fall back per glyph through a Latin-first stack.
+  // Put a CJK-capable macOS font first for both Chinese and English print editions.
   body,
   .post .post-header .post-title,
   .post .post-content,

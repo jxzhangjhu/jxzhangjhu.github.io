@@ -1,0 +1,193 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1040" viewBox="0 0 1600 1040" role="img" aria-labelledby="title desc">
+  <title id="title">Observability is layered, not singular</title>
+  <desc id="desc">A comparison of action-only, chain-of-thought-only, full-trajectory, and cross-agent monitoring, followed by a layered control loop.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+      <path d="M1 1l10 5-10 5z" fill="#49382c"/>
+    </marker>
+    <style>
+      .title{font:700 42px Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;fill:#30271f;letter-spacing:-.5px}
+      .subtitle{font:400 21px Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;fill:#71665d}
+      .head{font:700 25px Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;fill:#30271f}
+      .body{font:500 17px Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;fill:#50463e}
+      .small{font:450 15px Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;fill:#675d55}
+      .eyebrow{font:750 14px Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;letter-spacing:1.15px}
+      .rowlabel{font:750 14px Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;letter-spacing:.8px}
+      .flowhead{font:700 20px Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;fill:#30271f}
+      .note{font:400 15px Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;fill:#7a6e65}
+      .edge{fill:none;stroke:#49382c;stroke-width:3;marker-end:url(#arrow)}
+    </style>
+  </defs>
+
+  <rect width="1600" height="1040" fill="#fbf8f2"/>
+  <text x="70" y="76" class="title">Observability is layered, not singular</text>
+  <text x="70" y="114" class="subtitle">Each monitor sees a different projection of the system. Coverage improves when independent signals are combined.</text>
+
+  <g transform="translate(70 160)">
+    <rect width="345" height="535" rx="22" fill="#f2dfd3" stroke="#ad6544" stroke-width="3"/>
+    <circle cx="47" cy="45" r="25" fill="#ad6544"/>
+    <path d="M34 45h26M47 32v26" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+    <text x="88" y="52" class="head">Action-only</text>
+    <text x="28" y="94" class="eyebrow" fill="#8d4d33">WHAT IT SEES</text>
+    <text x="28" y="126" class="body">
+      <tspan x="28">Tool calls, commands, requests,</tspan>
+      <tspan x="28" dy="25">and visible environment changes</tspan>
+    </text>
+    <line x1="28" y1="174" x2="317" y2="174" stroke="#ad6544" stroke-opacity=".4"/>
+    <text x="28" y="206" class="rowlabel" fill="#8d4d33">STRENGTH</text>
+    <text x="28" y="238" class="body">
+      <tspan x="28">Grounded in observable behavior;</tspan>
+      <tspan x="28" dy="25">useful for hard policy checks</tspan>
+    </text>
+    <line x1="28" y1="286" x2="317" y2="286" stroke="#ad6544" stroke-opacity=".4"/>
+    <text x="28" y="318" class="rowlabel" fill="#8d4d33">BLIND SPOT</text>
+    <text x="28" y="350" class="body">
+      <tspan x="28">Intent, planning, and distributed</tspan>
+      <tspan x="28" dy="25">strategy may remain invisible</tspan>
+    </text>
+    <rect x="28" y="421" width="289" height="80" rx="13" fill="#fbf8f2" stroke="#ad6544" stroke-width="1.7"/>
+    <text x="47" y="449" class="rowlabel" fill="#8d4d33">BEST ROLE</text>
+    <text x="47" y="480" class="body">Check hard-rule violations</text>
+  </g>
+
+  <g transform="translate(442 160)">
+    <rect width="345" height="535" rx="22" fill="#eee3c3" stroke="#9b7c37" stroke-width="3"/>
+    <circle cx="47" cy="45" r="25" fill="#9b7c37"/>
+    <path d="M34 39h26M34 47h19M34 55h23" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+    <text x="88" y="52" class="head">CoT-only</text>
+    <text x="28" y="94" class="eyebrow" fill="#806420">WHAT IT SEES</text>
+    <text x="28" y="126" class="body">
+      <tspan x="28">Articulated reasoning, plans,</tspan>
+      <tspan x="28" dy="25">uncertainty, and stated intent</tspan>
+    </text>
+    <line x1="28" y1="174" x2="317" y2="174" stroke="#9b7c37" stroke-opacity=".42"/>
+    <text x="28" y="206" class="rowlabel" fill="#806420">STRENGTH</text>
+    <text x="28" y="238" class="body">
+      <tspan x="28">Can expose a bad strategy before</tspan>
+      <tspan x="28" dy="25">it becomes an external action</tspan>
+    </text>
+    <line x1="28" y1="286" x2="317" y2="286" stroke="#9b7c37" stroke-opacity=".42"/>
+    <text x="28" y="318" class="rowlabel" fill="#806420">BLIND SPOT</text>
+    <text x="28" y="350" class="body">
+      <tspan x="28">Reasoning may be absent, partial,</tspan>
+      <tspan x="28" dy="25">unfaithful, or deliberately controlled</tspan>
+    </text>
+    <rect x="28" y="421" width="289" height="80" rx="13" fill="#fbf8f2" stroke="#9b7c37" stroke-width="1.7"/>
+    <text x="47" y="449" class="rowlabel" fill="#806420">BEST ROLE</text>
+    <text x="47" y="480" class="body">Early-warning safety sensor</text>
+  </g>
+
+  <g transform="translate(814 160)">
+    <rect width="345" height="535" rx="22" fill="#dde8e0" stroke="#66816f" stroke-width="3"/>
+    <circle cx="47" cy="45" r="25" fill="#66816f"/>
+    <path d="M32 45h30M38 35l-6 10 6 10M56 35l6 10-6 10" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="88" y="52" class="head">Full trajectory</text>
+    <text x="28" y="94" class="eyebrow" fill="#4f6d5a">WHAT IT SEES</text>
+    <text x="28" y="126" class="body">
+      <tspan x="28">Task, CoT, actions, observations,</tspan>
+      <tspan x="28" dy="25">outputs, and local artifacts</tspan>
+    </text>
+    <line x1="28" y1="174" x2="317" y2="174" stroke="#66816f" stroke-opacity=".42"/>
+    <text x="28" y="206" class="rowlabel" fill="#4f6d5a">STRENGTH</text>
+    <text x="28" y="238" class="body">
+      <tspan x="28">Relates intent to action and</tspan>
+      <tspan x="28" dy="25">checks claims against evidence</tspan>
+    </text>
+    <line x1="28" y1="286" x2="317" y2="286" stroke="#66816f" stroke-opacity=".42"/>
+    <text x="28" y="318" class="rowlabel" fill="#4f6d5a">BLIND SPOT</text>
+    <text x="28" y="350" class="body">
+      <tspan x="28">Still local to one run; costly at</tspan>
+      <tspan x="28" dy="25">high recall and long horizons</tspan>
+    </text>
+    <rect x="28" y="421" width="289" height="80" rx="13" fill="#fbf8f2" stroke="#66816f" stroke-width="1.7"/>
+    <text x="47" y="449" class="rowlabel" fill="#4f6d5a">BEST ROLE</text>
+    <text x="47" y="480" class="body">Primary per-agent monitor</text>
+  </g>
+
+  <g transform="translate(1186 160)">
+    <rect width="345" height="535" rx="22" fill="#dde7ec" stroke="#607f91" stroke-width="3"/>
+    <circle cx="47" cy="45" r="25" fill="#607f91"/>
+    <circle cx="39" cy="39" r="5" fill="#fff"/><circle cx="56" cy="39" r="5" fill="#fff"/><circle cx="47" cy="55" r="5" fill="#fff"/>
+    <path d="M43 42l3 9M52 42l-3 9M44 39h7" stroke="#fff" stroke-width="2"/>
+    <text x="88" y="42" class="head">Cross-agent &amp;</text>
+    <text x="88" y="68" class="head">global state</text>
+    <text x="28" y="110" class="eyebrow" fill="#486b7e">WHAT IT SEES</text>
+    <text x="28" y="142" class="body">
+      <tspan x="28">Communication, shared memory,</tspan>
+      <tspan x="28" dy="25">permissions, and system effects</tspan>
+    </text>
+    <line x1="28" y1="190" x2="317" y2="190" stroke="#607f91" stroke-opacity=".42"/>
+    <text x="28" y="222" class="rowlabel" fill="#486b7e">STRENGTH</text>
+    <text x="28" y="254" class="body">
+      <tspan x="28">Detects correlated, fragmented,</tspan>
+      <tspan x="28" dy="25">or emergent system behavior</tspan>
+    </text>
+    <line x1="28" y1="302" x2="317" y2="302" stroke="#607f91" stroke-opacity=".42"/>
+    <text x="28" y="334" class="rowlabel" fill="#486b7e">BLIND SPOT</text>
+    <text x="28" y="366" class="body">
+      <tspan x="28">Complex attribution, privacy,</tspan>
+      <tspan x="28" dy="25">latency, and operational cost</tspan>
+    </text>
+    <rect x="28" y="421" width="289" height="80" rx="13" fill="#fbf8f2" stroke="#607f91" stroke-width="1.7"/>
+    <text x="47" y="449" class="rowlabel" fill="#486b7e">BEST ROLE</text>
+    <text x="47" y="480" class="body">Systemic-risk correlation</text>
+  </g>
+
+  <text x="70" y="755" class="eyebrow" fill="#65594f">DEFENSE IN DEPTH · OBSERVE, DECIDE, LEARN</text>
+
+  <g transform="translate(70 790)">
+    <rect width="255" height="120" rx="18" fill="#dde8e0" stroke="#66816f" stroke-width="2.7"/>
+    <text x="22" y="39" class="flowhead">Model alignment</text>
+    <text x="22" y="71" class="small">
+      <tspan x="22">Reduce harmful propensity</tspan>
+      <tspan x="22" dy="23">before deployment</tspan>
+    </text>
+  </g>
+  <path d="M325 850H364" class="edge"/>
+
+  <g transform="translate(375 790)">
+    <rect width="255" height="120" rx="18" fill="#eee3c3" stroke="#9b7c37" stroke-width="2.7"/>
+    <text x="22" y="39" class="flowhead">Runtime control</text>
+    <text x="22" y="71" class="small">
+      <tspan x="22">Constrain opportunity with</tspan>
+      <tspan x="22" dy="23">scope and least privilege</tspan>
+    </text>
+  </g>
+  <path d="M630 850H669" class="edge"/>
+
+  <g transform="translate(680 775)">
+    <rect width="320" height="150" rx="18" fill="#ebe6dc" stroke="#75685c" stroke-width="2.7"/>
+    <text x="22" y="39" class="flowhead">Independent monitoring</text>
+    <text x="22" y="70" class="small">Fuse the four views above</text>
+    <g transform="translate(22 94)" class="small">
+      <rect width="60" height="34" rx="8" fill="#dde8e0" stroke="#66816f"/><text x="30" y="22" text-anchor="middle">allow</text>
+      <rect x="70" width="60" height="34" rx="8" fill="#eee3c3" stroke="#9b7c37"/><text x="100" y="22" text-anchor="middle">ask</text>
+      <rect x="140" width="60" height="34" rx="8" fill="#dde7ec" stroke="#607f91"/><text x="170" y="22" text-anchor="middle">pause</text>
+      <rect x="210" width="60" height="34" rx="8" fill="#ead7db" stroke="#9b5964"/><text x="240" y="22" text-anchor="middle">stop</text>
+    </g>
+  </g>
+  <path d="M1000 850H1039" class="edge"/>
+
+  <g transform="translate(1050 790)">
+    <rect width="215" height="120" rx="18" fill="#ead7db" stroke="#9b5964" stroke-width="2.7"/>
+    <text x="22" y="39" class="flowhead">Human response</text>
+    <text x="22" y="71" class="small">
+      <tspan x="22">Review, contain,</tspan>
+      <tspan x="22" dy="23">and remediate</tspan>
+    </text>
+  </g>
+  <path d="M1265 850H1304" class="edge"/>
+
+  <g transform="translate(1315 790)">
+    <rect width="216" height="120" rx="18" fill="#f2dfd3" stroke="#ad6544" stroke-width="2.7"/>
+    <text x="22" y="39" class="flowhead">Incident learning</text>
+    <text x="22" y="71" class="small">
+      <tspan x="22">Update training, evals,</tspan>
+      <tspan x="22" dy="23">harness, and policy</tspan>
+    </text>
+  </g>
+
+  <path d="M1423 910V955H198V922" fill="none" stroke="#9b5964" stroke-width="2.8" stroke-dasharray="8 7" marker-end="url(#arrow)"/>
+  <text x="810" y="974" text-anchor="middle" class="small" fill="#823f4b">Post-incident evidence changes the next training and deployment cycle</text>
+  <text x="70" y="1018" class="note">Author synthesis. “Full trajectory” is richer than a single signal, but no monitor is complete or a substitute for preventive controls.</text>
+</svg>

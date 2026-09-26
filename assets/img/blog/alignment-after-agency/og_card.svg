@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">Alignment After Agency</title>
+  <desc id="desc">Social preview card for an article about safety for models that act.</desc>
+  <rect width="1200" height="630" fill="#fbf8f2"/>
+  <rect x="44" y="44" width="1112" height="542" rx="28" fill="#f7f2e9" stroke="#75685c" stroke-width="2"/>
+  <text x="82" y="118" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="20" font-weight="750" letter-spacing="2" fill="#8d4d33">ALIGNMENT · SAFETY · AGENT SYSTEMS</text>
+  <text x="82" y="204" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="65" font-weight="760" letter-spacing="-1.5" fill="#30271f">Alignment After Agency</text>
+  <text x="84" y="257" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="29" font-weight="430" fill="#65594f">Safety for models that reason, act, persist, and coordinate</text>
+
+  <g transform="translate(82 326)" font-family="Inter, ui-sans-serif, system-ui, sans-serif">
+    <g>
+      <rect width="180" height="116" rx="16" fill="#f2dfd3" stroke="#ad6544" stroke-width="2.5"/>
+      <text x="18" y="37" font-size="14" font-weight="750" letter-spacing="1.2" fill="#8d4d33">UNDERSTAND</text>
+      <text x="18" y="72" font-size="21" font-weight="700" fill="#30271f">Threat model</text>
+      <text x="18" y="99" font-size="15" fill="#65594f">pathways · signals</text>
+    </g>
+    <g transform="translate(207)">
+      <rect width="180" height="116" rx="16" fill="#eee3c3" stroke="#9b7c37" stroke-width="2.5"/>
+      <text x="18" y="37" font-size="14" font-weight="750" letter-spacing="1.2" fill="#806420">SHAPE</text>
+      <text x="18" y="72" font-size="21" font-weight="700" fill="#30271f">Train defenses</text>
+      <text x="18" y="99" font-size="15" fill="#65594f">model · monitor</text>
+    </g>
+    <g transform="translate(414)">
+      <rect width="180" height="116" rx="16" fill="#dde8e0" stroke="#66816f" stroke-width="2.5"/>
+      <text x="18" y="37" font-size="14" font-weight="750" letter-spacing="1.2" fill="#4f6d5a">CHALLENGE</text>
+      <text x="18" y="72" font-size="21" font-weight="700" fill="#30271f">Evaluate</text>
+      <text x="18" y="99" font-size="15" fill="#65594f">system · red team</text>
+    </g>
+    <g transform="translate(621)">
+      <rect width="180" height="116" rx="16" fill="#dde7ec" stroke="#607f91" stroke-width="2.5"/>
+      <text x="18" y="37" font-size="14" font-weight="750" letter-spacing="1.2" fill="#486b7e">CONTROL</text>
+      <text x="18" y="72" font-size="21" font-weight="700" fill="#30271f">Runtime gates</text>
+      <text x="18" y="99" font-size="15" fill="#65594f">allow · ask · stop</text>
+    </g>
+    <g transform="translate(828)">
+      <rect width="180" height="116" rx="16" fill="#ead7db" stroke="#9b5964" stroke-width="2.5"/>
+      <text x="18" y="37" font-size="14" font-weight="750" letter-spacing="1.2" fill="#823f4b">LEARN</text>
+      <text x="18" y="72" font-size="21" font-weight="700" fill="#30271f">Repair &amp; replay</text>
+      <text x="18" y="99" font-size="15" fill="#65594f">incident · regression</text>
+    </g>
+  </g>
+
+  <path d="M1090 475V514H170V475" fill="none" stroke="#9b5964" stroke-width="3" stroke-dasharray="9 7"/>
+  <text x="82" y="552" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="18" fill="#65594f">MODEL × HARNESS × MONITOR × ORGANIZATION</text>
+  <text x="1118" y="552" text-anchor="end" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="18" fill="#65594f">Jiaxin Zhang · 2026</text>
+</svg>

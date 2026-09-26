@@ -1,0 +1,128 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">How the unit of alignment expanded</title>
+  <desc id="desc">A four-stage timeline from response alignment to reasoning alignment, agent trajectories, and multi-agent systems.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+      <path d="M1 1l10 5-10 5z" fill="#49382c"/>
+    </marker>
+    <style>
+      .title{font:700 42px Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;fill:#30271f;letter-spacing:-.5px}
+      .subtitle{font:400 21px Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;fill:#71665d}
+      .era{font:700 17px Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;letter-spacing:1.5px}
+      .head{font:700 28px Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;fill:#30271f}
+      .body{font:400 19px Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;fill:#514840}
+      .label{font:700 16px Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;letter-spacing:.7px}
+      .unit{font:650 19px Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;fill:#30271f}
+      .risk{font:600 17px Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;fill:#6c3e31}
+      .note{font:400 15px Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;fill:#7a6e65}
+      .card{stroke-width:3}
+    </style>
+  </defs>
+
+  <rect width="1600" height="900" fill="#fbf8f2"/>
+  <text x="80" y="80" class="title">How the unit of alignment expanded</text>
+  <text x="80" y="118" class="subtitle">The safety question moved from “Is this answer acceptable?” to “Can this system act safely over time?”</text>
+
+  <line x1="180" y1="190" x2="1425" y2="190" stroke="#49382c" stroke-width="4" marker-end="url(#arrow)"/>
+  <text x="800" y="170" text-anchor="middle" class="label" fill="#856e57">MORE STATE · MORE AUTHORITY · MORE INTERACTION</text>
+
+  <g transform="translate(70 225)">
+    <rect width="340" height="505" rx="22" fill="#f2dfd3" stroke="#ad6544" class="card"/>
+    <circle cx="58" cy="55" r="27" fill="#ad6544"/>
+    <text x="58" y="63" text-anchor="middle" font-family="Inter,ui-sans-serif,system-ui" font-size="24" font-weight="800" fill="#fff">1</text>
+    <text x="100" y="48" class="era" fill="#8d4d33">2016–2023</text>
+    <text x="100" y="76" class="head">Response alignment</text>
+    <line x1="28" y1="104" x2="312" y2="104" stroke="#ad6544" stroke-opacity=".45" stroke-width="2"/>
+
+    <text x="32" y="143" class="label" fill="#8d4d33">PRIMARY OBJECT</text>
+    <text x="32" y="178" class="unit">A single answer</text>
+
+    <text x="32" y="225" class="label" fill="#8d4d33">CORE METHODS</text>
+    <text x="32" y="260" class="body">
+      <tspan x="32" dy="0">Preference learning</tspan>
+      <tspan x="32" dy="29">Instruction following</tspan>
+      <tspan x="32" dy="29">Refusal behavior</tspan>
+    </text>
+
+    <rect x="28" y="365" width="284" height="105" rx="14" fill="#fbf8f2" stroke="#ad6544" stroke-width="2"/>
+    <text x="46" y="397" class="label" fill="#8d4d33">TYPICAL BLIND SPOT</text>
+    <text x="46" y="430" class="risk">Specification gaming</text>
+    <text x="46" y="456" class="body" font-size="17">A good-looking final answer</text>
+  </g>
+
+  <g transform="translate(445 225)">
+    <rect width="340" height="505" rx="22" fill="#dde8e0" stroke="#66816f" class="card"/>
+    <circle cx="58" cy="55" r="27" fill="#66816f"/>
+    <text x="58" y="63" text-anchor="middle" font-family="Inter,ui-sans-serif,system-ui" font-size="24" font-weight="800" fill="#fff">2</text>
+    <text x="100" y="48" class="era" fill="#4f6d5a">2024–2025</text>
+    <text x="100" y="76" class="head">Reasoning alignment</text>
+    <line x1="28" y1="104" x2="312" y2="104" stroke="#66816f" stroke-opacity=".48" stroke-width="2"/>
+
+    <text x="32" y="143" class="label" fill="#4f6d5a">PRIMARY OBJECT</text>
+    <text x="32" y="178" class="unit">A reasoning trace</text>
+
+    <text x="32" y="225" class="label" fill="#4f6d5a">CORE METHODS</text>
+    <text x="32" y="260" class="body">
+      <tspan x="32" dy="0">Process supervision</tspan>
+      <tspan x="32" dy="29">CoT as a safety signal</tspan>
+      <tspan x="32" dy="29">Model-organism audits</tspan>
+    </text>
+
+    <rect x="28" y="365" width="284" height="105" rx="14" fill="#fbf8f2" stroke="#66816f" stroke-width="2"/>
+    <text x="46" y="397" class="label" fill="#4f6d5a">TYPICAL BLIND SPOT</text>
+    <text x="46" y="430" class="risk">Hidden computation</text>
+    <text x="46" y="456" class="body" font-size="17">The trace may be incomplete</text>
+  </g>
+
+  <g transform="translate(820 225)">
+    <rect width="340" height="505" rx="22" fill="#dde7ec" stroke="#607f91" class="card"/>
+    <circle cx="58" cy="55" r="27" fill="#607f91"/>
+    <text x="58" y="63" text-anchor="middle" font-family="Inter,ui-sans-serif,system-ui" font-size="24" font-weight="800" fill="#fff">3</text>
+    <text x="100" y="48" class="era" fill="#486b7e">2025–2026</text>
+    <text x="100" y="76" class="head">Agent trajectory</text>
+    <line x1="28" y1="104" x2="312" y2="104" stroke="#607f91" stroke-opacity=".48" stroke-width="2"/>
+
+    <text x="32" y="143" class="label" fill="#486b7e">PRIMARY OBJECT</text>
+    <text x="32" y="178" class="unit">A state-changing trajectory</text>
+
+    <text x="32" y="225" class="label" fill="#486b7e">CORE METHODS</text>
+    <text x="32" y="260" class="body">
+      <tspan x="32" dy="0">Tool-use training</tspan>
+      <tspan x="32" dy="29">Permission boundaries</tspan>
+      <tspan x="32" dy="29">Long-horizon monitoring</tspan>
+    </text>
+
+    <rect x="28" y="365" width="284" height="105" rx="14" fill="#fbf8f2" stroke="#607f91" stroke-width="2"/>
+    <text x="46" y="397" class="label" fill="#486b7e">TYPICAL BLIND SPOT</text>
+    <text x="46" y="430" class="risk">Overreach &amp; persistence</text>
+    <text x="46" y="456" class="body" font-size="17">One action changes the next</text>
+  </g>
+
+  <g transform="translate(1195 225)">
+    <rect width="340" height="505" rx="22" fill="#eee3c3" stroke="#9b7c37" class="card"/>
+    <circle cx="58" cy="55" r="27" fill="#9b7c37"/>
+    <text x="58" y="63" text-anchor="middle" font-family="Inter,ui-sans-serif,system-ui" font-size="24" font-weight="800" fill="#fff">4</text>
+    <text x="100" y="48" class="era" fill="#806420">2026 →</text>
+    <text x="100" y="76" class="head">Multi-agent system</text>
+    <line x1="28" y1="104" x2="312" y2="104" stroke="#9b7c37" stroke-opacity=".48" stroke-width="2"/>
+
+    <text x="32" y="143" class="label" fill="#806420">PRIMARY OBJECT</text>
+    <text x="32" y="178" class="unit">A network of actors</text>
+
+    <text x="32" y="225" class="label" fill="#806420">CORE METHODS</text>
+    <text x="32" y="260" class="body">
+      <tspan x="32" dy="0">Shared-state governance</tspan>
+      <tspan x="32" dy="29">Identity &amp; provenance</tspan>
+      <tspan x="32" dy="29">System-level control</tspan>
+    </text>
+
+    <rect x="28" y="365" width="284" height="105" rx="14" fill="#fbf8f2" stroke="#9b7c37" stroke-width="2"/>
+    <text x="46" y="397" class="label" fill="#806420">TYPICAL BLIND SPOT</text>
+    <text x="46" y="430" class="risk">Coordination failures</text>
+    <text x="46" y="456" class="body" font-size="17">Risk can be distributed</text>
+  </g>
+
+  <path d="M238 778 C500 850 1100 850 1365 778" fill="none" stroke="#49382c" stroke-width="3" marker-end="url(#arrow)"/>
+  <text x="800" y="795" text-anchor="middle" class="unit">Alignment target: output → trace → trajectory → socio-technical system</text>
+  <text x="80" y="878" class="note">Author synthesis. Dates mark shifts in emphasis, not hard boundaries between research eras.</text>
+</svg>

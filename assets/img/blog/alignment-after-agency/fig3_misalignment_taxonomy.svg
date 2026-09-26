@@ -1,0 +1,150 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="980" viewBox="0 0 1600 980" role="img" aria-labelledby="title desc">
+  <title id="title">A map of agentic misalignment</title>
+  <desc id="desc">Four failure families—objective, authority, truthfulness, and coordination—connect to an escalation path from latent propensity to systemic harm.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+      <path d="M1 1l10 5-10 5z" fill="#49382c"/>
+    </marker>
+    <style>
+      .title{font:700 42px Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;fill:#30271f;letter-spacing:-.5px}
+      .subtitle{font:400 21px Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;fill:#71665d}
+      .head{font:700 26px Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;fill:#30271f}
+      .body{font:500 18px Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;fill:#50463e}
+      .small{font:450 16px Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;fill:#675d55}
+      .eyebrow{font:750 15px Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;letter-spacing:1.25px}
+      .step{font:700 20px Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;fill:#30271f}
+      .note{font:400 15px Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;fill:#7a6e65}
+      .edge{fill:none;stroke:#49382c;stroke-width:3;marker-end:url(#arrow)}
+    </style>
+  </defs>
+
+  <rect width="1600" height="980" fill="#fbf8f2"/>
+  <text x="70" y="76" class="title">A map of agentic misalignment</text>
+  <text x="70" y="114" class="subtitle">Classify the failure before choosing a mitigation: the same bad outcome can arise from very different mechanisms.</text>
+
+  <g transform="translate(70 160)">
+    <rect width="340" height="330" rx="22" fill="#f2dfd3" stroke="#ad6544" stroke-width="3"/>
+    <text x="28" y="42" class="eyebrow" fill="#8d4d33">OBJECTIVE FAILURE</text>
+    <text x="28" y="82" class="head">Win the score, miss the task</text>
+    <line x1="28" y1="104" x2="312" y2="104" stroke="#ad6544" stroke-opacity=".45" stroke-width="2"/>
+    <text x="28" y="143" class="body">
+      <tspan x="28">• Reward hacking</tspan>
+      <tspan x="28" dy="36">• Verifier / grader gaming</tspan>
+      <tspan x="28" dy="36">• Shortcut or answer lookup</tspan>
+      <tspan x="28" dy="36">• Evaluation metagaming</tspan>
+    </text>
+    <rect x="28" y="277" width="284" height="32" rx="8" fill="#fbf8f2"/>
+    <text x="170" y="299" text-anchor="middle" class="small">Signal: score ↑, real utility ↔</text>
+  </g>
+
+  <g transform="translate(445 160)">
+    <rect width="340" height="330" rx="22" fill="#eee3c3" stroke="#9b7c37" stroke-width="3"/>
+    <text x="28" y="42" class="eyebrow" fill="#806420">AUTHORITY FAILURE</text>
+    <text x="28" y="82" class="head">Act beyond permission</text>
+    <line x1="28" y1="104" x2="312" y2="104" stroke="#9b7c37" stroke-opacity=".48" stroke-width="2"/>
+    <text x="28" y="143" class="body">
+      <tspan x="28">• Skip required confirmation</tspan>
+      <tspan x="28" dy="36">• Circumvent a restriction</tspan>
+      <tspan x="28" dy="36">• Acquire excess privilege</tspan>
+      <tspan x="28" dy="36">• Make an unapproved change</tspan>
+    </text>
+    <rect x="28" y="277" width="284" height="32" rx="8" fill="#fbf8f2"/>
+    <text x="170" y="299" text-anchor="middle" class="small">Signal: action &gt; delegated scope</text>
+  </g>
+
+  <g transform="translate(820 160)">
+    <rect width="340" height="330" rx="22" fill="#dde8e0" stroke="#66816f" stroke-width="3"/>
+    <text x="28" y="42" class="eyebrow" fill="#4f6d5a">TRUTHFULNESS FAILURE</text>
+    <text x="28" y="82" class="head">Hide what really happened</text>
+    <line x1="28" y1="104" x2="312" y2="104" stroke="#66816f" stroke-opacity=".48" stroke-width="2"/>
+    <text x="28" y="143" class="body">
+      <tspan x="28">• Claim success after failure</tspan>
+      <tspan x="28" dy="36">• Omit material side effects</tspan>
+      <tspan x="28" dy="36">• Manipulate evidence or logs</tspan>
+      <tspan x="28" dy="36">• Sandbag or mislead oversight</tspan>
+    </text>
+    <rect x="28" y="277" width="284" height="32" rx="8" fill="#fbf8f2"/>
+    <text x="170" y="299" text-anchor="middle" class="small">Signal: report ≠ observed state</text>
+  </g>
+
+  <g transform="translate(1195 160)">
+    <rect width="340" height="330" rx="22" fill="#dde7ec" stroke="#607f91" stroke-width="3"/>
+    <text x="28" y="42" class="eyebrow" fill="#486b7e">COORDINATION FAILURE</text>
+    <text x="28" y="82" class="head">Risk emerges between agents</text>
+    <line x1="28" y1="104" x2="312" y2="104" stroke="#607f91" stroke-opacity=".48" stroke-width="2"/>
+    <text x="28" y="143" class="body">
+      <tspan x="28">• Adopt an untrusted peer goal</tspan>
+      <tspan x="28" dy="36">• Collude through shared state</tspan>
+      <tspan x="28" dy="36">• Split a harmful plan</tspan>
+      <tspan x="28" dy="36">• Create correlated failures</tspan>
+    </text>
+    <rect x="28" y="277" width="284" height="32" rx="8" fill="#fbf8f2"/>
+    <text x="170" y="299" text-anchor="middle" class="small">Signal: local traces look benign</text>
+  </g>
+
+  <text x="70" y="555" class="eyebrow" fill="#65594f">ESCALATION PATH</text>
+  <text x="70" y="588" class="small">Misaligned behavior becomes harm only when propensity, opportunity, and weak control meet.</text>
+
+  <g transform="translate(70 625)">
+    <rect width="280" height="145" rx="18" fill="#ebe6dc" stroke="#75685c" stroke-width="2.7"/>
+    <circle cx="38" cy="39" r="22" fill="#75685c"/>
+    <text x="38" y="46" text-anchor="middle" font-family="Inter,ui-sans-serif,system-ui" font-size="19" font-weight="800" fill="#fff">1</text>
+    <text x="74" y="45" class="step">Latent propensity</text>
+    <text x="24" y="84" class="small">
+      <tspan x="24">A strategy is available and</tspan>
+      <tspan x="24" dy="25">sometimes preferred.</tspan>
+    </text>
+  </g>
+  <path d="M350 698H423" class="edge"/>
+
+  <g transform="translate(435 625)">
+    <rect width="280" height="145" rx="18" fill="#eee3c3" stroke="#9b7c37" stroke-width="2.7"/>
+    <circle cx="38" cy="39" r="22" fill="#9b7c37"/>
+    <text x="38" y="46" text-anchor="middle" font-family="Inter,ui-sans-serif,system-ui" font-size="19" font-weight="800" fill="#fff">2</text>
+    <text x="74" y="45" class="step">Exploit opportunity</text>
+    <text x="24" y="84" class="small">
+      <tspan x="24">A weak grader, broad tool, or</tspan>
+      <tspan x="24" dy="25">ambiguous permission opens a path.</tspan>
+    </text>
+  </g>
+  <path d="M715 698H788" class="edge"/>
+
+  <g transform="translate(800 625)">
+    <rect width="280" height="145" rx="18" fill="#f2dfd3" stroke="#ad6544" stroke-width="2.7"/>
+    <circle cx="38" cy="39" r="22" fill="#ad6544"/>
+    <text x="38" y="46" text-anchor="middle" font-family="Inter,ui-sans-serif,system-ui" font-size="19" font-weight="800" fill="#fff">3</text>
+    <text x="74" y="45" class="step">Unchecked repetition</text>
+    <text x="24" y="84" class="small">
+      <tspan x="24">Persistence, memory, or peers</tspan>
+      <tspan x="24" dy="25">amplify the initial deviation.</tspan>
+    </text>
+  </g>
+  <path d="M1080 698H1153" class="edge"/>
+
+  <g transform="translate(1165 625)">
+    <rect width="370" height="145" rx="18" fill="#ead7db" stroke="#9b5964" stroke-width="2.7"/>
+    <circle cx="38" cy="39" r="22" fill="#9b5964"/>
+    <text x="38" y="46" text-anchor="middle" font-family="Inter,ui-sans-serif,system-ui" font-size="19" font-weight="800" fill="#fff">4</text>
+    <text x="74" y="45" class="step">Persistent or systemic harm</text>
+    <text x="24" y="84" class="small">
+      <tspan x="24">State changes, access loss, data</tspan>
+      <tspan x="24" dy="25">exposure, sabotage, or coordination.</tspan>
+    </text>
+  </g>
+
+  <g transform="translate(70 820)">
+    <rect width="1465" height="100" rx="18" fill="#fbf8f2" stroke="#75685c" stroke-width="2" stroke-dasharray="8 7"/>
+    <text x="26" y="33" class="eyebrow" fill="#65594f">RISK MULTIPLIERS</text>
+    <text x="26" y="70" class="body">Longer horizon</text>
+    <circle cx="204" cy="64" r="4" fill="#75685c"/>
+    <text x="230" y="70" class="body">More privilege</text>
+    <circle cx="390" cy="64" r="4" fill="#75685c"/>
+    <text x="416" y="70" class="body">Weak or gameable verifier</text>
+    <circle cx="681" cy="64" r="4" fill="#75685c"/>
+    <text x="707" y="70" class="body">Shared memory / communication</text>
+    <circle cx="1028" cy="64" r="4" fill="#75685c"/>
+    <text x="1054" y="70" class="body">Slow or fragmented oversight</text>
+  </g>
+
+  <text x="70" y="961" class="note">Author taxonomy synthesized from frontier-lab incident reports, agentic-misalignment evaluations, and AI-control research.</text>
+</svg>

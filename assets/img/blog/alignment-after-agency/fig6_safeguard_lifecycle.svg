@@ -1,0 +1,146 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1040" viewBox="0 0 1600 1040" role="img" aria-labelledby="title desc">
+  <title id="title">The safeguard operating loop</title>
+  <desc id="desc">A closed-loop lifecycle from threat modeling through training, evaluation, runtime control, response, and incident-driven improvement, surrounded by infrastructure security controls.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+      <path d="M1 1l10 5-10 5z" fill="#49382c"/>
+    </marker>
+    <marker id="feedback-arrow" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="9" markerHeight="9" orient="auto">
+      <path d="M1 1l10 5-10 5z" fill="#9b5964"/>
+    </marker>
+    <style>
+      .title{font:700 42px Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;fill:#30271f;letter-spacing:-.5px}
+      .subtitle{font:400 21px Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;fill:#71665d}
+      .head{font:700 24px Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;fill:#30271f}
+      .body{font:500 17px Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;fill:#50463e}
+      .small{font:450 15px Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;fill:#675d55}
+      .eyebrow{font:750 14px Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;letter-spacing:1.15px}
+      .edge{fill:none;stroke:#49382c;stroke-width:3.1;marker-end:url(#arrow)}
+      .feedback{fill:none;stroke:#9b5964;stroke-width:3.2;stroke-dasharray:10 8;marker-end:url(#feedback-arrow)}
+    </style>
+  </defs>
+
+  <rect width="1600" height="1040" fill="#fbf8f2"/>
+  <text x="70" y="74" class="title">The safeguard operating loop</text>
+  <text x="70" y="112" class="subtitle">Understand the pathway → reduce propensity → test the stack → control execution → learn from every failure.</text>
+
+  <rect x="48" y="142" width="1504" height="806" rx="30" fill="#f7f2e9" stroke="#75685c" stroke-width="2.5" stroke-dasharray="11 8"/>
+  <text x="78" y="178" class="eyebrow" fill="#65594f">OPERATIONAL SHELL · CHECKPOINT SECURITY · SANDBOX · NETWORK &amp; CREDENTIAL ISOLATION · AUDIT · INCIDENT RESPONSE</text>
+
+  <g transform="translate(75 220)">
+    <rect width="255" height="310" rx="22" fill="#f2dfd3" stroke="#ad6544" stroke-width="3"/>
+    <text x="26" y="40" class="eyebrow" fill="#8d4d33">1 · UNDERSTAND</text>
+    <text x="26" y="79" class="head">Threat model</text>
+    <line x1="26" y1="101" x2="229" y2="101" stroke="#ad6544" stroke-opacity=".45" stroke-width="2"/>
+    <text x="26" y="137" class="body">
+      <tspan x="26">Actors &amp; incentives</tspan>
+      <tspan x="26" dy="30">Assets &amp; consequences</tspan>
+      <tspan x="26" dy="30">End-to-end pathways</tspan>
+      <tspan x="26" dy="30">Access &amp; bottlenecks</tspan>
+      <tspan x="26" dy="30">Observable signals</tspan>
+    </text>
+    <rect x="24" y="268" width="207" height="29" rx="8" fill="#fbf8f2"/>
+    <text x="128" y="288" text-anchor="middle" class="small">Output: testable scenarios</text>
+  </g>
+
+  <g transform="translate(375 220)">
+    <rect width="255" height="310" rx="22" fill="#eee3c3" stroke="#9b7c37" stroke-width="3"/>
+    <text x="26" y="40" class="eyebrow" fill="#806420">2 · SHAPE</text>
+    <text x="26" y="79" class="head">Train defenses</text>
+    <line x1="26" y1="101" x2="229" y2="101" stroke="#9b7c37" stroke-opacity=".48" stroke-width="2"/>
+    <text x="26" y="137" class="body">
+      <tspan x="26">Model policy &amp; refusal</tspan>
+      <tspan x="26" dy="30">Safe action trajectories</tspan>
+      <tspan x="26" dy="30">Adversarial examples</tspan>
+      <tspan x="26" dy="30">Classifiers &amp; reasoners</tspan>
+      <tspan x="26" dy="30">Decorrelated signals</tspan>
+    </text>
+    <rect x="24" y="268" width="207" height="29" rx="8" fill="#fbf8f2"/>
+    <text x="128" y="288" text-anchor="middle" class="small">Output: policy + detectors</text>
+  </g>
+
+  <g transform="translate(675 220)">
+    <rect width="255" height="310" rx="22" fill="#dde8e0" stroke="#66816f" stroke-width="3"/>
+    <text x="26" y="40" class="eyebrow" fill="#4f6d5a">3 · CHALLENGE</text>
+    <text x="26" y="79" class="head">Evaluate &amp; red-team</text>
+    <line x1="26" y1="101" x2="229" y2="101" stroke="#66816f" stroke-opacity=".48" stroke-width="2"/>
+    <text x="26" y="137" class="body">
+      <tspan x="26">Capability upper bound</tspan>
+      <tspan x="26" dy="30">Model-only behavior</tspan>
+      <tspan x="26" dy="30">Integrated safeguards</tspan>
+      <tspan x="26" dy="30">Known regressions</tspan>
+      <tspan x="26" dy="30">Novel adaptive attacks</tspan>
+    </text>
+    <rect x="24" y="268" width="207" height="29" rx="8" fill="#fbf8f2"/>
+    <text x="128" y="288" text-anchor="middle" class="small">Gate: safety × usefulness</text>
+  </g>
+
+  <g transform="translate(975 220)">
+    <rect width="255" height="310" rx="22" fill="#dde7ec" stroke="#607f91" stroke-width="3"/>
+    <text x="26" y="40" class="eyebrow" fill="#486b7e">4 · CONTROL</text>
+    <text x="26" y="79" class="head">Runtime safeguards</text>
+    <line x1="26" y1="101" x2="229" y2="101" stroke="#607f91" stroke-opacity=".48" stroke-width="2"/>
+    <text x="26" y="137" class="body">
+      <tspan x="26">Misalignment monitor</tspan>
+      <tspan x="26" dy="30">Misuse monitor</tspan>
+      <tspan x="26" dy="30">Typed permissions</tspan>
+      <tspan x="26" dy="30">Pre-action gates</tspan>
+      <tspan x="26" dy="30">Risk-tiered access</tspan>
+    </text>
+    <rect x="24" y="268" width="207" height="29" rx="8" fill="#fbf8f2"/>
+    <text x="128" y="288" text-anchor="middle" class="small">Action: allow · ask · stop</text>
+  </g>
+
+  <g transform="translate(1275 220)">
+    <rect width="250" height="310" rx="22" fill="#ead7db" stroke="#9b5964" stroke-width="3"/>
+    <text x="25" y="40" class="eyebrow" fill="#823f4b">5 · RESPOND</text>
+    <text x="25" y="79" class="head">Contain &amp; learn</text>
+    <line x1="25" y1="101" x2="225" y2="101" stroke="#9b5964" stroke-opacity=".48" stroke-width="2"/>
+    <text x="25" y="137" class="body">
+      <tspan x="25">Pause / block / revoke</tspan>
+      <tspan x="25" dy="30">Actor enforcement</tspan>
+      <tspan x="25" dy="30">Preserve evidence</tspan>
+      <tspan x="25" dy="30">Causal postmortem</tspan>
+      <tspan x="25" dy="30">Replay &amp; regression</tspan>
+    </text>
+    <rect x="23" y="268" width="204" height="29" rx="8" fill="#fbf8f2"/>
+    <text x="125" y="288" text-anchor="middle" class="small">Output: safer next cycle</text>
+  </g>
+
+  <path d="M330 375H363" class="edge"/>
+  <path d="M630 375H663" class="edge"/>
+  <path d="M930 375H963" class="edge"/>
+  <path d="M1230 375H1263" class="edge"/>
+
+  <path d="M1400 542V590H202V542" class="feedback"/>
+  <rect x="500" y="566" width="600" height="44" rx="12" fill="#fbf8f2" stroke="#9b5964" stroke-width="1.8"/>
+  <text x="800" y="593" text-anchor="middle" class="body" fill="#823f4b">Incidents and near misses update scenarios, data, and tests</text>
+
+  <g transform="translate(75 665)">
+    <text x="0" y="0" class="eyebrow" fill="#65594f">WHO OWNS THE CONTROL?</text>
+    <g transform="translate(0 24)">
+      <rect width="455" height="150" rx="18" fill="#fbf8f2" stroke="#66816f" stroke-width="2.4"/>
+      <text x="24" y="39" class="head">Model</text>
+      <text x="24" y="73" class="body">Generalize intent, uncertainty, refusal,</text>
+      <text x="24" y="101" class="body">safe completion, and safe stopping.</text>
+      <text x="24" y="132" class="small">Reduces harmful propensity.</text>
+    </g>
+    <g transform="translate(490 24)">
+      <rect width="455" height="150" rx="18" fill="#fbf8f2" stroke="#607f91" stroke-width="2.4"/>
+      <text x="24" y="39" class="head">Harness</text>
+      <text x="24" y="73" class="body">Scope tools, authenticate provenance,</text>
+      <text x="24" y="101" class="body">gate irreversible actions, preserve logs.</text>
+      <text x="24" y="132" class="small">Limits opportunity and blast radius.</text>
+    </g>
+    <g transform="translate(980 24)">
+      <rect width="450" height="150" rx="18" fill="#fbf8f2" stroke="#9b5964" stroke-width="2.4"/>
+      <text x="24" y="39" class="head">Organization</text>
+      <text x="24" y="73" class="body">Set access tiers, investigate alerts,</text>
+      <text x="24" y="101" class="body">revoke privileges, and own incidents.</text>
+      <text x="24" y="132" class="small">Makes control accountable.</text>
+    </g>
+  </g>
+
+  <text x="75" y="978" class="small">Author schematic adapted from the safeguard taxonomy in the GPT-6 Astra System Card §10.2.</text>
+  <text x="75" y="1005" class="small">A monitor is a sensor until it is connected to an actuator; asynchronous detection is not a transaction boundary.</text>
+</svg>

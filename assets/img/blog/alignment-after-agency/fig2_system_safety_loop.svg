@@ -1,0 +1,169 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="980" viewBox="0 0 1600 980" role="img" aria-labelledby="title desc">
+  <title id="title">Safety is a model–harness–environment property</title>
+  <desc id="desc">A model, harness, environment, monitoring, and human governance form a closed control loop. The environment defines task state, available actions, feedback, and consequences.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+      <path d="M1 1l10 5-10 5z" fill="#49382c"/>
+    </marker>
+    <style>
+      .title{font:700 42px Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;fill:#30271f;letter-spacing:-.5px}
+      .subtitle{font:400 21px Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;fill:#71665d}
+      .head{font:700 27px Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;fill:#30271f}
+      .body{font:500 18px Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;fill:#50463e}
+      .small{font:450 16px Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;fill:#675d55}
+      .eyebrow{font:750 15px Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;letter-spacing:1.25px}
+      .note{font:400 15px Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;fill:#7a6e65}
+      .edge{fill:none;stroke:#49382c;stroke-width:3.2;marker-end:url(#arrow)}
+      .sense{fill:none;stroke:#806f61;stroke-width:2.4;stroke-dasharray:8 7;marker-end:url(#arrow)}
+    </style>
+  </defs>
+
+  <rect width="1600" height="980" fill="#fbf8f2"/>
+  <text x="70" y="76" class="title">Safety is a model–harness–environment property</text>
+  <text x="70" y="114" class="subtitle">The model proposes. The harness grants authority. The environment creates consequences. Oversight closes the loop.</text>
+
+  <g transform="translate(70 175)">
+    <rect width="215" height="250" rx="20" fill="#f2dfd3" stroke="#ad6544" stroke-width="3"/>
+    <text x="28" y="42" class="eyebrow" fill="#8d4d33">INTENT</text>
+    <text x="28" y="82" class="head">User / operator</text>
+    <line x1="28" y1="105" x2="187" y2="105" stroke="#ad6544" stroke-opacity=".45" stroke-width="2"/>
+    <text x="28" y="142" class="body">
+      <tspan x="28">Goal</tspan>
+      <tspan x="28" dy="31">Scope</tspan>
+      <tspan x="28" dy="31">Consent</tspan>
+    </text>
+    <text x="28" y="232" class="small">What is authorized?</text>
+  </g>
+
+  <g transform="translate(350 150)">
+    <rect width="370" height="300" rx="22" fill="#eee3c3" stroke="#9b7c37" stroke-width="3"/>
+    <text x="30" y="43" class="eyebrow" fill="#806420">CONTROL PLANE</text>
+    <text x="30" y="82" class="head">Harness</text>
+    <g class="body">
+      <rect x="28" y="111" width="314" height="43" rx="10" fill="#fbf8f2" stroke="#9b7c37" stroke-width="1.7"/>
+      <text x="46" y="139">Policy &amp; permission checks</text>
+      <rect x="28" y="166" width="314" height="43" rx="10" fill="#fbf8f2" stroke="#9b7c37" stroke-width="1.7"/>
+      <text x="46" y="194">Context, memory &amp; tools</text>
+      <rect x="28" y="221" width="314" height="43" rx="10" fill="#fbf8f2" stroke="#9b7c37" stroke-width="1.7"/>
+      <text x="46" y="249">Budget, review &amp; stop rules</text>
+    </g>
+    <text x="30" y="289" class="small">Authority is a runtime decision.</text>
+  </g>
+
+  <g transform="translate(790 175)">
+    <rect width="300" height="250" rx="20" fill="#dde8e0" stroke="#66816f" stroke-width="3"/>
+    <text x="28" y="42" class="eyebrow" fill="#4f6d5a">COGNITION</text>
+    <text x="28" y="82" class="head">Model</text>
+    <line x1="28" y1="105" x2="272" y2="105" stroke="#66816f" stroke-opacity=".48" stroke-width="2"/>
+    <text x="28" y="142" class="body">
+      <tspan x="28">Interpret state</tspan>
+      <tspan x="28" dy="31">Plan / reason</tspan>
+      <tspan x="28" dy="31">Propose an action</tspan>
+    </text>
+    <text x="28" y="232" class="small">Capability is not authority.</text>
+  </g>
+
+  <g transform="translate(1160 150)">
+    <rect width="370" height="300" rx="22" fill="#dde7ec" stroke="#607f91" stroke-width="3"/>
+    <text x="30" y="43" class="eyebrow" fill="#486b7e">CONSEQUENCE PLANE</text>
+    <text x="30" y="82" class="head">Environment</text>
+    <g class="body">
+      <rect x="28" y="111" width="314" height="43" rx="10" fill="#fbf8f2" stroke="#607f91" stroke-width="1.7"/>
+      <text x="46" y="139">Task, state &amp; observations</text>
+      <rect x="28" y="166" width="314" height="43" rx="10" fill="#fbf8f2" stroke="#607f91" stroke-width="1.7"/>
+      <text x="46" y="194">Actions, tools &amp; permissions</text>
+      <rect x="28" y="221" width="314" height="43" rx="10" fill="#fbf8f2" stroke="#607f91" stroke-width="1.7"/>
+      <text x="46" y="249">Verifier, reward &amp; impact</text>
+    </g>
+    <text x="30" y="289" class="small">It teaches, measures, and amplifies.</text>
+  </g>
+
+  <path d="M285 300H338" class="edge"/>
+  <text x="311" y="281" text-anchor="middle" class="small">request</text>
+  <path d="M720 300H778" class="edge"/>
+  <text x="749" y="281" text-anchor="middle" class="small">context</text>
+  <path d="M1090 300H1148" class="edge"/>
+  <text x="1119" y="281" text-anchor="middle" class="small">action</text>
+  <path d="M1345 450V486H945V438" class="edge"/>
+  <text x="1150" y="472" text-anchor="middle" class="small">observation updates the next decision</text>
+
+  <g transform="translate(70 555)">
+    <rect width="180" height="235" rx="20" fill="#ead7db" stroke="#9b5964" stroke-width="3"/>
+    <text x="25" y="42" class="eyebrow" fill="#823f4b">GOVERNANCE</text>
+    <text x="25" y="80" class="head">Human</text>
+    <text x="25" y="111" class="head">oversight</text>
+    <line x1="25" y1="132" x2="155" y2="132" stroke="#9b5964" stroke-opacity=".45" stroke-width="2"/>
+    <text x="25" y="166" class="body">
+      <tspan x="25">Policy</tspan>
+      <tspan x="25" dy="29">Escalation</tspan>
+      <tspan x="25" dy="29">Incident review</tspan>
+    </text>
+  </g>
+
+  <g transform="translate(300 535)">
+    <rect width="790" height="275" rx="22" fill="#ebe6dc" stroke="#75685c" stroke-width="3"/>
+    <text x="30" y="43" class="eyebrow" fill="#65594f">OBSERVABILITY PLANE</text>
+    <text x="30" y="81" class="head">Monitor the whole trajectory</text>
+    <text x="30" y="111" class="small">Correlate what the agent says, does, changes, and communicates.</text>
+
+    <g transform="translate(30 137)">
+      <rect width="166" height="95" rx="13" fill="#fbf8f2" stroke="#75685c" stroke-width="1.8"/>
+      <text x="18" y="34" class="eyebrow" fill="#65594f">REASONING</text>
+      <text x="18" y="68" class="body">CoT / plans</text>
+    </g>
+    <g transform="translate(216 137)">
+      <rect width="166" height="95" rx="13" fill="#fbf8f2" stroke="#75685c" stroke-width="1.8"/>
+      <text x="18" y="34" class="eyebrow" fill="#65594f">BEHAVIOR</text>
+      <text x="18" y="68" class="body">Tool actions</text>
+    </g>
+    <g transform="translate(402 137)">
+      <rect width="166" height="95" rx="13" fill="#fbf8f2" stroke="#75685c" stroke-width="1.8"/>
+      <text x="18" y="34" class="eyebrow" fill="#65594f">EVIDENCE</text>
+      <text x="18" y="68" class="body">Artifacts</text>
+    </g>
+    <g transform="translate(588 137)">
+      <rect width="166" height="95" rx="13" fill="#fbf8f2" stroke="#75685c" stroke-width="1.8"/>
+      <text x="18" y="34" class="eyebrow" fill="#65594f">SYSTEM</text>
+      <text x="18" y="68" class="body">Global state</text>
+    </g>
+  </g>
+
+  <g transform="translate(1160 535)">
+    <rect width="370" height="275" rx="22" fill="#f2dfd3" stroke="#ad6544" stroke-width="3"/>
+    <text x="30" y="43" class="eyebrow" fill="#8d4d33">CONTROL RESPONSE</text>
+    <text x="30" y="81" class="head">Decide and intervene</text>
+    <g class="body">
+      <rect x="30" y="115" width="140" height="52" rx="12" fill="#dde8e0" stroke="#66816f" stroke-width="2"/>
+      <text x="100" y="148" text-anchor="middle">ALLOW</text>
+      <rect x="200" y="115" width="140" height="52" rx="12" fill="#eee3c3" stroke="#9b7c37" stroke-width="2"/>
+      <text x="270" y="148" text-anchor="middle">ASK</text>
+      <rect x="30" y="187" width="140" height="52" rx="12" fill="#dde7ec" stroke="#607f91" stroke-width="2"/>
+      <text x="100" y="220" text-anchor="middle">PAUSE</text>
+      <rect x="200" y="187" width="140" height="52" rx="12" fill="#ead7db" stroke="#9b5964" stroke-width="2"/>
+      <text x="270" y="220" text-anchor="middle">STOP</text>
+    </g>
+  </g>
+
+  <path d="M250 675H288" class="edge"/>
+  <path d="M1090 675H1148" class="edge"/>
+  <path d="M500 450V523" class="sense"/>
+  <path d="M940 425V523" class="sense"/>
+  <path d="M1345 450V523" class="sense"/>
+  <path d="M1345 535V512H535V462" fill="none" stroke="#9b5964" stroke-width="3" marker-end="url(#arrow)"/>
+  <text x="800" y="507" text-anchor="middle" class="small" fill="#823f4b">intervention feeds back into the harness</text>
+
+  <text x="70" y="868" class="eyebrow" fill="#65594f">DEFENSE IN DEPTH</text>
+  <g transform="translate(70 888)" class="body">
+    <rect width="250" height="48" rx="12" fill="#dde8e0" stroke="#66816f" stroke-width="2"/>
+    <text x="125" y="31" text-anchor="middle">Model alignment</text>
+    <rect x="275" width="250" height="48" rx="12" fill="#eee3c3" stroke="#9b7c37" stroke-width="2"/>
+    <text x="400" y="31" text-anchor="middle">Least privilege</text>
+    <rect x="550" width="250" height="48" rx="12" fill="#dde7ec" stroke="#607f91" stroke-width="2"/>
+    <text x="675" y="31" text-anchor="middle">Isolation &amp; sandboxing</text>
+    <rect x="825" width="250" height="48" rx="12" fill="#ebe6dc" stroke="#75685c" stroke-width="2"/>
+    <text x="950" y="31" text-anchor="middle">Trajectory monitoring</text>
+    <rect x="1100" width="360" height="48" rx="12" fill="#ead7db" stroke="#9b5964" stroke-width="2"/>
+    <text x="1280" y="31" text-anchor="middle">Response &amp; learning loop</text>
+  </g>
+  <text x="70" y="968" class="note">Author schematic. Monitoring adds visibility; it does not replace model alignment or runtime access control.</text>
+</svg>
