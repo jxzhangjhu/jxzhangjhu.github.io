@@ -4,16 +4,6 @@ permalink: /blog/
 title: Blog
 nav: false
 nav_order: 3
-pagination:
-  enabled: true
-  collection: posts
-  permalink: /page/:num/
-  per_page: 10
-  sort_field: date
-  sort_reverse: true
-  trail:
-    before: 1
-    after: 3
 ---
 
 <div class="post blog-lillog">
@@ -27,14 +17,8 @@ pagination:
   </div>
 
   <ul class="post-list">
-
-    {%- if page.pagination.enabled -%}
-      {%- assign postlist = paginator.posts -%}
-    {%- else -%}
-      {%- assign postlist = site.posts -%}
-    {%- endif -%}
-
-    {% for post in postlist %}
+    {% for post in site.posts %}
+    {% unless post.url contains '-zh' or post.lang == 'zh' %}
 
     {% if post.read_time %}
       {% assign read_time = post.read_time %}
@@ -71,11 +55,8 @@ pagination:
       </p>
     </li>
 
+    {% endunless %}
     {% endfor %}
   </ul>
-
-  {%- if page.pagination.enabled -%}
-    {%- include pagination.html -%}
-  {%- endif -%}
 
 </div>
