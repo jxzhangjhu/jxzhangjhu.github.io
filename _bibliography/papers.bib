@@ -22,6 +22,18 @@ Buttons:
 
 # 2026 Papers
 
+# NeurIPS 2026 - Prospective Hindsight
+@inproceedings{zhang2026prospective,
+  title={Prospective Hindsight: Self-Calibrating Reinforcement Learning via Prediction--Reality Gaps},
+  author={Zhang, Jiaxin and Peng, Xiangyu and Chen, Qinglin and Li, Yu and Hayashi, Hiroaki and Wu, Chien-Sheng},
+  booktitle={Advances in Neural Information Processing Systems},
+  year={2026},
+  abbr={NeurIPS 2026},
+  note={Accepted September 24, 2026; preprint forthcoming.},
+  category={Reliability & Safety, RL, UQ},
+  selected={true}
+}
+
 # arXiv - The Illusion of Certainty: CaOPD
 @article{zhang2026caopd,
   title={The Illusion of Certainty: Decoupling Capability and Calibration in On-Policy Distillation},
@@ -50,17 +62,17 @@ Buttons:
   abstract={AI agents are rapidly advancing from passive language models to autonomous systems executing complex, multi-step tasks. Yet their overconfidence in failure remains a fundamental barrier to deployment in high-stakes settings. Existing calibration methods, built for static single-turn outputs, cannot address the unique challenges of agentic systems, such as compounding errors along trajectories, uncertainty from external tools, and opaque failure modes. To address these challenges, we introduce, for the first time, the problem of Agentic Confidence Calibration and propose Holistic Trajectory Calibration (HTC), a novel diagnostic framework that extracts rich process-level features ranging from macro dynamics to micro stability across an agent's entire trajectory. Powered by a simple, interpretable model, HTC consistently surpasses strong baselines in both calibration and discrimination, across eight benchmarks, multiple LLMs, and diverse agent frameworks. Beyond performance, HTC delivers three essential advances: it provides interpretability by revealing the signals behind failure, enables transferability by applying across domains without retraining, and achieves generalization through a General Agent Calibrator (GAC) that achieves the best calibration (lowest ECE) on the out-of-domain GAIA benchmark. Together, these contributions establish a new process-centric paradigm for confidence calibration, providing a framework for diagnosing and enhancing the reliability of AI agents.} 
 }
 
-# arXiv - Agentic Uncertainty Quantification (under review at COLM 2026)
-@article{zhang2026agentic_uq,
+# EMNLP 2026 - Agentic Uncertainty Quantification
+@inproceedings{zhang2026agentic_uq,
   title={Agentic Uncertainty Quantification},
   author={Zhang, Jiaxin and Choubey, Prafulla Kumar and Huang, Kung-Hsiang and Xiong, Caiming and Wu, Chien-Sheng},
-  year = {2026},
-  abbr = {arXiv 2026},
-  note = {Under review at COLM 2026},
-  arxiv = {2601.15703},
-  pdf = {https://arxiv.org/pdf/2601.15703.pdf},
-  category = {Reliability & Safety, Agents, UQ},
-  selected = {true},
+  booktitle={Proceedings of the 2026 Conference on Empirical Methods in Natural Language Processing},
+  year={2026},
+  abbr={EMNLP 2026},
+  arxiv={2601.15703},
+  pdf={https://arxiv.org/pdf/2601.15703.pdf},
+  category={Reliability & Safety, Agents, UQ},
+  selected={true},
   abstract={Although AI agents have demonstrated impressive capabilities in long-horizon reasoning, their reliability is severely hampered by the "Spiral of Hallucination," where early epistemic errors propagate irreversibly. Existing methods face a dilemma: uncertainty quantification (UQ) methods typically act as passive sensors, only diagnosing risks without addressing them, while self-reflection mechanisms suffer from continuous or aimless corrections. To bridge this gap, we propose a unified Dual-Process Agentic UQ (AUQ) framework that transforms verbalized uncertainty into active, bi-directional control signals. Our architecture comprises two complementary mechanisms: System 1 (Uncertainty-Aware Memory, UAM), which implicitly propagates verbalized confidence and semantic explanations to prevent blind decision-making; and System 2 (Uncertainty-Aware Reflection, UAR), which utilizes these explanations as rational cues to trigger targeted inference-time resolution only when necessary. This enables the agent to balance efficient execution and deep deliberation dynamically. Extensive experiments on closed-loop benchmarks and open-ended deep research tasks demonstrate that our training-free approach achieves superior performance and trajectory-level calibration. We believe this principled framework AUQ represents a significant step towards reliable agents.} 
 }
 
@@ -92,8 +104,6 @@ Buttons:
   abstract={Enterprise deep research often fails to produce decision-ready reports due to uneven information coverage, context explosion, and premature stopping. We propose a scalable Enterprise Deep Research (EDR) architecture to address these failures. Our system (i) decomposes requests into coverage-driven objectives via outline generation with reflection, (ii) localizes context with dependency-guided execution and explicit information sharing, and (iii) enforces evidence-based completion criteria so agents iteratively collect information until sufficiency conditions are met. We evaluate on an internal sales enablement task and the public DeepResearch Bench benchmark, where our proposed system design achieves the strongest overall performance compared with competitive deep-research baselines. The results show that dependency-controlled context and explicit evidence sufficiency criteria reduce premature stopping and improve the consistency and depth of enterprise research outputs.}
 }
 
-# 2025 Papers
-
 # ICLR 2026 - Nudging the Boundaries of LLM Reasoning
 @inproceedings{chen2026nudging,
   title={Nudging the Boundaries of LLM Reasoning},
@@ -109,17 +119,18 @@ Buttons:
   abstract={Large language models (LLMs) have shown remarkable capabilities in reasoning tasks, yet they often struggle with complex multi-step problems. In this work, we propose NuRL (Nudging the Boundaries of LLM Reasoning), a novel approach that enhances LLM reasoning through strategic hint injection and self-improvement. Our method introduces a two-stage training framework: first, we use Group Relative Policy Optimization (GRPO) to improve base reasoning capabilities, then we apply self-generated or GPT-generated hints to guide reasoning trajectories. NuRL dynamically injects hints for samples where all rollouts fail, enabling the model to learn from its mistakes and improve reasoning quality. We evaluate our approach on multiple benchmarks including MATH-500, MATH-Hard, AIME24, MMLU-Pro, GPQA, and Date, demonstrating significant improvements in reasoning accuracy across different model sizes and architectures.} 
 }
 
-# arXiv - MMPersuade
-@article{qiu2025mmpersuade,
-  title={MMPersuade: A Dataset and Evaluation Framework for Multimodal Persuasion},
+# EMNLP 2026 - Seeing is Believing? (MMPersuade)
+@inproceedings{qiu2025mmpersuade,
+  title={Seeing is Believing? Evaluating Vision-Language Model Susceptibility in Agent-to-Agent Multimodal Persuasion},
   author={Qiu, Haoyi and Zhou, Yilun and Venkit, Pranav Narayanan and Huang, Kung-Hsiang and Zhang, Jiaxin and Peng, Nanyun and Wu, Chien-Sheng},
-  year = {2025},
-  abbr = {arXiv 2025},
-  arxiv = {2510.22768},
-  pdf = {https://arxiv.org/pdf/2510.22768.pdf},
-  category = {Multimodality & Vision},
-  selected = {true},
-  abstract={As large vision-language models (LVLMs) are increasingly deployed in domains like shopping, health, and news, they encounter substantial persuasive content. A critical question is how and why these models, as persuadees, are influenced by multimodal inputs. Understanding their susceptibility to persuasion and the effectiveness of different persuasive strategies is crucial, as overly persuadable models may adopt misleading beliefs, ignore user preferences, or generate unethical or unsafe outputs when exposed to manipulative information. We introduce MMPersuade, a unified framework for systematically studying multimodal persuasion dynamics in LVLMs. MMPersuade provides (i) a comprehensive multimodal dataset pairing images and videos with established persuasion principles, covering commercial, subjective, behavioral, and adversarial scenarios; and (ii) an evaluation framework that quantifies persuasion effectiveness and model susceptibility through third-party consistency scores and self-estimated token probabilities from conversation history. Our study of six leading LVLMs as persuadees yields three key insights: (i) multimodal inputs significantly increase persuasion effectiveness and model susceptibility compared to text-only, especially in misinformation scenarios; (ii) stated prior preferences reduce susceptibility, but multimodal information maintains its persuasive advantage; and (iii) different strategies vary in effectiveness across scenarios, with reciprocity most effective in commercial and subjective scenarios, while credibility and logic dominate in adversarial scenarios. By jointly analyzing persuasion effectiveness and susceptibility, MMPersuade provides a principled foundation for developing models that are robust, consistent, and ethically aligned when handling persuasive multimodal content.} 
+  booktitle={Proceedings of the 2026 Conference on Empirical Methods in Natural Language Processing},
+  year={2026},
+  abbr={EMNLP 2026},
+  arxiv={2510.22768},
+  pdf={https://arxiv.org/pdf/2510.22768.pdf},
+  category={Reliability & Safety, Agents, Multimodality & Vision},
+  selected={true},
+  abstract={As autonomous agents increasingly interact, they inevitably attempt to influence one another. While prior work in text-only settings has explored the dynamics of Agent-to-Agent (A2A) persuasion, the rise of Vision-Language Models (VLMs) introduces a more complex challenge: multimodal content conveys richer information while integrating subtle, hard-to-detect persuasive cues. To study this vulnerability, we present MMPersuade, a unified framework and dataset for A2A multimodal persuasion. We model interactions between a persuader agent, which leverages images and psychological strategies, and a persuadee VLM. Our benchmark spans commercial, subjective and behavioral, and adversarial contexts, and evaluates persuasion via function-calling that captures behavioral shifts beyond verbal responses. Experiments on six VLMs reveal that multimodal inputs consistently outperform text-only persuasion; susceptibility depends strongly on domain and format; and strategy effectiveness varies across contexts and model architectures. Our framework provides a foundation for building more robust and aligned VLMs in multi-agent environments.}
 }
 
 # ICML 2026 - LaTtE-Flow
@@ -135,6 +146,8 @@ Buttons:
   selected = {true},
   abstract={Recent advances in multimodal foundation models have unified image understanding and generation, opening exciting pathways for handling a wide range of vision-language tasks within a single framework. Despite progress, existing unified models typically require extensive pretraining and struggle to match the performance of models specialized for each task. Additionally, many of these models exhibit slow image generation speeds, limiting their practical applications in real-time or resource-constrained environments. In this work, we propose LaTtE-Flow, a novel and efficient architecture that unifies image understanding and generation in a single multimodal model. LaTtE-Flow builds upon strong pretrained vision-language models (VLMs), inheriting powerful multimodal understanding capabilities, and extends these capabilities through a novel layerwise timestep-expert flow-based architecture for efficient image generation. LaTtE-Flow distributes the flow matching process across specialized transformer layer groups, with each group responsible for different timestep subsets. This design significantly improves sampling efficiency by activating only a small number of layers at each sampling timestep. To further enhance performance, we propose a timestep-conditioned residual attention mechanism for efficient information reuse across layers. Experiments demonstrate that LaTtE-Flow excels in multimodal understanding tasks while maintaining competitive image generation quality, with inference speed approximately 6x faster than recent unified multimodal models.} 
 }
+
+# 2025 Papers
 
 # EMNLP 2025 - R2I-Bench
 @inproceedings{chen2025r2ibench,
