@@ -11,8 +11,6 @@ related_posts: false
 og_image: https://jxzhangjhu.github.io/assets/img/blog/calibrating-long-horizon-agents/fig1_agentic_reliability_loop.png
 ---
 
-<div class="lang-switch"><strong>English</strong> · <a href="/blog/2026/calibrating-long-horizon-agents-zh/">中文</a></div>
-
 ### Table of Contents
 
 - [Why long-horizon agents need calibrated uncertainty](#why-long-horizon-agents-need-calibrated-uncertainty)
@@ -39,8 +37,6 @@ og_image: https://jxzhangjhu.github.io/assets/img/blog/calibrating-long-horizon-
 - [Evaluate agentic calibration](#evaluate-agentic-calibration)
 - [Open challenges](#open-challenges)
 - [Summary](#summary)
-- [How to cite](#how-to-cite)
-- [References](#references)
 
 ---
 
@@ -56,8 +52,12 @@ This post is about the **inference-time** view: the base model is **frozen**. We
 
 > **Thesis.** With the model frozen, uncertainty is the control plane for a reliable — and self-improving — long-horizon agent: measure it over the trajectory, calibrate it, act on it, and let it drive self-evolution.
 
-![A loop diagram: measure trajectory uncertainty, calibrate confidence, act on uncertainty, write the signal into memory, and self-evolve the agent system.](/assets/img/blog/calibrating-long-horizon-agents/fig1_agentic_reliability_loop.png)
-*Figure 1. The agentic reliability loop. The same loop recurs in tool-use, coding, computer-use, deep-research, and reasoning agents; what changes between them is the signal that is actually trustworthy.*
+<figure class="post-figure post-figure--wide">
+  <a class="post-figure__link" href="/assets/img/blog/calibrating-long-horizon-agents/fig1_agentic_reliability_loop.svg" target="_blank" rel="noopener" title="Open full-size figure">
+    <img src="/assets/img/blog/calibrating-long-horizon-agents/fig1_agentic_reliability_loop.svg" alt="A four-stage reliability loop: measure trajectory uncertainty, calibrate it to success, act on it, and retain verified recoveries in memory, skills, and tools." loading="eager" decoding="async">
+  </a>
+  <figcaption><strong>Figure 1.</strong> The agentic reliability loop. The same loop recurs in tool-use, coding, computer-use, deep-research, and reasoning agents; what changes between them is the signal that is actually trustworthy.</figcaption>
+</figure>
 
 > **Three running examples.** We carry these through the whole post to keep the abstractions concrete:
 > - **E1 — Deep research (in the style of [GAIA](https://arxiv.org/abs/2311.12983) / enterprise deep research).** An agent must answer an open-ended research question by searching, reading, and synthesizing a report over many steps. *State:* external evidence (web/docs). *Verifier:* report-quality rubric / reference answer — often non-verifiable.
@@ -72,8 +72,12 @@ Benchmark accuracy is not agent reliability. A benchmark asks one question — d
 
 Reliability, in other words, is better described as a **profile** than a scalar. A useful one has four parts — **consistency**, **robustness**, **predictability**, and **safety** ([Rabanser et al., 2026](https://arxiv.org/abs/2602.16666)). Confidence and uncertainty mostly attack the last two: can the system predict its own failure, and can it route risky cases to safe fallback behavior?
 
-![A reliability profile for long-horizon agents: consistency, robustness, predictability, and safety.](/assets/img/blog/calibrating-long-horizon-agents/fig2_reliability_profile.png)
-*Figure 2. A reliability profile. Calibration is not all of reliability, but it is the lever that turns uncertainty into predictable, risk-aware behavior — Predictability and Safety.*
+<figure class="post-figure post-figure--wide">
+  <a class="post-figure__link" href="/assets/img/blog/calibrating-long-horizon-agents/fig2_reliability_profile.svg" target="_blank" rel="noopener" title="Open full-size figure">
+    <img src="/assets/img/blog/calibrating-long-horizon-agents/fig2_reliability_profile.svg" alt="A reliability profile with consistency, robustness, predictability, and safety." loading="lazy" decoding="async">
+  </a>
+  <figcaption><strong>Figure 2.</strong> Calibration is not all of reliability. It is the lever that most directly turns uncertainty into predictable, risk-aware behavior.</figcaption>
+</figure>
 
 ### Errors compound over a horizon
 
@@ -87,8 +91,12 @@ $$H_s(p) \;\approx\; \frac{\ln s}{\ln p}.$$
 
 This is the point of *The Illusion of Diminishing Returns* ([Sinha et al., 2025](https://arxiv.org/abs/2509.09677)): because $$H_s$$ grows hyperbolically as $$p \to 1$$, a *small* gain in per-step reliability buys a *large* gain in reliable horizon length once you are past ~80%. The flip side is the warning for this post: a confident final step says little about a long trajectory, because $$P(\text{success})$$ was set by the weakest steps, not the last one.
 
-![A curve showing reliable horizon length rising sharply as per-step accuracy approaches 100%.](/assets/img/blog/calibrating-long-horizon-agents/fig3_horizon_length.png)
-*Figure 3. Small per-step reliability gains produce large horizon gains — which is exactly why trajectory-level calibration has leverage, and why a final-answer score is the wrong thing to trust.*
+<figure class="post-figure post-figure--medium">
+  <a class="post-figure__link" href="/assets/img/blog/calibrating-long-horizon-agents/fig3_horizon_length.svg" target="_blank" rel="noopener" title="Open full-size figure">
+    <img src="/assets/img/blog/calibrating-long-horizon-agents/fig3_horizon_length.svg" alt="Reliable horizon length rises sharply as per-step reliability approaches 100 percent." loading="lazy" decoding="async">
+  </a>
+  <figcaption><strong>Figure 3.</strong> Small per-step reliability gains produce large horizon gains—which is exactly why trajectory-level calibration has leverage, and why a final-answer score is the wrong thing to trust.</figcaption>
+</figure>
 
 ### History becomes future context
 
@@ -163,23 +171,25 @@ A second axis is **distribution shift**. A confidence model calibrated on one ta
 
 ### Turn-level vs trajectory-level uncertainty
 
-Let $$F_t$$ denote the agent's decision at turn $$t$$ (action, or action + observation). Following the autoregressive chain rule for sequence uncertainty ([Malinin & Gales, 2021](https://arxiv.org/abs/2002.07650)) and its agentic generalization ([Oh et al., 2026](https://arxiv.org/abs/2602.05073)), trajectory uncertainty decomposes as a sum of **turn-level** terms:
+Let $$F_t$$ denote the agent's decision at turn $$t$$ (action, or action + observation). For an entropy-based uncertainty measure, the autoregressive chain rule gives an exact decomposition ([Malinin & Gales, 2021](https://arxiv.org/abs/2002.07650)):
 
-$$U(F_{1:T}) \;=\; \sum_{t=1}^{T} U\!\left(F_t \mid F_{<t}\right),$$
+$$H(F_{1:T}) \;=\; \sum_{t=1}^{T} H\!\left(F_t \mid F_{<t}\right).$$
 
-where each conditional term mixes the agent's *intrinsic* uncertainty at step $$t$$ with uncertainty *inherited* from the history. This is the cleanest way to see why single-turn UQ is a special case ($$T=1$$) and why agents need something more: the cross-term that single-turn methods cannot express.
+Each conditional term mixes the agent's *intrinsic* uncertainty at step $$t$$ with uncertainty inherited through the history. Other practical scores—verbalized confidence, probe scores, or verifier signals—do not automatically satisfy this equality; they need an explicit aggregation rule and empirical calibration ([Oh et al., 2026](https://arxiv.org/abs/2602.05073)). This is the cleanest way to see why single-turn UQ is a special case ($$T=1$$) and why agents need something more.
 
 ### Forward propagation and inverse calibration
 
 AUQ frames the agent-UQ problem as two coupled problems ([Zhang et al., 2026a](https://arxiv.org/abs/2601.15703)).
 
-**Forward problem (propagation).** Let $$V_t \in \{0,1\}$$ indicate that the trajectory up to step $$t$$ is still valid (free of a critical error). By the chain rule,
+**Forward problem (propagation).** Let $$E_t$$ denote a correct local decision and let $$V_t \in \{0,1\}$$ indicate that the trajectory through step $$t$$ remains valid. Because $$V_t$$ is the joint event $$V_{t-1} \cap E_t$$, the exact same-history factorization is
 
-$$P(V_t = 1 \mid h_t) \;=\; \underbrace{P(\text{correct}(a_t)\mid h_t)}_{\text{local confidence } c_t} \;\cdot\; \underbrace{P(V_{t-1}=1 \mid h_{t-1})}_{\text{historical validity}}.$$
+$$P(V_t{=}1 \mid h_t)
+= \underbrace{P(E_t{=}1 \mid V_{t-1}{=}1,h_t)}_{\text{local conditional confidence }c_t}
+\,\underbrace{P(V_{t-1}{=}1 \mid h_t)}_{\text{historical validity under current evidence}}.$$
 
-Two things fall out immediately. First, $$P(V_t)$$ is **monotonically non-increasing** in $$t$$: a single near-zero step ($$c_k \approx 0$$) drives the whole product to zero for all $$t > k$$ — the Spiral of Hallucination in one line. Second, it suggests a simple trajectory belief, $$P(V_t \mid h_t) \approx \prod_{i\le t} c_i$$, or a conservative $$\min_{i\le t} c_i$$ (the weakest-link reading we return to under aggregation).
+For an online controller, a useful proxy is the recursion $$q_t \approx c_t q_{t-1}$$, hence $$q_t \approx \prod_{i\le t} c_i$$, or the conservative weakest-link score $$\min_{i\le t} c_i$$. The proxy is monotonically non-increasing and exposes the Spiral of Hallucination: a near-zero step can poison everything downstream. The *posterior* $$P(V_t\mid h_t)$$ need not be monotone, however—new verification evidence or a successful recovery can raise it. That distinction matters whenever the agent can repair an earlier mistake.
 
-> **Worked example (E2).** The retail agent runs six steps to process a return, with local confidences $$c = (0.97,\, 0.62,\, 0.95,\, 0.96,\, 0.98,\, 0.99)$$ — one shaky step (step 2, "identify which order the customer means") hidden among confident ones. The naive **average** is $$0.91$$, which *looks* safe. But the forward recursion says the trajectory belief is $$\prod_i c_i \approx 0.53$$, and the **weakest link** is $$\min_i c_i = 0.62$$ — both flag the run as close to a coin flip. Step 2 caps everything after it: once the agent acts on the wrong order, no amount of downstream confidence can raise $$P(V_T)$$. This single example is why later we aggregate with a product/min, calibrate the result, and gate reflection on it.
+> **Worked example (E2).** The retail agent runs six steps to process a return, with local confidences $$c = (0.97,\, 0.62,\, 0.95,\, 0.96,\, 0.98,\, 0.99)$$—one shaky step (step 2, "identify which order the customer means") hidden among confident ones. The naive **average** is $$0.91$$, which *looks* safe. But the multiplicative proxy is $$\prod_i c_i \approx 0.53$$, and the **weakest link** is $$\min_i c_i = 0.62$$—both flag the run as close to a coin flip. Without new evidence or an explicit recovery, downstream confidence should not erase the warning from step 2. This is why we aggregate with a product/min, calibrate the result, and gate verification or reflection on it.
 
 **Inverse problem (calibration).** When the forward estimate drops below a threshold, $$P(V_t\mid h_t) < \delta$$, the agent should not just *report* low confidence — it should *act* to recover. Treating success as an optimality variable $$\mathcal{O}$$, the corrected action solves a posterior optimization,
 
@@ -280,8 +290,12 @@ Rather than hand-pick one aggregation rule, ACC asks a supervised question: **gi
 
 These map through a deliberately simple, interpretable calibrator $$\mathcal{C}_\tau = \sigma(\mathbf{w}^\top \phi(\tau) + b)$$ with L2 (full) or L1 (sparse) regularization. The simplicity is a feature, not a limitation: agent trajectory datasets are small and expensive, so a low-capacity model overfits less and — because the weights are inspectable — tells you *which* signals predict failure.
 
-![Holistic Trajectory Calibration overview: per-step token-confidence sequences become trajectory-level features (dynamics, stability, position, structure) feeding a lightweight interpretable calibrator.](/assets/img/blog/calibrating-long-horizon-agents/acc_fig1_htc.png)
-*Figure 4. Holistic Trajectory Calibration (HTC): the whole trajectory's confidence trace becomes process-level features for an interpretable calibrator; a pretrained General Agent Calibrator transfers to held-out tasks. (Image source: [Zhang et al., 2026b](https://arxiv.org/abs/2601.15778), Figure 1.)*
+<figure class="post-figure post-figure--full post-figure--paper">
+  <a class="post-figure__link" href="/assets/img/blog/calibrating-long-horizon-agents/acc_fig1_htc.png" target="_blank" rel="noopener" title="Open full-size figure">
+    <img src="/assets/img/blog/calibrating-long-horizon-agents/acc_fig1_htc.png" alt="HTC converts token-confidence trajectories into dynamics, stability, position, and structure features for an interpretable and transferable calibrator." loading="lazy" decoding="async">
+  </a>
+  <figcaption><strong>Figure 4.</strong> Holistic Trajectory Calibration (HTC): the confidence trace becomes process-level features for an interpretable calibrator, and a pretrained General Agent Calibrator transfers to held-out tasks. Cropped to the method overview; the quantitative results are summarized in Table 3. Source: <a href="https://arxiv.org/abs/2601.15778">Zhang et al. (2026b), Figure 1</a>.</figcaption>
+</figure>
 
 **Does seeing the process actually help? Yes — most where it matters.** The advantage over last-step confidence widens on the hardest tasks, exactly where overconfidence is most dangerous. On Humanity's Last Exam (HLE), raw verbalized confidence is essentially noise (ECE 0.656), and even last-step token-probability with temperature scaling only reaches ECE 0.436 — while HTC-Reduced reaches **ECE 0.031** (a ~14× reduction over the tuned last-step baseline) at an equal-or-better Brier score.
 
@@ -352,8 +366,12 @@ $$S_{\text{cons}}(a) \;=\; \frac{1}{N}\sum_{k=1}^{N} \hat{c}^{(k)} \cdot \mathbb
 
 with an adaptive memory-expansion fallback when local reflection fails.
 
-![Dual-process AUQ: System 1 uncertainty-aware memory propagates verbalized confidence forward; System 2 uncertainty-aware reflection triggers when confidence falls below threshold.](/assets/img/blog/calibrating-long-horizon-agents/auq_fig1_dual_process.png)
-*Figure 5. AUQ turns uncertainty into a switch: fast System-1 execution when confident, targeted System-2 reflection when confidence signals a likely failure point. (Image source: [Zhang et al., 2026a](https://arxiv.org/abs/2601.15703), Figure 1.)*
+<figure class="post-figure post-figure--medium post-figure--paper">
+  <a class="post-figure__link" href="/assets/img/blog/calibrating-long-horizon-agents/auq_fig1_dual_process.png" target="_blank" rel="noopener" title="Open full-size figure">
+    <img src="/assets/img/blog/calibrating-long-horizon-agents/auq_fig1_dual_process.png" alt="Dual-process AUQ uses uncertainty-aware memory in System 1 and a confidence gate to trigger targeted System-2 reflection." loading="lazy" decoding="async">
+  </a>
+  <figcaption><strong>Figure 5.</strong> AUQ turns uncertainty into a switch: fast System-1 execution when confident, targeted System-2 reflection when confidence signals a likely failure point. Re-extracted at high resolution from <a href="https://arxiv.org/abs/2601.15703">Zhang et al. (2026a), Figure 1</a>.</figcaption>
+</figure>
 
 **The two halves do different jobs — and the split shows up cleanly in ablation.** UAM-only gives the best *calibration* (lowest trajectory-ECE: it aligns confidence with reality), while UAR-only gives the best *resolution* (lowest Brier: it actively resolves gaps and polarizes belief toward the truth). AUQ keeps both, and the combination is what pays off downstream:
 
@@ -375,8 +393,12 @@ $$\text{Cost}_{\text{eff}} \;=\; \frac{\text{total cost of all attempts}}{\text{
 
 Under this metric, spending more per trajectory can *lower* cost per success, because it converts long futile failures into solved tasks. AUQ quantifies both sides of the ledger: its targeted reflection corrects **14.3%** of a ReAct baseline's failed trajectories with far more repairs than regressions (net-positive), yet the returns are sharply diminishing — past a point, accuracy plateaus while cost grows roughly exponentially, which is exactly why the trigger threshold $$\tau$$ has to be *chosen*, not maximized.
 
-![Real AUQ results: internal belief dynamics of UAM-only vs AUQ across trajectory steps, and a Pareto frontier of success rate versus computational cost.](/assets/img/blog/calibrating-long-horizon-agents/slide_auq_dynamics_pareto.png)
-*Figure 6. The economics, with real numbers. Left: across a long trajectory, AUQ keeps the confidence of eventual successes and failures separated, where UAM-only drifts and tangles. Right: the success-rate-vs-compute Pareto frontier — gated reflection buys accuracy up to a point, then "over-verifies" with diminishing returns. (Image source: author's slides; AUQ, [Zhang et al., 2026a](https://arxiv.org/abs/2601.15703).)*
+<figure class="post-figure post-figure--full post-figure--paper">
+  <a class="post-figure__link" href="/assets/img/blog/calibrating-long-horizon-agents/slide_auq_dynamics_pareto.png" target="_blank" rel="noopener" title="Open full-size figure">
+    <img src="/assets/img/blog/calibrating-long-horizon-agents/slide_auq_dynamics_pareto.png" alt="AUQ internal confidence dynamics and the success-rate versus computational-cost frontier." loading="lazy" decoding="async">
+  </a>
+  <figcaption><strong>Figure 6.</strong> The economics, with real numbers. Left: AUQ separates the confidence of eventual successes and failures more clearly than UAM alone. Right: gated reflection improves success up to a point and then yields diminishing returns. Numeric callouts are confidence thresholds; solid and dashed curves distinguish the full and <em>h</em>=5 settings. Adapted from the author's AUQ analysis slides; see <a href="https://arxiv.org/abs/2601.15703">Zhang et al. (2026a)</a>.</figcaption>
+</figure>
 
 ### When confidence gates fail
 
@@ -416,8 +438,12 @@ Evaluation is the weakest link in the field, and worth a clear-eyed section.
 
 **Metrics.** Use the trajectory-level versions of ECE, Brier, and AUROC defined in the problem setup, plus risk–coverage curves for selective execution. The trajectory belief $$C(\tau)$$ can be $$c_T$$, $$\text{mean}_t c_t$$, $$\min_t c_t$$, or a learned $$f(\phi(\tau))$$ — and which one you pick changes the numbers, so report it. A reliability diagram is the most informative single plot.
 
-![A trajectory reliability diagram comparing raw overconfident agent confidence against a calibrated curve near the diagonal.](/assets/img/blog/calibrating-long-horizon-agents/fig7_trajectory_reliability.png)
-*Figure 7. A trajectory reliability diagram asks whether trajectory confidence matches trajectory success. Raw agent confidence sits well below the diagonal (overconfident); calibration pulls it back.*
+<figure class="post-figure post-figure--medium">
+  <a class="post-figure__link" href="/assets/img/blog/calibrating-long-horizon-agents/fig7_trajectory_reliability.svg" target="_blank" rel="noopener" title="Open full-size figure">
+    <img src="/assets/img/blog/calibrating-long-horizon-agents/fig7_trajectory_reliability.svg" alt="An illustrative reliability diagram in which raw confidence is overconfident and calibrated confidence approaches the diagonal." loading="lazy" decoding="async">
+  </a>
+  <figcaption><strong>Figure 7.</strong> Illustrative trajectory reliability diagram—not experimental data. Raw confidence sits below the diagonal (overconfident); calibration pulls empirical success back toward predicted confidence.</figcaption>
+</figure>
 
 **Benchmarks.** There is, as of writing, no purpose-built agentic-UQ benchmark; people repurpose agent benchmarks that lack uncertainty labels.
 
@@ -461,12 +487,16 @@ The recipe is useful but young; here is where I would point a skeptical eye.
 
 Long-horizon agents fail differently from single-turn models: their errors compound, their history becomes future context, and their confidence must guide decisions rather than describe outputs. The inference-time playbook follows the reliability loop — **measure** uncertainty across the trajectory, **calibrate** it to success, **act** on it (abstain, ask, verify, reflect, allocate compute, route), and feed it back into **memory and skills**. ACC/HTC shows how to calibrate the whole trajectory; AUQ shows how to turn uncertainty into a runtime control signal; and the surrounding 2025–2026 literature supplies the evidence, the caveats, and the agent-type-specific signals. The frozen-model view takes you a long way. The next step — internalizing these behaviors into the weights — is the companion post.
 
-![A three-stage spine: Measure (AUQ, inference-time), Align (ACC, post-hoc calibration), Internalize (CaOPD, training-time).](/assets/img/blog/calibrating-long-horizon-agents/slide_measure_align_internalize.png)
-*Figure 8. The bigger arc this post sits inside: **Measure** trajectory uncertainty at inference time (AUQ), **Align** confidence to success with a transferable calibrator (ACC), and — in the companion post — **Internalize** it into the weights (CaOPD). Uncertainty as an actionable control variable, measured, calibrated, and eventually trained into the policy. (Image source: author's slides.)*
+<figure class="post-figure post-figure--wide">
+  <a class="post-figure__link" href="/assets/img/blog/calibrating-long-horizon-agents/slide_measure_align_internalize.svg" target="_blank" rel="noopener" title="Open full-size figure">
+    <img src="/assets/img/blog/calibrating-long-horizon-agents/slide_measure_align_internalize.svg" alt="A three-stage progression from measuring trajectory uncertainty with AUQ, to aligning confidence using ACC and HTC, to internalizing calibration with CaOPD." loading="lazy" decoding="async">
+  </a>
+  <figcaption><strong>Figure 8.</strong> The bigger arc: <strong>Measure</strong> trajectory uncertainty at inference time (AUQ), <strong>Align</strong> confidence to success with a transferable calibrator (ACC/HTC), and—in the companion post—<strong>Internalize</strong> it into the weights (CaOPD). Original synthesis by the author.</figcaption>
+</figure>
 
 ---
 
-*Acknowledgements / sources: figures marked "Image source" are reproduced from the cited papers; all other figures are original (generation scripts in `figures/`).*
+*Acknowledgements / sources: Figures 4 and 5 are cropped from the cited papers; Figure 6 is adapted from the author's AUQ analysis slides; all other figures are original. The reproducible vector-figure source is in `scripts/blog_figures/calibrating_long_horizon_agents.py`.*
 
 ---
 
@@ -484,7 +514,7 @@ Or in BibTeX:
   journal = "Jiaxin Zhang's Blog",
   year    = "2026",
   month   = "Jun",
-  url     = "https://jxzhangjhu.github.io/blog/2026/calibrating-long-horizon-agents/"
+  url      = "https://jxzhangjhu.github.io/blog/2026/calibrating-long-horizon-agents/"
 }
 ```
 
@@ -588,9 +618,9 @@ Or in BibTeX:
 
 [48] Skylar Zhai, et al. ["Abstain-R1: Calibrated Abstention and Post-Refusal Clarification via Verifiable RL."](https://arxiv.org/abs/2604.17073) arXiv:2604.17073, 2026.
 
-[49] Jiaxin Zhang, Prafulla Kumar Choubey, Kung-Hsiang Huang, Caiming Xiong, Chien-Sheng Wu. ["Agentic Uncertainty Quantification."](https://arxiv.org/abs/2601.15703) arXiv:2601.15703, 2026a.
+[49] Jiaxin Zhang, Prafulla Kumar Choubey, Kung-Hsiang Huang, Caiming Xiong, Chien-Sheng Wu. ["Agentic Uncertainty Quantification."](https://arxiv.org/abs/2601.15703) EMNLP 2026. arXiv:2601.15703.
 
-[50] Jiaxin Zhang, Caiming Xiong, Chien-Sheng Wu. ["Agentic Confidence Calibration."](https://arxiv.org/abs/2601.15778) arXiv:2601.15778, 2026b.
+[50] Jiaxin Zhang, Caiming Xiong, Chien-Sheng Wu. ["Agentic Confidence Calibration."](https://arxiv.org/abs/2601.15778) ICML 2026. arXiv:2601.15778.
 
 [51] Jiaxin Zhang, et al. ["From Passive Metric to Active Signal: The Evolving Role of Uncertainty Quantification in Large Language Models."](https://arxiv.org/abs/2601.15690) arXiv:2601.15690, 2026c.
 

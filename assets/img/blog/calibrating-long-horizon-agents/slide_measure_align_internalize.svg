@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="650" viewBox="0 0 1800 650" role="img" aria-labelledby="title desc">
+  <title id="title">Measure, align, and internalize uncertainty</title>
+  <desc id="desc">AUQ measures trajectory uncertainty, ACC and HTC align confidence with success, and CaOPD internalizes calibration during training.</desc>
+  <defs>
+    <marker id="arrow-blue" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2864dc"/>
+    </marker>
+    <marker id="arrow-muted" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#687386"/>
+    </marker>
+  </defs>
+  <rect width="100%" height="100%" fill="white"/>
+  <text x="900" y="64" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="42" font-weight="800" fill="#202634" style="">FROM MEASUREMENT TO NATIVE RELIABILITY</text>
+<text x="900" y="106" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="25" font-weight="400" fill="#687386" style="">Uncertainty becomes progressively cheaper and more deeply integrated</text>
+<rect x="70" y="170" width="485" height="385" rx="24" fill="white" stroke="#2864dc" stroke-width="4"/>
+<path d="M 94 170 H 531 Q 555 170 555 194 V 262 H 70 V 194 Q 70 170 94 170" fill="#edf3ff"/>
+<text x="312.5" y="231" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="30" font-weight="800" fill="#2864dc" style="">MEASURE</text>
+<text x="312.5" y="327" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="38" font-weight="800" fill="#2864dc" style="">AUQ</text>
+<text x="312.5" y="367" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="21" font-weight="600" fill="#687386" style="">Inference time</text>
+<text x="312.5" y="440" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="22" font-weight="400" fill="#202634"><tspan x="312.5" dy="0">propagate trajectory uncertainty</tspan><tspan x="312.5" dy="38">trigger targeted reflection</tspan></text>
+<path d="M 580 360 L 635 360" stroke="#2864dc" stroke-width="8" fill="none" marker-end="url(#arrow-blue)"/>
+<rect x="660" y="170" width="485" height="385" rx="24" fill="white" stroke="#109a70" stroke-width="4"/>
+<path d="M 684 170 H 1121 Q 1145 170 1145 194 V 262 H 660 V 194 Q 660 170 684 170" fill="#ecf8f3"/>
+<text x="902.5" y="231" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="30" font-weight="800" fill="#109a70" style="">ALIGN</text>
+<text x="902.5" y="327" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="38" font-weight="800" fill="#109a70" style="">ACC / HTC</text>
+<text x="902.5" y="367" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="21" font-weight="600" fill="#687386" style="">Post hoc</text>
+<text x="902.5" y="440" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="22" font-weight="400" fill="#202634"><tspan x="902.5" dy="0">map confidence to success</tspan><tspan x="902.5" dy="38">transfer an interpretable calibrator</tspan></text>
+<path d="M 1170 360 L 1225 360" stroke="#2864dc" stroke-width="8" fill="none" marker-end="url(#arrow-blue)"/>
+<rect x="1250" y="170" width="485" height="385" rx="24" fill="white" stroke="#d97706" stroke-width="4"/>
+<path d="M 1274 170 H 1711 Q 1735 170 1735 194 V 262 H 1250 V 194 Q 1250 170 1274 170" fill="#fff4e5"/>
+<text x="1492.5" y="231" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="30" font-weight="800" fill="#d97706" style="">INTERNALIZE</text>
+<text x="1492.5" y="327" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="38" font-weight="800" fill="#d97706" style="">CaOPD</text>
+<text x="1492.5" y="367" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="21" font-weight="600" fill="#687386" style="">Training time</text>
+<text x="1492.5" y="440" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="22" font-weight="400" fill="#202634"><tspan x="1492.5" dy="0">calibration-aware distillation</tspan><tspan x="1492.5" dy="38">preserve capability and honesty</tspan></text>
+<text x="900" y="606" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="25" font-weight="700" fill="#687386" style="">runtime control  →  calibrated prediction  →  calibrated policy</text>
+</svg>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="560" viewBox="0 0 1800 560" role="img" aria-labelledby="title desc">
+  <title id="title">A reliability profile for long-horizon agents</title>
+  <desc id="desc">Consistency, robustness, predictability, and safety; calibrated uncertainty most directly supports the latter two.</desc>
+  <defs>
+    <marker id="arrow-blue" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2864dc"/>
+    </marker>
+    <marker id="arrow-muted" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#687386"/>
+    </marker>
+  </defs>
+  <rect width="100%" height="100%" fill="white"/>
+  <text x="900" y="66" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="42" font-weight="800" fill="#202634" style="">A RELIABILITY PROFILE FOR LONG-HORIZON AGENTS</text>
+<text x="900" y="108" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="25" font-weight="400" fill="#687386" style="">Calibrated uncertainty directly supports predictability and safety</text>
+<rect x="55" y="160" width="400" height="310" rx="22" fill="#f7f8fa" stroke="#687386" stroke-width="4"/>
+<text x="255.0" y="258" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="30" font-weight="800" fill="#687386" style="">CONSISTENCY</text>
+<text x="255.0" y="325" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="24" font-weight="400" fill="#202634"><tspan x="255.0" dy="0">stable outcomes</tspan><tspan x="255.0" dy="36">across reruns</tspan></text>
+<rect x="485" y="160" width="400" height="310" rx="22" fill="#f7f8fa" stroke="#687386" stroke-width="4"/>
+<text x="685.0" y="258" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="30" font-weight="800" fill="#687386" style="">ROBUSTNESS</text>
+<text x="685.0" y="325" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="24" font-weight="400" fill="#202634"><tspan x="685.0" dy="0">graceful under tool, prompt,</tspan><tspan x="685.0" dy="36">and environment shift</tspan></text>
+<rect x="915" y="160" width="400" height="310" rx="22" fill="#edf3ff" stroke="#2864dc" stroke-width="4"/>
+<text x="1115.0" y="258" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="30" font-weight="800" fill="#2864dc" style="">PREDICTABILITY</text>
+<text x="1115.0" y="325" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="24" font-weight="400" fill="#202634"><tspan x="1115.0" dy="0">confidence predicts</tspan><tspan x="1115.0" dy="36">trajectory success</tspan></text>
+<text x="1115.0" y="430" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="19" font-weight="700" fill="#2864dc" style="">uncertainty lever</text>
+<rect x="1345" y="160" width="400" height="310" rx="22" fill="#ecf8f3" stroke="#109a70" stroke-width="4"/>
+<text x="1545.0" y="258" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="30" font-weight="800" fill="#109a70" style="">SAFETY</text>
+<text x="1545.0" y="325" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="24" font-weight="400" fill="#202634"><tspan x="1545.0" dy="0">bounded harm; safe</tspan><tspan x="1545.0" dy="36">fallback and escalation</tspan></text>
+<text x="1545.0" y="430" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="19" font-weight="700" fill="#109a70" style="">uncertainty lever</text>
+<text x="900" y="525" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="24" font-weight="600" fill="#687386" style="font-style:italic;">Reliability is a profile—not a single benchmark score.</text>
+</svg>

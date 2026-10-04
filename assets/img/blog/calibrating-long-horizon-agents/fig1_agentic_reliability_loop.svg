@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="820" viewBox="0 0 1600 820" role="img" aria-labelledby="title desc">
+  <title id="title">The agentic reliability loop</title>
+  <desc id="desc">Measure and calibrate trajectory uncertainty, act on it, then retain verified recoveries in memory, skills, and tools.</desc>
+  <defs>
+    <marker id="arrow-blue" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2864dc"/>
+    </marker>
+    <marker id="arrow-muted" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#687386"/>
+    </marker>
+  </defs>
+  <rect width="100%" height="100%" fill="white"/>
+  <text x="800" y="66" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="43" font-weight="800" fill="#202634" style="">THE AGENTIC RELIABILITY LOOP</text>
+<text x="800" y="108" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="25" font-weight="400" fill="#687386" style="">Frozen model · uncertainty as the runtime control plane</text>
+<rect x="55" y="190" width="335" height="250" rx="22" fill="#edf3ff" stroke="#2864dc" stroke-width="4"/>
+<circle cx="100" cy="237" r="25" fill="#2864dc"/>
+<text x="100" y="246" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="24" font-weight="800" fill="white" style="">1</text>
+<text x="222.5" y="295" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="29" font-weight="800" fill="#2864dc" style="">MEASURE</text>
+<text x="222.5" y="350" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="22" font-weight="400" fill="#202634"><tspan x="222.5" dy="0">trajectory uncertainty</tspan><tspan x="222.5" dy="35">state + tool evidence</tspan></text>
+<rect x="440" y="190" width="335" height="250" rx="22" fill="#f2efff" stroke="#6d4fd3" stroke-width="4"/>
+<circle cx="485" cy="237" r="25" fill="#6d4fd3"/>
+<text x="485" y="246" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="24" font-weight="800" fill="white" style="">2</text>
+<text x="607.5" y="295" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="29" font-weight="800" fill="#6d4fd3" style="">CALIBRATE</text>
+<text x="607.5" y="350" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="22" font-weight="400" fill="#202634"><tspan x="607.5" dy="0">confidence to</tspan><tspan x="607.5" dy="35">trajectory success</tspan></text>
+<rect x="825" y="190" width="335" height="250" rx="22" fill="#fff4e5" stroke="#d97706" stroke-width="4"/>
+<circle cx="870" cy="237" r="25" fill="#d97706"/>
+<text x="870" y="246" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="24" font-weight="800" fill="white" style="">3</text>
+<text x="992.5" y="295" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="29" font-weight="800" fill="#d97706" style="">ACT</text>
+<text x="992.5" y="350" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="22" font-weight="400" fill="#202634"><tspan x="992.5" dy="0">ask · verify · reflect</tspan><tspan x="992.5" dy="35">route · stop</tspan></text>
+<rect x="1210" y="190" width="335" height="250" rx="22" fill="#ecf8f3" stroke="#109a70" stroke-width="4"/>
+<circle cx="1255" cy="237" r="25" fill="#109a70"/>
+<text x="1255" y="246" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="24" font-weight="800" fill="white" style="">4</text>
+<text x="1377.5" y="295" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="29" font-weight="800" fill="#109a70" style="">SELF-EVOLVE</text>
+<text x="1377.5" y="350" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="22" font-weight="400" fill="#202634"><tspan x="1377.5" dy="0">memory · skills · tools</tspan><tspan x="1377.5" dy="35">verified recoveries</tspan></text>
+<path d="M 390 315 L 432 315" stroke="#2864dc" stroke-width="7" fill="none" marker-end="url(#arrow-blue)"/>
+<path d="M 775 315 L 817 315" stroke="#2864dc" stroke-width="7" fill="none" marker-end="url(#arrow-blue)"/>
+<path d="M 1160 315 L 1202 315" stroke="#2864dc" stroke-width="7" fill="none" marker-end="url(#arrow-blue)"/>
+<path d="M 1378 447 C 1378 620, 1260 685, 1085 685 L 300 685 C 125 685, 95 585, 130 455" stroke="#2864dc" stroke-width="7" fill="none" marker-end="url(#arrow-blue)"/>
+<rect x="435" y="545" width="730" height="78" rx="39" fill="#f7f8fa" stroke="#d9dee7" stroke-width="2"/>
+<text x="800" y="579" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="20" font-weight="700" fill="#687386" style="">Persistent state</text>
+<text x="800" y="609" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="24" font-weight="600" fill="#202634" style="">evidence · confidence · provenance · memory</text>
+<path d="M 992 440 C 975 490, 945 520, 905 544" stroke="#687386" stroke-width="4" fill="none" marker-end="url(#arrow-muted)"/>
+<text x="800" y="770" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="25" font-weight="600" fill="#687386" style="font-style:italic;">Detect → decide → recover → retain what worked</text>
+</svg>
