@@ -1,0 +1,16 @@
+- key: reliability
+  title: Safety, Alignment & Agent Reliability
+  description: Behavioral alignment, honesty, uncertainty, calibration, and reliable decision-making—from LLMs to agent trajectories.
+  focus: Do agents recognize their limits and act within them?
+- key: post_training
+  title: Agentic Post-training & Reinforcement Learning
+  description: Reinforcement learning, on-policy distillation, experience-based supervision, and cost-effective adaptation of language models.
+  focus: How do we turn experience into better policies?
+- key: self_improvement
+  title: Self-Improving Agents & Model–Harness Co-Evolution
+  description: Joint improvement of models, harnesses, and training data, alongside earlier work on automated prompt optimization.
+  focus: What should improve—the model, the harness, or both?
+- key: systems
+  title: Agent Systems, Evaluation & Efficiency
+  description: Long-horizon search, retrieval, multimodal evaluation, memory, and efficient agent execution.
+  focus: How do agents remain effective over long trajectories?

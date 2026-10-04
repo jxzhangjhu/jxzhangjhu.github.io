@@ -24,6 +24,8 @@ Buttons:
 
 # NeurIPS 2026 - Prospective Hindsight
 @inproceedings{zhang2026prospective,
+  research_group={post_training},
+  takeaway={Self-calibrating reinforcement learning using the gap between predicted and observed outcomes.},
   title={Prospective Hindsight: Self-Calibrating Reinforcement Learning via Prediction--Reality Gaps},
   author={Zhang, Jiaxin and Peng, Xiangyu and Chen, Qinglin and Li, Yu and Hayashi, Hiroaki and Wu, Chien-Sheng},
   booktitle={Advances in Neural Information Processing Systems},
@@ -36,6 +38,9 @@ Buttons:
 
 # arXiv - The Illusion of Certainty: CaOPD
 @article{zhang2026caopd,
+  research_group={post_training},
+  takeaway={Separating capability gains from confidence calibration in on-policy distillation.},
+  note={Under review at ICLR 2027.},
   title={The Illusion of Certainty: Decoupling Capability and Calibration in On-Policy Distillation},
   author={Zhang, Jiaxin and Peng, Xiangyu and Chen, Qinglin and Ye, Qinyuan and Xiong, Caiming and Wu, Chien-Sheng},
   year = {2026},
@@ -50,6 +55,8 @@ Buttons:
 
 # ICML 2026 - Agentic Confidence Calibration
 @inproceedings{zhang2026agentic_conf,
+  research_group={reliability},
+  takeaway={Process-level signals for estimating whether an agent trajectory will succeed.},
   title={Agentic Confidence Calibration},
   author={Zhang, Jiaxin and Xiong, Caiming and Wu, Chien-Sheng},
   booktitle={International Conference on Machine Learning},
@@ -64,6 +71,8 @@ Buttons:
 
 # EMNLP 2026 - Agentic Uncertainty Quantification
 @inproceedings{zhang2026agentic_uq,
+  research_group={reliability},
+  takeaway={Turning uncertainty into active memory and reflection controls for agents.},
   title={Agentic Uncertainty Quantification},
   author={Zhang, Jiaxin and Choubey, Prafulla Kumar and Huang, Kung-Hsiang and Xiong, Caiming and Wu, Chien-Sheng},
   booktitle={Proceedings of the 2026 Conference on Empirical Methods in Natural Language Processing},
@@ -78,6 +87,8 @@ Buttons:
 
 # ACL 2026 - From Passive Metric to Active Signal
 @inproceedings{zhang2026passive,
+  research_group={reliability},
+  takeaway={A survey of uncertainty as a control and training signal, rather than only a diagnostic metric.},
   title={From Passive Metric to Active Signal: The Evolving Role of Uncertainty Quantification in Large Language Models},
   author={Zhang, Jiaxin and Cui, Wendi and Li, Zhuohang and Huang, Lifu and Malin, Bradley and Xiong, Caiming and Wu, Chien-Sheng},
   booktitle={Proceedings of the 64th Annual Meeting of the Association for Computational Linguistics},
@@ -92,6 +103,8 @@ Buttons:
 
 # ACL 2026 - Don't Stop Early: Deep Research
 @inproceedings{choubey2026deepresearch,
+  research_group={systems},
+  takeaway={Dependency-controlled information flow and evidence-aware stopping for enterprise deep research.},
   title={Don't Stop Early: Scalable Enterprise Deep Research with Controlled Information Flow and Evidence-Aware Termination},
   author={Choubey, Prafulla Kumar and Huang, Kung-Hsiang and Venkit, Pranav Narayanan and Zhang, Jiaxin and Vats, Vaibhav and Li, Yu and Peng, Xiangyu and Wu, Chien-Sheng},
   booktitle={Proceedings of the 64th Annual Meeting of the Association for Computational Linguistics: Industry Track},
@@ -106,6 +119,8 @@ Buttons:
 
 # ICLR 2026 - Nudging the Boundaries of LLM Reasoning
 @inproceedings{chen2026nudging,
+  research_group={post_training},
+  takeaway={Hint-guided exploration to help reinforcement learning move beyond all-failure rollouts.},
   title={Nudging the Boundaries of LLM Reasoning},
   author={Chen, Justin Chih-Yao and Peng, Becky Xiangyu and Choubey, Prafulla Kumar and Huang, Kung-Hsiang and Zhang, Jiaxin and Bansal, Mohit and Wu, Chien-Sheng},
   booktitle={International Conference on Learning Representations},
@@ -121,6 +136,8 @@ Buttons:
 
 # EMNLP 2026 - Seeing is Believing? (MMPersuade)
 @inproceedings{qiu2025mmpersuade,
+  research_group={reliability},
+  takeaway={Evaluating behavioral susceptibility to agent-to-agent multimodal persuasion.},
   title={Seeing is Believing? Evaluating Vision-Language Model Susceptibility in Agent-to-Agent Multimodal Persuasion},
   author={Qiu, Haoyi and Zhou, Yilun and Venkit, Pranav Narayanan and Huang, Kung-Hsiang and Zhang, Jiaxin and Peng, Nanyun and Wu, Chien-Sheng},
   booktitle={Proceedings of the 2026 Conference on Empirical Methods in Natural Language Processing},
@@ -147,10 +164,109 @@ Buttons:
   abstract={Recent advances in multimodal foundation models have unified image understanding and generation, opening exciting pathways for handling a wide range of vision-language tasks within a single framework. Despite progress, existing unified models typically require extensive pretraining and struggle to match the performance of models specialized for each task. Additionally, many of these models exhibit slow image generation speeds, limiting their practical applications in real-time or resource-constrained environments. In this work, we propose LaTtE-Flow, a novel and efficient architecture that unifies image understanding and generation in a single multimodal model. LaTtE-Flow builds upon strong pretrained vision-language models (VLMs), inheriting powerful multimodal understanding capabilities, and extends these capabilities through a novel layerwise timestep-expert flow-based architecture for efficient image generation. LaTtE-Flow distributes the flow matching process across specialized transformer layer groups, with each group responsible for different timestep subsets. This design significantly improves sampling efficiency by activating only a small number of layers at each sampling timestep. To further enhance performance, we propose a timestep-conditioned residual attention mechanism for efficient information reuse across layers. Experiments demonstrate that LaTtE-Flow excels in multimodal understanding tasks while maintaining competitive image generation quality, with inference speed approximately 6x faster than recent unified multimodal models.} 
 }
 
+# New manuscripts: local homepage review; no unverified publication links.
+@misc{zhang2026self_retrospection,
+  title={Self-Retrospection Distillation: Turning Post-hoc Experiences into Prior Foresight},
+  author={Zhang, Haoxiang and Chen, Qinglin and Hayashi, Hiroaki and Li, Zhuofeng and Zhang, Siming and Zhang, Jiaxin and Chen, Jixuan and Wu, Fang and Lu, Pan and Savarese, Silvio and McAuley, Julian and Wu, Chien-Sheng},
+  year={2026},
+  abbr={Under review},
+  note={Submitted to ICLR 2027.},
+  research_group={post_training},
+  category={Distillation, Reasoning},
+  takeaway={Distilling post-hoc experience into prior foresight, without requiring the privileged experience at inference time.},
+  selected={true}
+}
+
+@misc{chen2026agentic_self_awareness,
+  title={Agentic Self-Awareness: Aligning Knowing, Acting, and Holding},
+  author={Chen, Qinglin and Hayashi, Hiroaki and Zhang, Jiaxin and Wu, Chien-Sheng},
+  year={2026},
+  abbr={Under review},
+  note={Submitted to ICLR 2027.},
+  research_group={reliability},
+  category={Behavioral Alignment, Harness, Evaluation},
+  takeaway={Testing the gap between recognizing blocked tasks and actually withholding unauthorized or infeasible actions.},
+  selected={true}
+}
+
+@misc{peng2026mds_zero,
+  title={MDS-Zero: Self-Improving Multimodal Deep Search via Online QA--Solver Co-training},
+  author={Peng, Xiangyu and Zhang, Jiaxin and Yan, An and Li, Yu and Xu, Ran and Chen, Zeyuan and Wu, Chien-Sheng},
+  year={2026},
+  abbr={Under review},
+  note={Submitted to ICLR 2027.},
+  research_group={self_improvement},
+  category={RL, Adaptive Curriculum, Multimodal Search},
+  takeaway={Co-training a question generator and search solver with a fixed verification harness and seeded training data.},
+  selected={true}
+}
+
+@misc{lei2026belief_shift,
+  title={Fork Where the Model Changes Its Mind: Belief-Shift Branching for Tree-Structured Reinforcement Learning},
+  author={Lei, Bin and Li, Yu and Choubey, Prafulla Kumar and Zhang, Jiaxin and Peng, Xiangyu and Ye, Qinyuan and Narayan, Kartik and Ding, Caiwen and Savarese, Silvio and Wu, Chien-Sheng},
+  year={2026},
+  abbr={Under review},
+  note={Submitted to ICLR 2027.},
+  research_group={post_training},
+  category={RL, Reasoning, Exploration},
+  takeaway={Allocating tree-structured exploration to points where the model's answer belief changes.},
+  selected={true}
+}
+
+@misc{li2026speculate_memory,
+  title={Speculate with Memory: Lossless Acceleration for LLM Agents},
+  author={Li, Yu and Ye, Qinyuan and Choubey, Prafulla Kumar and Zhang, Jiaxin and Wu, Chien-Sheng},
+  year={2026},
+  abbr={Under review},
+  note={Submitted to ICLR 2027.},
+  research_group={systems},
+  category={Memory, Agents, Efficiency},
+  takeaway={Using memory to improve a speculative executor, with exact-match acceptance and read-only tool constraints.},
+  selected={true}
+}
+
+@misc{ye2026fragility,
+  title={On the Fragility of Self-Improving Agents: Variance, Task Order, and Underspecification},
+  author={Ye, Qinyuan and Li, Yu and Pruksachatkun, Yada and Zhang, Jiaxin and Wu, Chien-Sheng},
+  year={2026},
+  abbr={Under review},
+  note={Submitted to ICLR 2027.},
+  research_group={reliability},
+  category={Self-improvement, Memory, Evaluation},
+  takeaway={Examining how randomness, task order, and underspecified memory updates undermine reproducible self-improvement.},
+  selected={true}
+}
+
+@misc{narayan2026agentic_post_training,
+  title={Lessons from Agentic Post-Training of MLLMs for Multimodal Web Search},
+  author={Narayan, Kartik and Peng, Xiangyu and Choubey, Prafulla Kumar and Zhang, Jiaxin and Lei, Bin and Patel, Vishal M. and Savarese, Silvio and Wu, Chien-Sheng},
+  year={2026},
+  abbr={Under review},
+  note={Submitted to ICLR 2027.},
+  research_group={post_training},
+  category={RL, Multimodal Search, Evaluation},
+  takeaway={Studying how rollout design, tools, summarizers, and judges affect agentic post-training and evaluation.},
+  selected={true}
+}
+
+@misc{chen2026cotrace,
+  title={CoTrace: Data Recipes for Training Terminal Agents with Harness--Model Co-Evolution},
+  author={Chen, Jixuan and Zhang, Jiaxin and Ye, Qinyuan and Pruksachatkun, Yada and Zhang, Haoxiang and Zhuo, Jingming and Zhang, Yifan and Dai, Yutong and Tan, Juntao and Peng, Xiangyu and Savarese, Silvio and Chen, Zeyuan and Qin, Lianhui and Wu, Chien-Sheng},
+  year={2026},
+  abbr={Under review},
+  note={Submitted to ICLR 2027.},
+  research_group={self_improvement},
+  category={Harness, Data, Coding, RL},
+  takeaway={Routing failures into harness changes, runtime-matched training traces, and fresh online RL rollouts.},
+  selected={true}
+}
+
 # 2025 Papers
 
 # EMNLP 2025 - R2I-Bench
 @inproceedings{chen2025r2ibench,
+  research_group={systems},
+  takeaway={A benchmark for reasoning-driven text-to-image generation.},
   title={R2I-Bench: Benchmarking Reasoning-Driven Text-to-Image Generation},
   author={Chen, Kaijie and Lin, Zihao and Xu, Zhiyang and Shen, Ying and Yao, Yuguang and Rimchala, Joy and Zhang, Jiaxin and Huang, Lifu},
   booktitle={Proceedings of the 2025 Conference on Empirical Methods in Natural Language Processing},
@@ -169,6 +285,8 @@ Buttons:
 
 # EMNLP 2025 - Towards statistical factuality guarantee
 @inproceedings{li2025statistical,
+  research_group={reliability},
+  takeaway={Statistical approaches to factuality guarantees for vision-language models.},
   title={Towards Statistical Factuality Guarantee For Large Vision-Language Models},
   author={Li, Zhuohang and Yan, Chao and Jackson, Nicholas J and Cui, Wendi and Li, Bo and Zhang, Jiaxin and Malin, Bradley A},
   booktitle={Proceedings of the 2025 Conference on Empirical Methods in Natural Language Processing},
@@ -183,6 +301,8 @@ Buttons:
 
 # EMNLP 2025 - Confidence-Aware Reasoning
 @inproceedings{zhang2025confidence,
+  research_group={post_training},
+  takeaway={Confidence-aware control of self-guided reasoning trajectories.},
   title={Confidence-Aware Reasoning: Optimizing Self-Guided Thinking Trajectories in Large Reasoning Models},
   author={Zhang, Jiaxin},
   booktitle={Proceedings of the 2025 Conference on Empirical Methods in Natural Language Processing: Industry Track},
@@ -196,6 +316,8 @@ Buttons:
 
 # ACL 2025 - SEE
 @inproceedings{cui2025see,
+  research_group={self_improvement},
+  takeaway={Earlier prompt-level optimization: balancing strategic exploration and exploitation.},
   title={SEE: Strategic Exploration and Exploitation for Cohesive In-Context Prompt Optimization},
   author={Cui, Wendi and Li, Zhuohang and Sun, Hao and Lopez, Damien and Das, Kamalika and Malin, Bradley A and Kumar, Sricharan and Zhang, Jiaxin},
   booktitle={Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics},
@@ -211,6 +333,8 @@ Buttons:
 
 # ACL 2025 - Automatic Prompt Optimization via Heuristic Search
 @inproceedings{cui2025automatic,
+  research_group={self_improvement},
+  takeaway={A survey of heuristic-search methods for automated prompt optimization.},
   title={Automatic Prompt Optimization via Heuristic Search: A Survey},
   author={Cui, Wendi and Li, Zhuohang and Sun, Hao and Lopez, Damien and Das, Kamalika and Malin, Bradley A and Kumar, Sricharan and Zhang, Jiaxin},
   booktitle={Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics},
@@ -239,6 +363,8 @@ Buttons:
 
 # NAACL 2025 - Gradient-guided Attention Map Editing
 @inproceedings{wang2025gradient,
+  research_group={reliability},
+  takeaway={Inference-time attention editing to mitigate contextual hallucinations.},
   title={Gradient-guided Attention Map Editing: Towards Efficient Contextual Hallucination Mitigation},
   author={Wang, Yu and Das, Kamalika and Gao, Xiang and Cui, Wendi and Li, Peng and Zhang, Jiaxin},
   booktitle={Proceedings of the 2025 Conference of the North American Chapter of the Association for Computational Linguistics},
@@ -253,6 +379,8 @@ Buttons:
 
 # EMNLP 2024 - Divide-Conquer-Reasoning (updated from industry track)
 @inproceedings{cui2024dcrfull,
+  research_group={self_improvement},
+  takeaway={Decomposed consistency evaluation coupled with explanation-guided response improvement.},
   title={Divide-Conquer-Reasoning for Consistency Evaluation and Automatic Improvement of Large Language Models},
   author={Cui, Wendi and Li, Zhuohang and Lopez, Damien and Das, Kamalika and Malin, Bradley and Kumar, Sricharan and Zhang, Jiaxin},
   booktitle={Proceedings of the 2024 Conference on Empirical Methods in Natural Language Processing: Industry Track},
@@ -271,6 +399,8 @@ Buttons:
 
 # EMNLP 2024 - ski
 @inproceedings{zhang2024ski,
+  research_group={post_training},
+  takeaway={Synthesizing structured knowledge for injection through continual pre-training, SFT, and retrieval.},
   title={Synthetic Knowledge Ingestion: Towards Knowledge Refinement and Injection for Enhancing Large Language Models},
   author={Zhang, Jiaxin and Cui, Wendi and Huang, Yiran and Das, Kamalika and Kumar, Sricharan},
   booktitle={Proceedings of the 2024 Conference on Empirical Methods in Natural Language Processing},
@@ -287,6 +417,8 @@ Buttons:
 
 # EMNLP 2024 - ook
 @inproceedings{li2024ook,
+  research_group={systems},
+  takeaway={Testing whether a retrieval corpus can actually support a query or query distribution.},
   title={Do You Know What You Are Talking About? Characterizing Query-Knowledge Relevance For Reliable Retrieval Augmented Generation},
   author={Li, Zhuohang and Zhang, Jiaxin and Yan, Chao and Das, Kamalika and Kumar, Sricharan and Kantarcioglu, Murat and Malin, Bradley A},
   booktitle={Proceedings of the 2024 Conference on Empirical Methods in Natural Language Processing},
@@ -303,6 +435,8 @@ Buttons:
 
 # EMNLP 2024 - hyqe
 @inproceedings{zhou2024hyqe,
+  research_group={systems},
+  takeaway={Efficient retrieval-context ranking with hypothetical query embeddings.},
   title={HyQE: Ranking Contexts with Hypothetical Query Embeddings},
   author={Zhou, Weichao and Zhang, Jiaxin and Hasson, Hilaf and Singh, Anu and Li, Wenchao},
   booktitle={Proceedings of the 2024 Conference on Empirical Methods in Natural Language Processing},
@@ -319,6 +453,8 @@ Buttons:
 
 # EMNLP 2024 - holistic evaluation
 @inproceedings{liu2024holis,
+  research_group={systems},
+  takeaway={Reference-free evaluation of interleaved text-and-image generation.},
   title={Holistic evaluation for interleaved text-and-image generation},
   author={Liu, Minqian and Xu, Zhiyang and Lin, Zihao and Ashby, Trevor and Rimchala, Joy and Zhang, Jiaxin and Huang, Lifu},
   booktitle={Proceedings of the 2024 Conference on Empirical Methods in Natural Language Processing},
@@ -338,6 +474,8 @@ Buttons:
 
 # EMNLP 2024 industry - sos
 @inproceedings{sinha2024sos,
+  research_group={reliability},
+  takeaway={Jointly optimizing prompt performance and security rather than performance alone.},
   title={Survival of the Safest: Towards Secure Prompt Optimization through Interleaved Multi-Objective Evolution},
   author={Sinha, Ankita and Cui, Wendi and Das, Kamalika and Zhang, Jiaxin},
   booktitle={Proceedings of the 2024 Conference on Empirical Methods in Natural Language Processing - Industry Track},
@@ -354,6 +492,8 @@ Buttons:
 
 # EACL 2024 - SPUQ
 @inproceedings{gao2024spuq,
+  research_group={reliability},
+  takeaway={Quantifying language-model uncertainty through input perturbations.},
   title={SPUQ: Perturbation-Based Uncertainty Quantification for Large Language Models},
   author={Gao, Xiang and Zhang, Jiaxin and Mouatadid, Lalla and Das, Kamalika},
   booktitle={Proceedings of the 18th Conference of the European Chapter of the Association for Computational Linguistics},
@@ -371,6 +511,8 @@ Buttons:
 
 # AISTATS 2024 - DDAR
 @inproceedings{zhang2024discriminant,
+  research_group={reliability},
+  takeaway={Earlier UQ foundations: distance-aware representations for deterministic uncertainty estimation.},
   title={Discriminant Distance-Aware Representation on Deterministic Uncertainty Quantification Methods},
   author={Zhang, Jiaxin and Das, Kamalika and Kumar, Sricharan},
   booktitle={International Conference on Artificial Intelligence and Statistics},
@@ -401,6 +543,8 @@ Buttons:
 
 # WACV 2024
 @inproceedings{zhang2024imageuq,
+  research_group={reliability},
+  takeaway={Earlier UQ foundations: estimating image reconstruction uncertainty without training data.},
   title={On the Quantification of Image Reconstruction Uncertainty without Training Data},
   author={Zhang, Jiaxin and Bi, Sirui and Fung, Victor},
   booktitle={IEEE/CVF Winter Conference on Applications of Computer Vision (WACV)},
@@ -429,6 +573,8 @@ Buttons:
 
 # NeurIPS 2023
 @inproceedings{zhang2023interactive,
+  research_group={post_training},
+  takeaway={Cost-effective language-model adaptation through sparse human supervision and multi-fidelity feedback.},
   title={Interactive Multi-fidelity Learning for Cost-effective Adaptation of Language Model with Sparse Human Supervision},
   author={Zhang, Jiaxin and Li, Zhuohang and Das, Kamalika and Kumar, Sricharan},
   booktitle={Advances in Neural Information Processing Systems},
@@ -447,6 +593,8 @@ Buttons:
 
 # EMNLP 2023
 @inproceedings{zhang2023sac3,
+  research_group={reliability},
+  takeaway={Black-box hallucination detection through semantic-aware cross-check consistency.},
   title={SAC$^3$: Reliable Hallucination Detection in Black-Box Language Models via Semantic-aware Cross-check Consistency},
   author={Zhang, Jiaxin and Li, Zhuohang and Das, Kamalika and Malin, Bradley and Kumar, Sricharan},
   booktitle={Proceedings of the 2023 Conference on Empirical Methods in Natural Language Processing},
@@ -475,6 +623,8 @@ Buttons:
 
 # NeurIPS 2023 workshop
 @inproceedings{cui2023dcr,
+  research_group={self_improvement},
+  takeaway={Early DCR work on black-box consistency evaluation and response improvement.},
   title={A Divide-Conquer-Reasoning Approach to Consistency Evaluation and Improvement in Blackbox Large Language Models},
   author={Cui, Wendi and Zhang, Jiaxin and Li, Zhuohang and Lopez, Damien and Das, Kamalika and Malin Bradley  and Kumar, Sricharan},
   booktitle={NeurIPS 2023 Workshop on Socially Responsible Language Modelling Research},
@@ -612,6 +762,8 @@ Buttons:
 
 # CVPR 2022
 @inproceedings{li2022auditing,
+  research_group={reliability},
+  takeaway={Earlier privacy foundations: auditing federated-learning defenses through gradient leakage.},
   title={Auditing Privacy Defenses in Federated Learning via Generative Gradient Leakage},
   author={Li, Zhuohang and Zhang, Jiaxin and Liu, Luyang and Liu, Jian},
   booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
@@ -738,6 +890,9 @@ Buttons:
 
 
 @inproceedings{zhang2021self,
+  research_group={reliability},
+  takeaway={Earlier reliability foundations: active-learning-based self-supervised anomaly detection.},
+  year={2021},
   title={Self-supervised anomaly detection via neural autoregressive flows with active learning},
   author={Zhang, Jiaxin and Saleeby, Kyle and Feldhausen, Thomas and Bi, Sirui and Plotkowski, Alex and Womble, David},
   booktitle={NeurIPS 2021 Workshop on Deep Generative Models and Downstream Applications},
@@ -758,11 +913,13 @@ Buttons:
 
 
 @inproceedings{zhangvariational,
+  research_group={reliability},
+  takeaway={Earlier UQ foundations: generative flows for reconstruction uncertainty estimation.},
   title={Variational Generative Flows for Reconstruction Uncertainty Estimation},
   author={Zhang, Jiaxin and Drgona, Jan and Mukherjee, Sayak and Halappanavar, Mahantesh and Liu, Frank},
   booktitle={ICML 2021 Workshop on Uncertainty and Robustness in Deep Learning},
   year={2021},
-  abbr = {ICLR Workshop},
+  abbr = {ICML Workshop},
 }
 
 
@@ -810,6 +967,8 @@ Buttons:
 
 # AISTATS 2021
 @inproceedings{zhang2021scalable,
+  research_group={reliability},
+  takeaway={Earlier UQ foundations: scalable, gradient-free information gathering for implicit models.},
   title={A Scalable Gradient Free Method for Bayesian Experimental Design with Implicit Models},
   author={Zhang, Jiaxin and Bi, Sirui and Zhang, Guannan},
   booktitle={International Conference on Artificial Intelligence and Statistics},
@@ -891,6 +1050,8 @@ Buttons:
 
 
 @article{zhang2021modern,
+  research_group={reliability},
+  takeaway={Earlier UQ foundations: a survey of efficient Monte Carlo methods for uncertainty propagation.},
   title={Modern Monte Carlo methods for efficient uncertainty quantification and propagation: A survey},
   author={Zhang, Jiaxin},
   journal={Wiley Interdisciplinary Reviews: Computational Statistics},

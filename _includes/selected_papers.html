@@ -1,4 +1,11 @@
 
-          <div class="publications">
-            {% bibliography -f papers -q @*[selected=true]* %}
-          </div>
+<div class="publications grouped-publications">
+  {% for group in site.data.research_groups %}
+    <section class="research-publication-group" id="research-{{ group.key }}" aria-labelledby="research-heading-{{ group.key }}">
+      <h3 id="research-heading-{{ group.key }}"><span class="research-card-number">0{{ forloop.index }}</span> {{ group.title }}</h3>
+      <p class="research-group-description">{{ group.description }}</p>
+      {% capture group_query %}@*[research_group={{ group.key }}]*{% endcapture %}
+      {% bibliography -f papers -q {{ group_query }} %}
+    </section>
+  {% endfor %}
+</div>

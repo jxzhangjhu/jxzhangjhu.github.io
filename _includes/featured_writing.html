@@ -1,0 +1,20 @@
+<section class="featured-writing" aria-labelledby="featured-writing-title">
+  <div class="homepage-section-heading">
+    <h2 id="featured-writing-title" class="homepage-section-title">Research Writing</h2>
+    <a href="{{ '/blog/' | relative_url }}">All articles <span aria-hidden="true">→</span></a>
+  </div>
+  <p class="section-intro">Long-form notes connecting recent research, practical agent design, and open questions.</p>
+  <div class="featured-writing-grid">
+    {% for item in site.data.featured_writing %}
+      <article class="writing-card">
+        <p class="writing-topic">{{ item.topic }}</p>
+        <h3><a href="{{ item.url | relative_url }}">{{ item.title }}</a></h3>
+        <p class="writing-summary">{{ item.summary }}</p>
+        <div class="writing-links">
+          <a href="{{ item.url | relative_url }}">Read article <span aria-hidden="true">→</span></a>
+          {% if item.zh_url %}<a href="{{ item.zh_url | relative_url }}" lang="zh-CN">中文版</a>{% endif %}
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+</section>

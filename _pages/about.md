@@ -17,6 +17,7 @@ conference_travel: true  # conference travel list
 awards: true
 professional_services: true  # AC, reviewers, etc.
 selected_papers: true
+featured_writing: true
 social: false  # includes social icons at the bottom of the page
 importance: 1
 nav: false  # About is hardcoded in header.html, so set to false to avoid duplication
@@ -38,17 +39,11 @@ My technical roots lie deeply in extreme-scale computing. During my tenure as a 
 Beyond research, I am an active contributor to the open-source community, maintaining several heavily starred projects (3,000+ stars) focused on LLM RAG, Prompt Optimization, and Reliability.
  -->
 
-I am a **Senior Staff Research Scientist (Research Lead)** at [Salesforce AI Research](https://blog.salesforceairesearch.com/), where I lead a team building **reliable, calibrated LLM models and self-evolving long-horizon AI agents**. My research turns **uncertainty, confidence, and consistency into first-class training signals** for post-training/RL, scalable evaluation, agent oversight, and self-evolving.
+I am a **Senior Staff Research Scientist and Research Lead** at [Salesforce AI Research](https://blog.salesforceairesearch.com/). I study how to build **reliable, aligned, and self-improving AI agents** through agentic post-training, behavioral evaluation, and model–harness co-evolution. My work connects honesty, calibration, and uncertainty with learning and control in coding, tool-using, and long-horizon agents.
 
-<em>I believe the next frontier of AI capability lies at the intersection of <strong>calibrated reasoning</strong> and <strong>self-improving agents</strong> — systems that know what they don't know and can autonomously improve through principled exploration.</em>
+I am interested in the gap between **what an agent knows, what it does, and when it should stop or ask for help**. Addressing this gap requires more than a stronger model: training signals, evaluation protocols, the execution harness, and the environment all shape agent behavior.
 
-My current research focuses on:
-
-- **Agentic Reinforcement Learning** — calibration-aware post-training, on-policy distillation, and self-evolving training environments (<a href="https://arxiv.org/abs/2604.16830">CaOPD</a>, <a href="https://arxiv.org/abs/2509.25666">NuRL</a>).
-- **Alignment, Calibration & Honesty** — turning uncertainty and consistency into active training signals for honest, scalable LLM oversight (<a href="https://arxiv.org/abs/2601.15690">Passive→Active survey</a>, <a href="https://arxiv.org/abs/2601.15778">Agentic Confidence Calibration</a>).
-- **Long-horizon Agents & Evaluation** — trajectory-level oversight and enterprise-scale agent benchmarks (<a href="https://arxiv.org/abs/2601.15703">Agentic Uncertainty Quantification</a>, <a href="https://www.salesforce.com/blog/trusted-deepresearch/">Trustworthy Deep Research</a>).
-
-Previously, I was a Senior Staff Research Scientist and founding research lead at [Intuit AI Research](https://www.intuit.com/), for building reliable LLM systems, spanning LLM post-training, alignment, evaluation, and production deployment. I architected and deployed hallucination detection ([SAC3](https://arxiv.org/abs/2311.01740), used by 1,600+ internal users) and prompt optimization pipelines ([PhaseEvo](https://arxiv.org/abs/2402.11347), used by 2,000+ developers) for enterprise financial LLMs — recognized with the **Intuit CTO Award (top 1%)**. Earlier, as Staff Research Scientist at [Oak Ridge National Laboratory](https://www.ornl.gov/), I architected distributed deep learning at **20,000+ GPUs** on world-class supercomputers ([Summit](https://en.wikipedia.org/wiki/Summit_(supercomputer)), [Frontier](https://en.wikipedia.org/wiki/Frontier_(supercomputer))) and led 7 DOE projects ($6.4M total) on Generative AI for Science, recognized with the **DOE Promising Early-Career Researcher Award**. I earned my Ph.D. at [Johns Hopkins University](https://www.jhu.edu/).
+Previously, I was a Senior Staff Research Scientist and founding research lead at [Intuit AI Research](https://www.intuit.com/), where I built LLM reliability and evaluation infrastructure used by **1,600+ internal users**, and automated prompt optimization pipelines used by **2,000+ developers**. This work was recognized with the **Intuit CTO Award (top 1%)**. Earlier, at [Oak Ridge National Laboratory](https://www.ornl.gov/), I worked on distributed deep learning at **20,000+ GPUs on Summit** and served as PI/co-PI on seven DOE/ORNL projects ($6.4M total) in AI for Science. I received the **DOE Promising Early-Career Researcher Award** and earned my Ph.D. at [Johns Hopkins University](https://www.jhu.edu/).
 
 
 <!-- 

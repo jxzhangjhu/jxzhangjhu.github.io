@@ -1,0 +1,19 @@
+- title: "Alignment After Agency: Safety for Models That Act"
+  topic: Alignment & safety
+  url: /blog/2026/alignment-after-agency/
+  zh_url: /blog/2026/alignment-after-agency-zh/
+  summary: Agent behavior, oversight, and safeguards across the model, harness, and environment.
+- title: "Jev: When Calibration Becomes an API"
+  topic: Calibration & decision models
+  url: /blog/2026/jev-calibration-as-an-api/
+  zh_url: /blog/2026/jev-calibration-as-an-api-zh/
+  summary: A living review of calibrated decision models, RLCD, open tooling, and their limits.
+- title: "Calibrating Long-Horizon Agents"
+  topic: Agent reliability
+  url: /blog/2026/calibrating-long-horizon-agents/
+  summary: Measuring trajectory uncertainty—and using it to reflect, abstain, ask, and route.
+- title: "Environment Scaling for Agentic RL"
+  topic: Agentic post-training
+  url: /blog/2026/environment-scaling-for-agentic-rl/
+  zh_url: /blog/2026/environment-scaling-for-agentic-rl-zh/
+  summary: How tasks, environments, and verifiers become scalable reinforcement-learning signals.

@@ -2,7 +2,7 @@
 layout: default
 ---
 
-<div class="post">
+<div class="post homepage">
   <article>
     <div class="row">
         <div class="col-sm-3">
@@ -33,7 +33,8 @@ layout: default
     <div class="clearfix">
       {{ content }}
     </div>
-
+    {% include research_focus.html %}
+    {% if page.featured_writing %}{% include featured_writing.html %}{% endif %}
 
     <!-- News -->
     {% if page.news -%}
@@ -42,19 +43,18 @@ layout: default
       {%- include news.html %}
     {%- endif %}
 
-    <!-- Recent Talks (before Publications) -->
-    {% if page.recent_talks -%}
-      <h2 style="font-size: 1.5rem; margin-top: 2.5rem; margin-bottom: 0.5rem; font-weight: bold;">Recent Talks</h2>
-      <hr style="border: none; border-top: 2px solid var(--global-divider-color); margin-top: 0; margin-bottom: 1rem;">
-      {%- include recent_talks.html %}
-    {%- endif %}
-
     <!-- Selected Publications -->
     {% if page.selected_papers -%}
-      <h2 style="font-size: 1.5rem; margin-top: 2.5rem; margin-bottom: 0.5rem; font-weight: bold;"><a href="{{ '/publications/' | relative_url }}" style="color: inherit;">Selected Publications</a></h2>
+      <h2 id="research-publications" class="homepage-section-title"><a href="{{ '/publications/' | relative_url }}" style="color: inherit;">Research Publications</a></h2>
       <hr style="border: none; border-top: 2px solid var(--global-divider-color); margin-top: 0; margin-bottom: 1rem;">
-      <p style="margin-top: 0; margin-bottom: 1rem; font-size: 0.9rem;">(Full publication list can be found on <a href="https://scholar.google.com/citations?user=LiDm8jEAAAAJ&hl=en" target="_blank">Google Scholar</a> and on the <a href="{{ '/publications/' | relative_url }}">Publications</a> page.)</p>
+      <p class="section-intro">Relevant work grouped by research direction, including first-author papers and earlier foundations. See the <a href="{{ '/publications/' | relative_url }}">complete chronological archive</a> or <a href="https://scholar.google.com/citations?user=LiDm8jEAAAAJ&hl=en" target="_blank" rel="noopener">Google Scholar</a>. <span class="publication-legend">First-author papers are marked; submissions are labeled under review.</span></p>
       {%- include selected_papers.html %}
+    {%- endif %}
+
+    {% if page.recent_talks -%}
+      <h2 class="homepage-section-title">Recent Talks</h2>
+      <hr style="border: none; border-top: 2px solid var(--global-divider-color); margin-top: 0; margin-bottom: 1rem;">
+      {%- include recent_talks.html %}
     {%- endif %}
 
     <!-- Awards & Honors (from CV) -->

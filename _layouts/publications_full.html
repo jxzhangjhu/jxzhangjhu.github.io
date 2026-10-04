@@ -8,6 +8,14 @@ layout: default
   </header>
   <article>
     <p style="margin-bottom: 1.5rem;">Full publication list is also available on <a href="https://scholar.google.com/citations?user=LiDm8jEAAAAJ&hl=en" target="_blank" rel="noopener">Google Scholar</a>.</p>
+    <nav class="publication-filters" hidden aria-label="Filter publications by research direction">
+      <button type="button" data-publication-filter="all" aria-pressed="true">All papers</button>
+      {% for group in site.data.research_groups %}
+        <button type="button" data-publication-filter="{{ group.key }}" aria-pressed="false">{{ group.title }}</button>
+      {% endfor %}
+      <button type="button" data-publication-filter="earlier" aria-pressed="false">Other / Earlier Research</button>
+    </nav>
+    <p id="publication-filter-status" class="publication-filter-status" aria-live="polite"></p>
 
     <div class="publications">
       <h2 style="font-size: 1.35rem; margin-top: 1rem; margin-bottom: 0.75rem; font-weight: bold;">2026</h2>
@@ -39,3 +47,4 @@ layout: default
     </div>
   </article>
 </div>
+<script src="{{ '/assets/js/publication-filters.js' | relative_url }}" defer></script>
