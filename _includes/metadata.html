@@ -47,7 +47,14 @@
     {% if page.og_image or site.og_image -%}
     <meta property="og:image" content="{%- if page.og_image -%}{{ page.og_image }}{%- else -%}{{ site.og_image }}{%- endif -%}" />
     {%- endif %}
-    <meta property="og:locale" content="{{ site.lang }}" />
+    {%- if page.lang -%}
+      {%- assign og_locale = page.lang -%}
+    {%- elsif page.url contains '-zh' -%}
+      {%- assign og_locale = 'zh_CN' -%}
+    {%- else -%}
+      {%- assign og_locale = site.lang -%}
+    {%- endif %}
+    <meta property="og:locale" content="{{ og_locale }}" />
 
     <!-- Twitter card -->
     <meta name="twitter:card" content="{%- if page.og_image -%}summary_large_image{%- else -%}summary{%- endif -%}" />

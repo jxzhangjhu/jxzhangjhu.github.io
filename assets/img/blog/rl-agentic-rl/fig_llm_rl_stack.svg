@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2400" height="820" viewBox="0 0 2400 820">
+  <rect width="2400" height="820" fill="#ffffff"/>
+  <style>
+    .title{font:700 42px Inter,Arial,sans-serif;fill:#1f2937;letter-spacing:.3px}
+    .head{font:700 29px Inter,Arial,sans-serif;fill:#1f2937}
+    .body{font:400 23px Inter,Arial,sans-serif;fill:#475569}
+    .note{font:italic 22px Inter,Arial,sans-serif;fill:#5f6874}
+    .core{font:700 27px Inter,Arial,sans-serif;fill:#7b3fb2}
+    .box{stroke:#315e86;stroke-width:4;rx:30}
+    .arrow{stroke:#64748b;stroke-width:4;fill:none;marker-end:url(#arrow)}
+  </style>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b"/>
+    </marker>
+  </defs>
+
+  <text x="1200" y="72" text-anchor="middle" class="title">LLM RL / Agentic RL stack: what each layer controls</text>
+
+  <g transform="translate(55 145)">
+    <rect class="box" x="0" y="0" width="350" height="235" fill="#e6f0fc"/>
+    <text x="175" y="83" text-anchor="middle" class="head"><tspan x="175">Prompts /</tspan><tspan x="175" dy="34">Environments</tspan></text>
+    <text x="175" y="164" text-anchor="middle" class="body"><tspan x="175">train tasks, tools,</tspan><tspan x="175" dy="31">state, resets</tspan></text>
+
+    <path class="arrow" d="M350 117 H386"/>
+    <rect class="box" x="390" y="0" width="350" height="235" fill="#e8f5ee"/>
+    <text x="565" y="83" text-anchor="middle" class="head"><tspan x="565">Rollout</tspan><tspan x="565" dy="34">Engine</tspan></text>
+    <text x="565" y="164" text-anchor="middle" class="body"><tspan x="565">vLLM / SGLang</tspan><tspan x="565" dy="31">async workers</tspan></text>
+
+    <path class="arrow" d="M740 117 H776"/>
+    <rect class="box" x="780" y="0" width="350" height="235" fill="#fff3dc"/>
+    <text x="955" y="83" text-anchor="middle" class="head"><tspan x="955">Reward /</tspan><tspan x="955" dy="34">Verifier</tspan></text>
+    <text x="955" y="164" text-anchor="middle" class="body"><tspan x="955">RM, judge,</tspan><tspan x="955" dy="31">rule checker</tspan></text>
+
+    <path class="arrow" d="M1130 117 H1166"/>
+    <rect class="box" x="1170" y="0" width="350" height="235" fill="#f0e9fc"/>
+    <text x="1345" y="83" text-anchor="middle" class="head"><tspan x="1345">Advantage</tspan><tspan x="1345" dy="34">Estimation</tspan></text>
+    <text x="1345" y="164" text-anchor="middle" class="body"><tspan x="1345">baseline, GRPO,</tspan><tspan x="1345" dy="31">process/outcome</tspan></text>
+
+    <path class="arrow" d="M1520 117 H1556"/>
+    <rect class="box" x="1560" y="0" width="350" height="235" fill="#fdecef"/>
+    <text x="1735" y="83" text-anchor="middle" class="head"><tspan x="1735">Policy</tspan><tspan x="1735" dy="34">Update</tspan></text>
+    <text x="1735" y="164" text-anchor="middle" class="body"><tspan x="1735">PPO / GRPO</tspan><tspan x="1735" dy="31">DPO / OPD</tspan></text>
+
+    <path class="arrow" d="M1910 117 H1946"/>
+    <rect class="box" x="1950" y="0" width="350" height="235" fill="#edf3f5"/>
+    <text x="2125" y="83" text-anchor="middle" class="head"><tspan x="2125">Monitoring /</tspan><tspan x="2125" dy="34">Evaluation</tspan></text>
+    <text x="2125" y="164" text-anchor="middle" class="body"><tspan x="2125">pass@k, KL,</tspan><tspan x="2125" dy="31">entropy, safety</tspan></text>
+  </g>
+
+  <text x="225" y="555" text-anchor="middle" class="note">Environment supplies experience</text>
+  <text x="685" y="555" text-anchor="middle" class="note">Systems make it fast</text>
+  <text x="1130" y="555" text-anchor="middle" class="note">Reward defines the goal</text>
+  <text x="1585" y="555" text-anchor="middle" class="note">Optimization bounds the step</text>
+  <text x="2075" y="555" text-anchor="middle" class="note">Evaluation keeps it honest</text>
+  <text x="1200" y="700" text-anchor="middle" class="core">Core invariant: reward → optimization → exploration → environment → systems consistency</text>
+</svg>

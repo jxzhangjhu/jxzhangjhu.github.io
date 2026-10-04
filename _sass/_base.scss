@@ -836,7 +836,13 @@ html.transition *::after {
       margin: 1.6rem 0;
       box-shadow: 0 1px 5px rgba(0, 0, 0, 0.07);
       font-size: 1rem;
+      overflow-wrap: anywhere;
       p:last-child { margin-bottom: 0; }
+    }
+    // Long bare URLs are common in the citation blocks. Let them wrap instead of
+    // being silently clipped by the article's horizontal-overflow guard.
+    a {
+      overflow-wrap: anywhere;
     }
     // paper-style tables: clear top/bottom rules + header underline + light row lines
     table {
@@ -865,6 +871,39 @@ html.transition *::after {
       height: auto;
       display: block;
       margin: 1.6rem auto 0.4rem;
+    }
+    img[src*="/paper_"] {
+      background: #fff;
+      outline: 1px solid var(--global-divider-color);
+      outline-offset: 0;
+    }
+    img.post-image--portrait {
+      width: 100%;
+      max-width: 820px;
+    }
+    // Kramdown emits ordinary Markdown figures as one paragraph containing an
+    // image followed by an italic caption. Give those figures the same visual
+    // rhythm as the newer semantic <figure> components and make them zoomable.
+    p:has(> img) {
+      margin: 2rem auto 2.25rem;
+      text-align: center;
+
+      > img {
+        margin: 0 auto;
+        cursor: zoom-in;
+      }
+
+      > img + em,
+      > a + em {
+        display: block;
+        max-width: 920px;
+        margin: 0.65rem auto 0;
+        color: var(--global-text-color-light);
+        font-size: 0.9rem;
+        font-style: italic;
+        line-height: 1.5;
+        text-align: left;
+      }
     }
     // Semantic, zoomable figures for long-form research posts. Width variants
     // keep sparse diagrams and near-square plots from dominating the reading
@@ -1000,6 +1039,11 @@ progress {
 @page {
   size: A4 portrait;
   margin: 14mm 13mm 15mm;
+}
+
+@page blog-landscape {
+  size: A4 landscape;
+  margin: 13mm 14mm 14mm;
 }
 
 @media print {
@@ -1189,20 +1233,45 @@ progress {
     border-bottom: 1pt solid #111 !important;
   }
 
+  // Seven- and eight-column comparison matrices are unreadable when every
+  // column is forced to the same width. Let content determine the widths and
+  // use a compact-but-printable type size for those exceptional tables.
+  .post .post-content table:has(tr > :nth-child(6)) {
+    page: blog-landscape;
+    table-layout: auto !important;
+    font-size: 7.5pt !important;
+    line-height: 1.22 !important;
+  }
+
+  .post .post-content table:has(tr > :nth-child(6)) th,
+  .post .post-content table:has(tr > :nth-child(6)) td {
+    padding: 1.25mm 1.1mm !important;
+  }
+
   // Markdown emits each image and its italic caption as adjacent paragraphs.
   // Keep them together when :has() is supported, while all images remain bounded
   // for browsers that do not implement it in paged media.
   .post .post-content p:has(> img) {
-    margin-bottom: 1.5mm !important;
+    margin: 4mm auto 6mm !important;
     break-inside: avoid-page;
     page-break-inside: avoid;
     break-after: avoid-page;
     page-break-after: avoid;
   }
 
-  .post .post-content p:has(> img) + p {
-    break-before: avoid-page;
-    page-break-before: avoid;
+  // Very wide diagrams are automatically tagged by zoom.js once their natural
+  // dimensions are known. Giving them a landscape sheet preserves embedded
+  // labels instead of shrinking them to illegibility on portrait A4.
+  .post .post-content p.post-figure--print-landscape {
+    page: blog-landscape;
+    break-before: page;
+    page-break-before: always;
+    break-after: page;
+    page-break-after: always;
+  }
+
+  .post .post-content p.post-figure--print-landscape > img {
+    max-height: 170mm !important;
   }
 
   .post .post-content img,
@@ -1214,9 +1283,13 @@ progress {
     height: auto !important;
     margin: 4mm auto 1.5mm !important;
     object-fit: contain;
-    filter: grayscale(100%);
+    filter: grayscale(100%) contrast(1.12);
     break-inside: avoid-page;
     page-break-inside: avoid;
+  }
+
+  .post .post-content img[src*="/paper_"] {
+    outline: 0.5pt solid #aaa !important;
   }
 
   .post .post-content .post-figure {
@@ -1233,6 +1306,16 @@ progress {
     margin-top: 1.5mm !important;
   }
 
+  .post .post-content p:has(> img) > img + em,
+  .post .post-content p:has(> img) > a + em {
+    display: block !important;
+    margin: 1.5mm auto 0 !important;
+    color: #222 !important;
+    font-size: 8.5pt !important;
+    line-height: 1.35 !important;
+    text-align: left !important;
+  }
+
   .post .post-content pre,
   .post .post-content code,
   .post .post-content .highlight {
@@ -1246,8 +1329,10 @@ progress {
   }
 
   .post .post-content pre {
-    break-inside: avoid-page;
-    page-break-inside: avoid;
+    // Long code samples cannot fit on one sheet; allow a clean page break rather
+    // than leaving a large blank area or clipping the block.
+    break-inside: auto;
+    page-break-inside: auto;
     font-size: 8.6pt !important;
     line-height: 1.35 !important;
   }

@@ -1,10 +1,18 @@
 <!DOCTYPE html>
-<html lang="{{ site.lang }}">
+{%- if page.lang -%}
+  {%- assign document_lang = page.lang -%}
+{%- elsif page.url contains '-zh' -%}
+  {%- assign document_lang = 'zh-CN' -%}
+{%- else -%}
+  {%- assign document_lang = site.lang -%}
+{%- endif -%}
+<html lang="{{ document_lang }}">
 
   <!-- Head -->
   <head>
   {%- if page.redirect -%}
-    <meta http-equiv="refresh" content="3; url={{ site.baseurl }}/" />
+    <meta http-equiv="refresh" content="0; url={{ page.redirect }}" />
+    <link rel="canonical" href="{{ page.redirect }}" />
   {%- endif -%}
   {% include head.html %}
   </head>
@@ -17,6 +25,9 @@
 
     <!-- Content -->
     <div class="container mt-5">
+      {%- if page.redirect -%}
+      <p>Redirecting to <a href="{{ page.redirect }}">{{ page.redirect }}</a>…</p>
+      {%- endif -%}
       {{ content }}
     </div>
 

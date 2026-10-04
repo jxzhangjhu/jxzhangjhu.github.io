@@ -9,7 +9,7 @@ categories: research-notes
 giscus_comments: true
 related_posts: false
 ai_assisted: true
-og_image: https://jxzhangjhu.github.io/assets/img/blog/rl-agentic-rl/fig_llm_rl_stack.png
+og_image: https://jxzhangjhu.github.io/assets/img/blog/rl-agentic-rl/og_card.png
 ---
 
 <div class="lang-switch"><strong>English</strong> · <a href="/blog/2026/everything-about-rl-and-agentic-rl-zh/">中文</a></div>
@@ -78,7 +78,7 @@ Equivalently, keep this stack in mind:
 **Reward → Optimization → Exploration → Environment → Systems Consistency**
 
 ![A stack diagram of LLM RL and Agentic RL: prompts/environments, rollout engine, reward/verifier, advantage estimation, policy update, monitoring/evaluation.](/assets/img/blog/rl-agentic-rl/fig_llm_rl_stack.png)
-*A practical stack view: rewards define the goal, optimization bounds the update, environments supply
+*Figure 1. A practical stack view: rewards define the goal, optimization bounds the update, environments supply
 experience, systems make rollouts fast, and monitoring keeps the whole loop honest.*
 
 **If you remember only five things:**
@@ -393,7 +393,7 @@ These are **two independent axes**, often confused:
 | **Online** | PPO / GRPO with fresh rollouts used immediately | async RL with stale rollouts (§18); replay-based value methods |
 | **Offline** | (rare / degenerate) | DPO on a fixed preference set (§9); offline RL (CQL, IQL) |
 
-*Table T0. The two axes are orthogonal; most LLM RL sits in the "online, nearly on-policy" cell.*
+*Table 1. The two axes are orthogonal; most LLM RL sits in the "online, nearly on-policy" cell.*
 
 For LLM post-training the mapping is clean: **PPO/GRPO/RLVR are online and nearly on-policy** — they
 generate rollouts now and consume them almost immediately, using the IS ratio only to absorb the mild
@@ -539,7 +539,7 @@ critic bias.*
 | actor-critic | A2C → TRPO → PPO | policy + critic baseline + stable step | critic is memory-heavy at LLM scale |
 | group-relative | GRPO | drop critic, group-mean baseline | the modern RLVR default |
 
-*Table T0b. Each family fixes the previous one's binding weakness; LLM RL ends up at PPO/GRPO.*
+*Table 2. Each family fixes the previous one's binding weakness; LLM RL ends up at PPO/GRPO.*
 
 **Takeaway.** LLM RL lives in the policy-gradient / actor-critic world because language generation is a
 stochastic, sequence-level decision problem with sparse trajectory rewards — the exact setting where a
@@ -582,7 +582,7 @@ Beyond a learned scalar RM, two cheaper preference sources are now common:
 | Rubric / constitutional | low–medium | consistent, auditable | rubric design effort |
 | Verifiable checker (§5) | low (if checkable) | lower attack surface, exact | only for verifiable tasks; verifier can be exploited |
 
-*Table T3. Reward/verifier sources and trade-offs.*
+*Table 3. Reward/verifier sources and trade-offs.*
 
 ---
 
@@ -797,7 +797,7 @@ L^{\text{CLIP}}(\theta) \;=\; \mathbb{E}_t\!\left[ \min\!\Big( r_t(\theta)\,\hat
 $$
 
 ![PPO clipped surrogate objective vs the probability ratio, for positive and negative advantage.](/assets/img/blog/rl-agentic-rl/fig_ppo_clip.png)
-*The clipped surrogate for $$A>0$$ (left) and $$A<0$$ (right). Inside $$[1-\epsilon,1+\epsilon]$$ it
+*Figure 2. The clipped surrogate for $$A>0$$ (left) and $$A<0$$ (right). Inside $$[1-\epsilon,1+\epsilon]$$ it
 follows the unclipped $$rA$$; outside, the outer $$\min$$ flattens the upside (left) while still letting
 the policy move away from bad actions (right). This asymmetry is exactly what makes $$L^{\text{CLIP}}$$ a
 pessimistic lower bound.*
@@ -978,7 +978,7 @@ The "variant zoo" (Table T1) is then a sequence of small fixes to GRPO's known b
 | **GSPO** ([Qwen 2025](https://arxiv.org/abs/2507.18071)) | 2025 | **sequence-level** importance ratio, clipping, and optimization | coarser credit per token |
 | **CISPO** ([MiniMax 2025](https://arxiv.org/abs/2506.13585)) | 2025 | clip the IS *weight*, keep all-token gradient (see §7) | weight clipping tuning |
 
-*Table T1. The main GRPO variants. Each is a targeted fix to a specific GRPO bias; many more exist, but
+*Table 4. The main GRPO variants. Each is a targeted fix to a specific GRPO bias; many more exist, but
 these four cover the ideas that recur in practice.*
 
 ---
@@ -1064,7 +1064,7 @@ gradients.*
 | PPO epochs | 1 (sometimes 2–4) | reusing the same rollouts more makes the data increasingly off-policy → instability |
 | generation length | task-dependent | too short truncates reasoning; too long wastes rollout compute and invites length hacking |
 
-*Table T2. Sensible GRPO defaults. These are starting points, not laws — verify per task.*
+*Table 5. Sensible GRPO defaults. These are starting points, not laws — verify per task.*
 
 **Takeaway.** GRPO swaps PPO's critic for a group-mean baseline; the variant zoo (Dr. GRPO, DAPO, GSPO,
 CISPO, …) is a catalog of patches for its std/length/KL/credit biases. Know the *bias each one targets*,
@@ -1542,7 +1542,7 @@ That idea is **difficulty ≠ trainability**. A task only produces a learning si
 $$p(1-p)$$, where $$p$$ is the policy's pass rate:
 
 ![Reward variance p(1-p) vs pass rate: tasks teach most when the pass rate is near one half.](/assets/img/blog/rl-agentic-rl/fig_reward_variance.png)
-*Reward variance $$\hat{p}(1-\hat{p})$$ is maximized at $$p\approx0.5$$ and zero at the extremes. A task
+*Figure 3. Reward variance $$\hat{p}(1-\hat{p})$$ is maximized at $$p\approx0.5$$ and zero at the extremes. A task
 the model always fails ($$p=0$$) or always passes ($$p=1$$) yields zero advantage and zero gradient — it
 teaches nothing right now, regardless of how "hard" it is in absolute terms.*
 

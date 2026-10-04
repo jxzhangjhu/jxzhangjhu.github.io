@@ -57,8 +57,8 @@ Booth 的议程本身有据可查。一张现场 schedule 的照片（[Wu, 2026]
 
 > **核心判断。** 模型正在从*回答问题*走向*接管项目*。当有效 operating horizon 从几分钟延长到几小时、几周，真正的约束就不再是 raw capability，而是它周围那套机制：**evaluation latency、credit assignment、verification、monitoring 与 human trust**。时间不只是又一条 scaling axis，它是那条会把另外五件事一起拖着走的轴。
 
-![The operating-horizon ladder and the five things that scale with it](/assets/img/blog/time-is-the-new-scaling-axis-openai-icml-2026/fig1_horizon.png)
-*Figure 1. 四场 Q&A 的共同主线。只有当它拖着一起走的这五件事——evaluation、training signal、safety monitoring、verification 与 trust——同时延长时，延长 horizon 才算 progress。*
+![Operating horizon 阶梯，以及随之扩展的五个维度](/assets/img/blog/time-is-the-new-scaling-axis-openai-icml-2026/fig1_horizon.png)
+*图 1. 四场 Q&A 的共同主线。只有当它拖着一起走的这五件事——evaluation、training signal、safety monitoring、verification 与 trust——同时延长时，延长 horizon 才算 progress。*
 
 > **两个贯穿全文的例子。** 用来让后面的抽象保持诚实：
 > - **E1 —— 一周的 refactor。** 一个 coding agent 拿到一个 repo 和一份 spec，跑几天、几百次 tool call，最后交回一个分支。*成功标准：*测试全过，而且人愿意 merge。
@@ -87,12 +87,12 @@ Hu 的笔记把 Brown 的观点记得很直接——当前路线不需要架构�
 
 这部分 Brown 的公开论证已经被更广泛地接受了。他的说法是：能力已经变成"a function of how much money you put into it" （[Brown, 2026](https://podscripts.co/podcasts/no-priors-artificial-intelligence-technology-startups/why-traditional-benchmarks-fail-modern-ai-models-with-openai-research-scientist-noam-brown)）。Benchmark grid——纵轴模型、横轴基准、每格一个数——默认每个模型*有*一个数。可是：跑一次；跑五次取最好；让三个副本互相辩论；给一个副本一周时间。同一组权重，四个完全不同的系统。
 
-![Capability as a curve over test-time budget](/assets/img/blog/time-is-the-new-scaling-axis-openai-icml-2026/fig2_capability_curve.png)
-*Figure 2. 示意图。单数字 benchmark 报告的只是一条竖切片。在 grid 恰好使用的那个预算上，这一代看起来只比上一代高出一点误差；往右两个数量级，它已经是另一个系统。*
+![Capability 随 test-time budget 变化的曲线](/assets/img/blog/time-is-the-new-scaling-axis-openai-icml-2026/fig2_capability_curve.png)
+*图 2. 示意图。单数字 benchmark 报告的只是一条竖切片。在 grid 恰好使用的那个预算上，这一代看起来只比上一代高出一点误差；往右两个数量级，它已经是另一个系统。*
 
 实际后果是：一次公平比较至少需要三者之一——各系统共享的**固定 inference budget**、score 对 tokens/成本/时间的**曲线**，或者把 capability gain 与买到它的额外预算**一起**报告。
 
-> **Insight —— benchmark-maxxing 从训练环节挪到了报告环节。**Best-of-N、LLM judge、router、复杂 scaffold，都能靠多花 inference 抬高标题数字。作为产品决策这可能完全正确，但它不是"模型更好"的证据；而一张隐藏预算的 grid，恰恰无法区分这两者。
+> **Insight —— benchmark-maxxing 从训练环节挪到了报告环节。** Best-of-N、LLM judge、router、复杂 scaffold，都能靠多花 inference 抬高标题数字。作为产品决策这可能完全正确，但它不是"模型更好"的证据；而一张隐藏预算的 grid，恰恰无法区分这两者。
 
 也不是所有任务都同样受益于更多时间，所以曲线的*形状*才是有意思的对象。Factual recall 几乎立刻走平；而 search 形状的工作——竞赛数学、debug、cyber、实验科学——会持续吃到收益，因为多出来的预算买到的是更多被探索、也被验证过的分支。
 
@@ -119,8 +119,8 @@ Hu 的笔记把 Brown 的观点记得很直接——当前路线不需要架构�
 
 对 chat 模型，一个 eval item 花几秒；对 E1，一次 faithful pass 要一周——因为要知道一个 agent 能不能扛住一周的工作，唯一诚实的办法就是让它扛一次。Hu 的笔记点到了那个让人不舒服的推论：evaluation loop 可能比它本该指导的 development loop 还慢。
 
-![Evaluation latency against task horizon](/assets/img/blog/time-is-the-new-scaling-axis-openai-icml-2026/fig3_eval_latency.png)
-*Figure 3. 示意图。Faithful evaluation 会随着它所测量的 horizon 一起变长。过了某个点，对一个模型的判决会在它的继任者发布之后才到达。*
+![Evaluation latency 随 task horizon 增长](/assets/img/blog/time-is-the-new-scaling-axis-openai-icml-2026/fig3_eval_latency.png)
+*图 3. 示意图。Faithful evaluation 会随着它所测量的 horizon 一起变长。过了某个点，对一个模型的判决会在它的继任者发布之后才到达。*
 
 > **Trade-off.** 并行买到的是样本量，不是速度。你可以同时跑两百条 week-long rollout，照样要等一周；而且 sequential dependency 比看上去更糟——在研究形状的工作（E2）里，往往要等 experiment t 跑完，才能决定 experiment t+1 是什么。
 
@@ -139,8 +139,8 @@ Hu 的笔记把 Brown 的观点记得很直接——当前路线不需要架构�
 
 按笔记的说法，agents 团队把难点放在了这里。看 E1：agent 跑三天、发出几百条命令，而在第一天上午的某个时刻，它悄悄接受了一个关于数据库 schema 的错误信念。三天后测试没过，terminal reward 写着 `0`。它不会告诉你：在一个第一天就已经被污染的世界里，它在第三天跑的那条命令其实是个合理决策。
 
-![Credit assignment over a long trajectory](/assets/img/blog/time-is-the-new-scaling-axis-openai-icml-2026/fig4_credit_assignment.png)
-*Figure 4. 结尾的一个分数，要解释它之前发生的一切。Horizon 越长，中性动作越多、局部合理的 recovery 越多，早期错误污染后续全部观测的空间也越大。*
+![长 trajectory 中的 credit assignment](/assets/img/blog/time-is-the-new-scaling-axis-openai-icml-2026/fig4_credit_assignment.png)
+*图 4. 结尾的一个分数，要解释它之前发生的一切。Horizon 越长，中性动作越多、局部合理的 recovery 越多，早期错误污染后续全部观测的空间也越大。*
 
 ---
 
@@ -169,8 +169,8 @@ Safety 场次的名单是确定的，它*为什么而开*也是确定的：Kathe
 
 参会者记下来的原话是 **"punish actions, not thoughts."** 它很容易被误读成"reasoning trace 不重要"。已发表的结果说的其实更具体、也更有用。在 [Baker et al. (2025)](https://arxiv.org/abs/2503.11926) 中，一个 GPT-4o monitor 观察 frontier reasoning model 的 chain of thought，在 agentic coding environments 里抓 reward hacking 的效果远好于只看 actions 和 outputs 的 monitor——一个更弱的模型成功监督了更强的模型。接着他们做了显然的下一步：把这个 monitor 放进 reward。在**低**优化压力下它是有效的，得到的 agent 更强、hacking 也没增加；再往上加压，agent 学会了 **obfuscated reward hacking**——同样的 exploit，配上看起来无害的 reasoning。
 
-![The monitorability tax](/assets/img/blog/time-is-the-new-scaling-axis-openai-icml-2026/fig5_monitorability.png)
-*Figure 5. 对 Baker et al. (2025) 定性结论的示意图，不是复现数据。这个 sensor 一直有效，直到你对它优化得足够狠；而这种失败从内部看不出来——你观察到的现象是"hacking 消失了"。*
+![Monitorability tax](/assets/img/blog/time-is-the-new-scaling-axis-openai-icml-2026/fig5_monitorability.png)
+*图 5. 对 Baker et al. (2025) 定性结论的示意图，不是复现数据。这个 sensor 一直有效，直到你对它优化得足够狠；而这种失败从内部看不出来——你观察到的现象是"hacking 消失了"。*
 
 > **Trade-off —— monitorability tax。** 想让 chain of thought 保持可读，可能意味着刻意*不*针对它训练：用一个稍差或稍贵的模型，换一条你还敢信的通道。这是一笔要主动去付的成本。
 
@@ -201,8 +201,8 @@ Safety 场次的名单是确定的，它*为什么而开*也是确定的：Kathe
 
 这些指标很糙，却比看上去更好，因为它们测的是 **revealed trust**：有人真的愿意花稀缺算力，也愿意让系统在真实 codebase 上动手。公开数据指向同一个方向：到 2026 年 5 月，超过 70% 的 sampled Codex 用户至少委托过一项预计需要人类一小时以上的任务，四分之一委托过超过八小时的任务（[OpenAI, 2026](https://openai.com/index/how-agents-are-transforming-work/)）；在分布的顶端，并行 agent 的数量已经多到"逐分钟监督"在算术上不可能。
 
-![The delegation ladder](/assets/img/blog/time-is-the-new-scaling-axis-openai-icml-2026/fig6_delegation_ladder.png)
-*Figure 6. Benchmark 大多停在下面三级。GPU 那个问题问的是最上面两级——在那里，约束是 trust，不是 capability。*
+![Delegation 阶梯](/assets/img/blog/time-is-the-new-scaling-axis-openai-icml-2026/fig6_delegation_ladder.png)
+*图 6. Benchmark 大多停在下面三级。GPU 那个问题问的是最上面两级——在那里，约束是 trust，不是 capability。*
 
 ---
 

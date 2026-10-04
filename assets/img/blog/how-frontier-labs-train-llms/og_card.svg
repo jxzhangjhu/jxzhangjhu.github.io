@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#ffffff"/>
+  <rect width="14" height="630" fill="#426f9f"/>
+  <style>
+    .eyebrow{font:700 24px Inter,Arial,sans-serif;fill:#2c5278;letter-spacing:1px}
+    .title{font:800 61px Inter,Arial,sans-serif;fill:#181c24}
+    .sub{font:400 29px Inter,Arial,sans-serif;fill:#5d6878}
+    .flow{font:700 24px Inter,Arial,sans-serif;fill:#294e74}
+    .author{font:700 26px Inter,Arial,sans-serif;fill:#181c24}
+    .site{font:400 25px Inter,Arial,sans-serif;fill:#627087}
+  </style>
+  <text x="80" y="78" class="eyebrow">RESEARCH NOTES</text>
+  <text x="80" y="164" class="title">How Frontier Labs Train</text>
+  <text x="80" y="233" class="title">Large Language Models</text>
+  <text x="80" y="298" class="sub">One converging recipe — and the knobs where labs disagree.</text>
+  <rect x="80" y="386" width="1040" height="72" rx="14" fill="#eef4fa"/>
+  <text x="600" y="431" text-anchor="middle" class="flow">Data → Pre-train → Mid-train → SFT → RL → Align → Eval</text>
+  <text x="80" y="559" class="author">Jiaxin Zhang</text>
+  <text x="267" y="559" class="site">jxzhangjhu.github.io</text>
+</svg>

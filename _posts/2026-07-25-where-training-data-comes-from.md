@@ -1270,7 +1270,7 @@ as well-established for pre-training-style forward-KL distillation and as a usef
 
 Here is the decision procedure I would actually follow, with the first matching branch winning.
 
-![The distillation decision procedure](/assets/img/blog/where-training-data-comes-from/fig6_distillation_decision.png)
+![The distillation decision procedure](/assets/img/blog/where-training-data-comes-from/fig6_distillation_decision.png){: .post-image--portrait }
 *Figure 6. Access tier and capacity gap determine the method; the loss function is the last thing you
 choose, not the first. Numbers are from the sources cited in this section.*
 

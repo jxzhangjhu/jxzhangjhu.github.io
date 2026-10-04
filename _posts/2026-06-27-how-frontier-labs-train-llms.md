@@ -18,7 +18,7 @@ og_image: https://jxzhangjhu.github.io/assets/img/blog/how-frontier-labs-train-l
 - [Why read the tech reports?](#why-read-the-tech-reports)
 - [The shape of a frontier model](#the-shape-of-a-frontier-model)
   - [The settled core](#the-settled-core)
-  - [The big shift: dense to MoE](#the-big-shift-dense-to-moe)
+  - [The big shift: dense to MoE](#the-big-shift-dense-to-mixture-of-experts)
   - [Where labs still disagree](#where-labs-still-disagree)
 - [Data: the real moat](#data-the-real-moat)
 - [Pre-training: scaling, precision, stability](#pre-training-scaling-precision-stability)
@@ -41,8 +41,6 @@ they describe one convergent pipeline - data, pre-training, mid-training, SFT, R
 and safety - and only a handful of choices actually differ between labs. This post is that pipeline,
 taught stage by stage, with Microsoft's MAI-Thinking-1 as a spine and the other reports as a chorus.
 -->
-
----
 
 ## Why read the tech reports?
 
@@ -1336,18 +1334,6 @@ figures are original.*
   url     = "https://jxzhangjhu.github.io/blog/2026/how-frontier-labs-train-llms/"
 }
 ```
-
----
-
----
-
----
-
----
-
----
-
----
 
 ---
 

@@ -10,7 +10,7 @@ giscus_comments: true
 related_posts: false
 ai_assisted: true
 read_time: 115
-og_image: https://jxzhangjhu.github.io/assets/img/blog/rl-agentic-rl/fig_llm_rl_stack.png
+og_image: https://jxzhangjhu.github.io/assets/img/blog/rl-agentic-rl/og_card.png
 ---
 
 <div class="lang-switch"><a href="/blog/2026/everything-about-rl-and-agentic-rl/">English</a> · <strong>中文</strong></div>
@@ -72,8 +72,8 @@ og_image: https://jxzhangjhu.github.io/assets/img/blog/rl-agentic-rl/fig_llm_rl_
 
 **Reward → Optimization → Exploration → Environment → Systems Consistency**
 
-![A stack diagram of LLM RL and Agentic RL: prompts/environments, rollout engine, reward/verifier, advantage estimation, policy update, monitoring/evaluation.](/assets/img/blog/rl-agentic-rl/fig_llm_rl_stack.png)
-*一个实用的 stack 视角：reward 定义目标，optimization 限制更新，environment 产生经验，systems 让 rollout 高效，monitoring/evaluation 让整条 loop 保持诚实。*
+![LLM RL 与 Agentic RL 的分层结构：环境、rollout、reward、advantage、policy update 与 evaluation。](/assets/img/blog/rl-agentic-rl/fig_llm_rl_stack.png)
+*图 1. 一个实用的 stack 视角：reward 定义目标，optimization 限制更新，environment 产生经验，systems 让 rollout 高效，monitoring/evaluation 让整条 loop 保持诚实。*
 
 **如果只记住五件事：**
 
@@ -268,7 +268,7 @@ $$
 | **Online** | PPO / GRPO，新鲜 rollout 立即使用 | async RL 带 stale rollout（§18）；基于 replay 的 value 方法 |
 | **Offline** | （罕见 / 退化） | DPO 用固定 preference 集（§9）；offline RL（CQL、IQL） |
 
-*Table T0. 这两条轴是正交的；大多数 LLM RL 落在“online、近 on-policy”这一格。*
+*表 1. 这两条轴是正交的；大多数 LLM RL 落在“online、近 on-policy”这一格。*
 
 对 LLM post-training，映射很干净：**PPO/GRPO/RLVR 是 online、近 on-policy**——现采 rollout、几乎立即消费，只用 IS 比值来吸收 PPO epoch 和 async staleness 带来的轻度 off-policyness。**DPO（§9）是 offline**——训练中从不采样，因此更便宜更稳定，但被它起步的 preference 数据所限。
 
@@ -354,7 +354,7 @@ value-based 方法必须学 $$Q(s,a)$$，再通过 Bellman backup 做 bootstrap�
 | actor-critic | A2C → TRPO → PPO | policy + critic baseline + 稳定步长 | critic 在 LLM 规模很吃显存 |
 | group-relative | GRPO | 去 critic，group-mean baseline | 现代 RLVR 默认 |
 
-*Table T0b. 每个家族都修掉上一个的约束性弱点；LLM RL 最终落在 PPO/GRPO。*
+*表 2. 每个家族都修掉上一个的约束性弱点；LLM RL 最终落在 PPO/GRPO。*
 
 **Takeaway.** LLM RL 处在 policy-gradient / actor-critic 世界里，因为语言生成是一个随机、sequence-level、terminal reward 稀疏的决策问题——正是纯 value-based 的 argmax 崩掉的场景。保留显式 policy；把 critic 当作降方差工具——并注意 GRPO 用 group baseline 替代了它（§8）。
 
@@ -385,7 +385,7 @@ $$
 | Rubric / constitutional | low–medium | 一致、可审计 | rubric 设计成本 |
 | Verifiable checker (§5) | low（若可检查） | 攻击面更小、精确 | 仅限可验证任务；verifier 仍可被 exploit |
 
-*Table T3. Reward/verifier 来源与权衡。*
+*表 3. Reward/verifier 来源与权衡。*
 
 ---
 
@@ -507,8 +507,8 @@ $$
 L^{\text{CLIP}}(\theta) \;=\; \mathbb{E}_t\!\left[ \min\!\Big( r_t(\theta)\,\hat{A}_t,\;\; \mathrm{clip}\big(r_t(\theta),\, 1-\epsilon,\, 1+\epsilon\big)\,\hat{A}_t \Big) \right].
 $$
 
-![PPO clipped surrogate objective vs the probability ratio, for positive and negative advantage.](/assets/img/blog/rl-agentic-rl/fig_ppo_clip.png)
-*$$A>0$$（左）与 $$A<0$$（右）时的 clipped surrogate。在 $$[1-\epsilon,1+\epsilon]$$ 之内它跟随未裁剪的 $$rA$$；之外，外层 $$\min$$ 压平了上行（左），同时仍允许 policy 远离坏动作（右）。正是这种不对称使 $$L^{\text{CLIP}}$$ 成为一个悲观下界。*
+![PPO 的 clipped surrogate 与 probability ratio；分别展示正、负 advantage。](/assets/img/blog/rl-agentic-rl/fig_ppo_clip.png)
+*图 2. $$A>0$$（左）与 $$A<0$$（右）时的 clipped surrogate。在 $$[1-\epsilon,1+\epsilon]$$ 之内它跟随未裁剪的 $$rA$$；之外，外层 $$\min$$ 压平了上行（左），同时仍允许 policy 远离坏动作（右）。正是这种不对称使 $$L^{\text{CLIP}}$$ 成为一个悲观下界。*
 
 advantage 通常用 **Generalized Advantage Estimation** 估计（[Schulman et al., 2015b](https://arxiv.org/abs/1506.02438)）：
 
@@ -615,7 +615,7 @@ $$\mathbb{D}_{\text{KL}} \approx \tfrac{\pi_{\text{ref}}}{\pi_\theta} - \log\tfr
 | **GSPO** ([Qwen 2025](https://arxiv.org/abs/2507.18071)) | 2025 | **sequence-level** 的 importance ratio、clipping 与优化 | 每 token credit 更粗 |
 | **CISPO** ([MiniMax 2025](https://arxiv.org/abs/2506.13585)) | 2025 | 裁剪 IS *weight*，保留全 token 梯度（见 §7） | weight clipping 调参 |
 
-*Table T1. 主要的 GRPO 变体。每个都是对某个特定 GRPO 偏差的针对性修补；更多变体存在，但这四个覆盖了实践中反复出现的想法。*
+*表 4. 主要的 GRPO 变体。每个都是对某个特定 GRPO 偏差的针对性修补；更多变体存在，但这四个覆盖了实践中反复出现的想法。*
 
 ---
 
@@ -665,7 +665,7 @@ baseline 问题与 §7 的一样：对任意状态相关的 $$b(s)$$，$$\mathbb
 | PPO epochs | 1（有时 2–4） | 反复重用同一批 rollout 会让数据越来越 off-policy → 不稳 |
 | generation length | 视任务而定 | 太短截断 reasoning；太长浪费 rollout 算力并招致 length hacking |
 
-*Table T2. 合理的 GRPO 默认值。这是起点，不是定律——按任务核实。*
+*表 5. 合理的 GRPO 默认值。这是起点，不是定律——按任务核实。*
 
 **Takeaway.** GRPO 用 group-mean baseline 换掉 PPO 的 critic；变体动物园（Dr. GRPO、DAPO、GSPO、CISPO …）是对它 std/length/KL/credit 偏差的一份补丁目录。要知道*每个针对的偏差*，而不只是名字。
 
@@ -960,8 +960,8 @@ single-turn 情形很简单：reward 附在那一个 response 上。在一条只
 
 那个想法是 **difficulty ≠ trainability**。一个任务只有在当前 policy 下结果*不确定*时才产生学习信号。对一个二值 verifiable reward，per-task 方差是 $$p(1-p)$$，其中 $$p$$ 是 policy 的通过率：
 
-![Reward variance p(1-p) vs pass rate: tasks teach most when the pass rate is near one half.](/assets/img/blog/rl-agentic-rl/fig_reward_variance.png)
-*Reward 方差 $$\hat{p}(1-\hat{p})$$ 在 $$p\approx0.5$$ 时最大、在两端为零。一个模型总是失败（$$p=0$$）或总是通过（$$p=1$$）的任务，给出零 advantage、零梯度——它当下什么都不教，无论它在绝对意义上多“难”。*
+![Reward 方差 p(1-p) 与 pass rate；任务在通过率接近一半时最有训练信号。](/assets/img/blog/rl-agentic-rl/fig_reward_variance.png)
+*图 3. Reward 方差 $$\hat{p}(1-\hat{p})$$ 在 $$p\approx0.5$$ 时最大、在两端为零。一个模型总是失败（$$p=0$$）或总是通过（$$p=1$$）的任务，给出零 advantage、零梯度——它当下什么都不教，无论它在绝对意义上多“难”。*
 
 ---
 

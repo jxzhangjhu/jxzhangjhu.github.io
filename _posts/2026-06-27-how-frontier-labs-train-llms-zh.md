@@ -42,8 +42,6 @@ Kimi、Meta、Microsoft AI、Zhipu 以及其他十几家机构发布了*端到�
 MAI-Thinking-1 为主线，其他报告则作为合唱。
 -->
 
----
-
 ## 为什么要读这些技术报告？
 
 在深度学习时代的大部分时间里，*一个前沿模型究竟是怎么训练出来的*一直是业界守口如瓶的秘密：系统卡片里的寥寥数语、一个参数量、一张基准测试表格。你可以读遍每一篇论文，却仍然不知道该如何造出一个。这种情况已经改变了。2024-2026 年间发生了一件了不起的事：一家接一家实验室发布了真正的**端到端技术报告**——不是吊人胃口的预告，而是数据流水线、架构消融实验、优化器、强化学习配方、奖励设计、评测方法以及安全流程。DeepSeek（V3、V3.2、R1）、Qwen3、Kimi K2 和 k1.5、Meta 的 Llama 3、Google 的 Gemma、Microsoft AI 的 MAI-Thinking-1、Zhipu 的 GLM-4.5、Alibaba、Moonshot、Xiaomi 的 MiMo、Tencent 的 Hunyuan、MiniMax、NVIDIA 的 Nemotron，以及完全开源的 OLMo 2 / Tulu 3——以及在 2026 年年中涌现的新一波：DeepSeek-V4、GLM-5 / 5.2、Kimi K3、Qwen3.5、xAI 的 Grok 4.5，以及 Thinking Machines 的 Inkling。它们合在一起，就是一本无心插柳的教科书。
@@ -502,8 +500,6 @@ GLM-5.2 agentic 攀登背后的具体算法——**SAO，即 Single-rollout Asyn
 
 ---
 
----
-
 ## 收敛的配方
 
 从各个阶段往后退一步，本文开头的论断依然成立：到 2026 年，存在**一套配方**，而这些报告都是它的变体。下面用一口气讲完整条流水线——*整理并去重“人类 + 合成”数据，并通过 scaling-law 预测来选择配比；在一个按“每参数 token 数”排布的阶梯上、以刻意过训练的方式、用 FP8 预训练一个 RoPE/GQA/SwiGLU/RMSNorm 的 MoE；在推理密集的数据上做 mid-training 并扩展上下文；用 SFT/冷启动来植入行为与格式；运行 GRPO 系的 RL，配以可验证奖励、熵控制和可训练性筛选；用门控的奖励栈和 instruction hierarchy 来做对齐；以廉价的 NLL 加上防污染的基准动物园来度量；并对照一套 preparedness framework 进行红队。* 一旦你把这句话内化于心，下表中的每一份报告读起来都像是在做填空题。
@@ -582,19 +578,7 @@ GLM-5.2 agentic 攀登背后的具体算法——**SAO，即 Single-rollout Asyn
 
 ---
 
----
-
----
-
----
-
----
-
----
-
----
-
-## References
+## 参考文献
 
 [1] Amro Abbas, et al. ["SemDeDup: Data-efficient learning at web-scale through semantic deduplication"](https://arxiv.org/abs/2303.09540) arXiv:2303.09540, 2023.
 

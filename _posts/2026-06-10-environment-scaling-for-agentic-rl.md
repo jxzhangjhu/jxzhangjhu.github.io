@@ -40,8 +40,6 @@ Train, Evolve) plus a small set of design axes; the ideas that matter are verifi
 difficulty vs. trainability, and transfer.
 -->
 
----
-
 ## Why environments?
 
 Classic supervised fine-tuning treats a fixed dataset as ground truth: imitate these trajectories,

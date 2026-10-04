@@ -1337,14 +1337,14 @@ operating on the right clock.
 
 ---
 
-*Source note: Liang Wenfeng's reported May 2026 remarks are cited through a July 2026 *Daily Economic News*
+**Source note.** Liang Wenfeng's reported May 2026 remarks are cited through a July 2026 *Daily Economic News*
 report on a circulating 42-page AI-organized transcript. The outlet said an investment institution
 participating in DeepSeek's financing confirmed that a May meeting took place and regarded the content as
 credible, but no original audio, speaker-labeled official transcript, or DeepSeek confirmation is public.
 The article therefore treats the remarks as a
 media-reported, institution-corroborated unofficial record and as motivation—not technical evidence.
 Company engineering metrics elsewhere are first-party reports; recent 2026 preprints are described as
-paper-specific evidence rather than settled results. All figures are original.*
+paper-specific evidence rather than settled results. All figures are original.
 
 ---
 

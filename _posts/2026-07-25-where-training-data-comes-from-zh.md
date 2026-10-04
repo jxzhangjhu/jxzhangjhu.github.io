@@ -529,7 +529,7 @@ probing 分析给出了原因，而且这个解释可以推广。在单一格式
 
 下面是我实际会遵循的决策流程，第一个匹配上的分支胜出。
 
-![Distillation 决策流程](/assets/img/blog/where-training-data-comes-from/fig6_distillation_decision.png)
+![Distillation 决策流程](/assets/img/blog/where-training-data-comes-from/fig6_distillation_decision.png){: .post-image--portrait }
 *图 6. Access tier 与容量差距决定了方法；损失函数是你最后才选的东西，而不是最先选的。图中数字来自本节引用的文献。*
 
 **第 0 步。两项 pre-flight 诊断。** 测量候选 teacher 与 student 之间初始的 per-token KL 或 top-k 重合度（校准参考上文：~0.04 可行，~0.19 会失败）。测量你的 student 在目标 prompt 上的通过率——如果接近零，on-policy 梯度会消失，你需要先做 curriculum 节奏控制，或者先来一段更容易的 warm-up。

@@ -40,8 +40,6 @@ the agent's code and prompts, with the LLM as the optimizer — and it inherits 
 where the tasks come from, what makes a task useful for *selection*, and how to keep the verifier honest.
 -->
 
----
-
 ## Why evolve the harness?
 
 Here is a fact that should bother anyone who thinks model weights are everything. Take a *frozen* GPT-4 and
@@ -414,7 +412,7 @@ $$\mathrm{Disc}(t)=0$$ — it cannot rank anyone, no matter how hard it is.
 *Figure 6. The selection-signal twin of environment scaling's reward-variance curve. A task helps the search only
 where candidates split; "every candidate fails" and "every candidate passes" are both dead zones. With a
 binary verifier and a fraction $$\rho(t)$$ of candidates passing, $$\mathrm{Disc}(t)=\rho(1-\rho)$$ — the same
-bell curve, but the x-axis is "fraction of *candidates* that pass," not "fraction of *rollouts*."*
+bell curve, but the x-axis is "fraction of candidates that pass," not "fraction of rollouts."*
 
 The field keeps rediscovering this. [HarnessX](https://arxiv.org/abs/2606.14249) reports that single-harness
 evolution **stagnates to Δ = 0.0** on heterogeneous tasks — fixing domain A regresses domain B, the net
@@ -641,13 +639,19 @@ risk monitor. (Image source: [Lin et al., 2026](https://arxiv.org/abs/2604.25850
 That last point — and AHE's and ADAS's finding that **the optimal harness is model-specific** — is why the
 real destination is **co-evolution**: the harness you evolve for today's model must be re-evolved when the
 model upgrades, so the clean separation of "frozen weights, evolving harness" eventually dissolves back into
-the joint problem $$\max_{\theta,h} f$$. SIA is the first concrete evidence that this joint optimization beats
+the joint problem
+
+$$
+\max_{\theta,h} f.
+$$
+
+SIA is the first concrete evidence that this joint optimization beats
 either lever alone on *all* of its domains — the clearest sign yet that "frozen weights, evolving harness"
 is a stepping stone, not the destination.
 
 ![SIA: harness + weight co-evolution beats either lever alone](/assets/img/blog/self-evolving-agentic-harnesses/paper_fig11_sia_coevolution.png)
 *Figure 11. Co-evolution as evidence, not aspiration (SIA). Across three domains, jointly updating the
-harness *and* the weights (SIA-W+H) beats the baseline, the harness-only variant (SIA-H), and prior SOTA —
+harness and the weights (SIA-W+H) beats the baseline, the harness-only variant (SIA-H), and prior SOTA —
 the gap is largest where the ceiling is domain knowledge no prompt can supply. (Image source:
 [Hebbar et al., 2026](https://arxiv.org/abs/2605.27276))*
 
