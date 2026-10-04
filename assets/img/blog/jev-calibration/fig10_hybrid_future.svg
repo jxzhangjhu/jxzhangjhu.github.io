@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">A hybrid future with Jev fast paths and language model slow paths</title>
+  <desc id="desc">A system architecture sends state to a Jev fast path, uses probability and risk to act automatically or route uncertain cases to a language model, then sends consequential outputs to a validator or human. Outcomes feed monitoring and recalibration.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="10" markerHeight="10" orient="auto">
+      <path d="M1 1l10 5-10 5z" fill="#28343a"/>
+    </marker>
+    <marker id="feedback-arrow" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="10" markerHeight="10" orient="auto">
+      <path d="M1 1l10 5-10 5z" fill="#8b4a3c"/>
+    </marker>
+    <style>
+      .title{font:700 48px Arial,Helvetica,sans-serif;fill:#20282e}
+      .subtitle{font:400 27px Arial,Helvetica,sans-serif;fill:#556169}
+      .eyebrow{font:700 24px Arial,Helvetica,sans-serif;letter-spacing:1px}
+      .head{font:700 29px Arial,Helvetica,sans-serif;fill:#20282e}
+      .body{font:400 24px Arial,Helvetica,sans-serif;fill:#354149}
+      .edge{fill:none;stroke:#28343a;stroke-width:4;marker-end:url(#arrow)}
+      .feedback{fill:none;stroke:#8b4a3c;stroke-width:4;stroke-dasharray:12 9;marker-end:url(#feedback-arrow)}
+    </style>
+  </defs>
+
+  <rect width="1600" height="900" fill="#fbfaf6"/>
+  <text x="70" y="72" class="title">The likely end state is a calibrated cascade</text>
+  <text x="70" y="114" class="subtitle">Spend slow intelligence only where uncertainty, novelty, or consequence justifies it.</text>
+
+  <g transform="translate(55 174)">
+    <rect width="1490" height="520" rx="30" fill="#fff" stroke="#69747b" stroke-width="3"/>
+    <rect x="24" y="24" width="1442" height="190" rx="24" fill="#e8f1ee" stroke="#176d62" stroke-width="2.5"/>
+    <rect x="24" y="238" width="1442" height="250" rx="24" fill="#eef0f5" stroke="#4a5f86" stroke-width="2.5"/>
+    <text x="50" y="60" class="eyebrow" fill="#176d62">FAST PATH · ROUTINE DECISIONS</text>
+    <text x="50" y="274" class="eyebrow" fill="#4a5f86">SLOW PATH · AMBIGUOUS OR HIGH-RISK CASES</text>
+
+    <g transform="translate(60 83)">
+      <rect width="235" height="100" rx="18" fill="#fff" stroke="#4f5b62" stroke-width="2.5"/>
+      <text x="118" y="42" text-anchor="middle" class="head">Live state</text>
+      <text x="118" y="76" text-anchor="middle" class="body">+ typed questions</text>
+    </g>
+    <path d="M355 133H430" class="edge"/>
+    <g transform="translate(450 83)">
+      <rect width="235" height="100" rx="18" fill="#d4e7e1" stroke="#176d62" stroke-width="3"/>
+      <text x="118" y="42" text-anchor="middle" class="head">Jev</text>
+      <text x="118" y="76" text-anchor="middle" class="body">typed probabilities</text>
+    </g>
+    <path d="M745 133H820" class="edge"/>
+    <g transform="translate(840 71)">
+      <path d="M130 0L260 62L130 124L0 62Z" fill="#f6efd8" stroke="#8b7125" stroke-width="3"/>
+      <text x="130" y="53" text-anchor="middle" class="head">Probability</text>
+      <text x="130" y="87" text-anchor="middle" class="body">× consequence</text>
+    </g>
+    <path d="M1100 133H1175" class="edge"/>
+    <g transform="translate(1195 83)">
+      <rect width="235" height="100" rx="18" fill="#dfeae3" stroke="#47755c" stroke-width="3"/>
+      <text x="118" y="42" text-anchor="middle" class="head">Act</text>
+      <text x="118" y="76" text-anchor="middle" class="body">low-risk + confident</text>
+    </g>
+
+    <path d="M970 195V312H860" class="edge"/>
+    <text x="990" y="250" class="body">uncertain / novel</text>
+
+    <g transform="translate(550 312)">
+      <rect width="310" height="120" rx="20" fill="#fff" stroke="#4a5f86" stroke-width="3"/>
+      <text x="155" y="49" text-anchor="middle" class="head">LLM slow path</text>
+      <text x="155" y="86" text-anchor="middle" class="body">reason · search · tools</text>
+    </g>
+    <path d="M860 372H950" class="edge"/>
+    <g transform="translate(970 312)">
+      <rect width="350" height="120" rx="20" fill="#f3e7e5" stroke="#8b4a3c" stroke-width="3"/>
+      <text x="175" y="49" text-anchor="middle" class="head">Validator / human</text>
+      <text x="175" y="86" text-anchor="middle" class="body">verify · approve · stop</text>
+    </g>
+    <path d="M550 372H450" class="edge"/>
+    <g transform="translate(180 312)">
+      <rect width="250" height="120" rx="20" fill="#fff" stroke="#4a5f86" stroke-width="3" stroke-dasharray="10 7"/>
+      <text x="125" y="49" text-anchor="middle" class="head">Ask / defer</text>
+      <text x="125" y="86" text-anchor="middle" class="body">gather more evidence</text>
+    </g>
+  </g>
+
+  <g transform="translate(230 746)">
+    <rect width="1140" height="86" rx="24" fill="#f5ece7" stroke="#8b4a3c" stroke-width="3" stroke-dasharray="11 7"/>
+    <text x="570" y="38" text-anchor="middle" class="head">Outcome telemetry → drift tests → threshold updates → recalibration</text>
+    <text x="570" y="70" text-anchor="middle" class="body">Keep model version, question wording, base rate, and action policy under change control.</text>
+  </g>
+
+  <path d="M1367 694V720Q1367 746 1328 788" class="feedback"/>
+  <path d="M230 788H125Q92 788 92 752V365Q92 322 119 322" class="feedback"/>
+  <text x="800" y="880" text-anchor="middle" class="body" font-weight="700">Fast when the decision is bounded; slow when the world is not.</text>
+</svg>

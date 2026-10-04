@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">Jev and the return of the decision model</title>
+  <desc id="desc">Open Graph cover with a structured state card flowing through a Jev decision node into a probability distribution and three application branches: act, verify, and escalate.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="9" markerHeight="9" orient="auto">
+      <path d="M1 1l10 5-10 5z" fill="#253139"/>
+    </marker>
+    <style>
+      .kicker{font:700 24px Arial,Helvetica,sans-serif;fill:#176d62;letter-spacing:1.5px}
+      .title{font:700 57px Arial,Helvetica,sans-serif;fill:#20282e}
+      .subtitle{font:400 27px Arial,Helvetica,sans-serif;fill:#556169}
+      .head{font:700 26px Arial,Helvetica,sans-serif;fill:#20282e}
+      .body{font:400 24px Arial,Helvetica,sans-serif;fill:#354149}
+      .edge{fill:none;stroke:#253139;stroke-width:4;marker-end:url(#arrow)}
+    </style>
+  </defs>
+
+  <rect width="1200" height="630" fill="#fbfaf6"/>
+  <rect x="34" y="34" width="1132" height="562" rx="34" fill="#fff" stroke="#d6d3cb" stroke-width="3"/>
+  <text x="78" y="98" class="kicker">SYSTEM ONE · CALIBRATION · HYBRID AI</text>
+  <text x="78" y="176" class="title">Jev and the return of</text>
+  <text x="78" y="244" class="title">the decision model</text>
+  <text x="78" y="294" class="subtitle">When calibration becomes an API</text>
+
+  <g transform="translate(82 372)">
+    <rect width="214" height="126" rx="20" fill="#f4efe5" stroke="#59656c" stroke-width="3"/>
+    <text x="107" y="52" text-anchor="middle" class="head">State</text>
+    <text x="107" y="90" text-anchor="middle" class="body">typed questions</text>
+  </g>
+  <path d="M296 435H356" class="edge"/>
+
+  <g transform="translate(378 360)">
+    <rect width="176" height="150" rx="42" fill="#d4e7e1" stroke="#176d62" stroke-width="4"/>
+    <text x="88" y="68" text-anchor="middle" class="title" font-size="45">Jev</text>
+    <text x="88" y="108" text-anchor="middle" class="body">fast path</text>
+  </g>
+  <path d="M554 435H614" class="edge"/>
+
+  <g transform="translate(636 352)">
+    <rect width="250" height="166" rx="20" fill="#e8eef7" stroke="#315f87" stroke-width="3"/>
+    <text x="22" y="40" class="head">Probabilities</text>
+    <rect x="22" y="60" width="202" height="26" rx="6" fill="#cfd8df"/>
+    <rect x="22" y="60" width="142" height="26" rx="6" fill="#315f87"/>
+    <rect x="22" y="98" width="202" height="26" rx="6" fill="#cfd8df"/>
+    <rect x="22" y="98" width="58" height="26" rx="6" fill="#7893aa"/>
+    <rect x="22" y="136" width="202" height="18" rx="6" fill="#cfd8df"/>
+    <rect x="22" y="136" width="24" height="18" rx="6" fill="#a1b1be"/>
+  </g>
+  <path d="M886 435H934" class="edge"/>
+
+  <g transform="translate(952 349)">
+    <rect width="170" height="48" rx="12" fill="#e5eee8" stroke="#47755c" stroke-width="2.5"/>
+    <text x="85" y="33" text-anchor="middle" class="head">ACT</text>
+    <rect y="61" width="170" height="48" rx="12" fill="#f6efd8" stroke="#8b7125" stroke-width="2.5" stroke-dasharray="7 5"/>
+    <text x="85" y="94" text-anchor="middle" class="head">VERIFY</text>
+    <rect y="122" width="170" height="48" rx="12" fill="#f0dfe1" stroke="#8b4a3c" stroke-width="2.5"/>
+    <text x="85" y="155" text-anchor="middle" class="head">ESCALATE</text>
+  </g>
+  <text x="78" y="558" class="body" font-weight="700">Typed uncertainty as a software interface</text>
+</svg>

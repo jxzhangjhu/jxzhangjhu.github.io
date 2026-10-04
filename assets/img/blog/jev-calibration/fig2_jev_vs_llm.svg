@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Jev and language models are complementary execution paths</title>
+  <desc id="desc">Two parallel lanes compare a Jev fast decision path with a generative language model slow deliberation path, then show a hybrid cascade that routes routine decisions to Jev and ambiguous or high-risk cases to a language model and verifier.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="10" markerHeight="10" orient="auto">
+      <path d="M1 1l10 5-10 5z" fill="#28343a"/>
+    </marker>
+    <style>
+      .title{font:700 48px Arial,Helvetica,sans-serif;fill:#20282e}
+      .subtitle{font:400 27px Arial,Helvetica,sans-serif;fill:#556169}
+      .lane{font:700 30px Arial,Helvetica,sans-serif;fill:#20282e}
+      .head{font:700 28px Arial,Helvetica,sans-serif;fill:#20282e}
+      .body{font:400 25px Arial,Helvetica,sans-serif;fill:#354149}
+      .tag{font:700 24px Arial,Helvetica,sans-serif;letter-spacing:.7px}
+      .edge{fill:none;stroke:#28343a;stroke-width:4;marker-end:url(#arrow)}
+    </style>
+  </defs>
+
+  <rect width="1600" height="900" fill="#fbfaf6"/>
+  <text x="70" y="72" class="title">Two execution paths, one system</text>
+  <text x="70" y="114" class="subtitle">Jev compresses a decision; an LLM expands a problem. Reliable systems compose both.</text>
+
+  <g transform="translate(70 176)">
+    <rect width="1460" height="246" rx="28" fill="#e8f1ee" stroke="#176d62" stroke-width="3"/>
+    <rect width="230" height="246" rx="28" fill="#d3e7e1"/>
+    <text x="115" y="76" text-anchor="middle" class="lane">Jev</text>
+    <text x="115" y="112" text-anchor="middle" class="tag" fill="#176d62">FAST PATH</text>
+    <text x="115" y="161" text-anchor="middle" class="body">bounded choice</text>
+    <text x="115" y="196" text-anchor="middle" class="body">parallel outputs</text>
+
+    <g transform="translate(280 52)">
+      <rect width="245" height="142" rx="20" fill="#fff" stroke="#176d62" stroke-width="2.5"/>
+      <text x="122" y="56" text-anchor="middle" class="head">Structured state</text>
+      <text x="122" y="96" text-anchor="middle" class="body">+ typed questions</text>
+    </g>
+    <path d="M525 123H605" class="edge"/>
+    <g transform="translate(625 52)">
+      <rect width="245" height="142" rx="20" fill="#fff" stroke="#176d62" stroke-width="2.5"/>
+      <text x="122" y="56" text-anchor="middle" class="head">One evaluation</text>
+      <text x="122" y="96" text-anchor="middle" class="body">all questions at once</text>
+    </g>
+    <path d="M870 123H950" class="edge"/>
+    <g transform="translate(970 52)">
+      <rect width="245" height="142" rx="20" fill="#fff" stroke="#176d62" stroke-width="2.5"/>
+      <text x="122" y="56" text-anchor="middle" class="head">Typed distribution</text>
+      <text x="122" y="96" text-anchor="middle" class="body">branch · rank · route</text>
+    </g>
+    <text x="1340" y="102" text-anchor="middle" class="head">Best fit</text>
+    <text x="1340" y="140" text-anchor="middle" class="body">repeatable, narrow,</text>
+    <text x="1340" y="176" text-anchor="middle" class="body">latency-sensitive calls</text>
+  </g>
+
+  <g transform="translate(70 460)">
+    <rect width="1460" height="246" rx="28" fill="#eef0f5" stroke="#4a5f86" stroke-width="3"/>
+    <rect width="230" height="246" rx="28" fill="#dfe4ed"/>
+    <text x="115" y="76" text-anchor="middle" class="lane">LLM</text>
+    <text x="115" y="112" text-anchor="middle" class="tag" fill="#4a5f86">SLOW PATH</text>
+    <text x="115" y="161" text-anchor="middle" class="body">open-ended output</text>
+    <text x="115" y="196" text-anchor="middle" class="body">sequential reasoning</text>
+
+    <g transform="translate(280 52)">
+      <rect width="245" height="142" rx="20" fill="#fff" stroke="#4a5f86" stroke-width="2.5"/>
+      <text x="122" y="56" text-anchor="middle" class="head">Open problem</text>
+      <text x="122" y="96" text-anchor="middle" class="body">instruction + context</text>
+    </g>
+    <path d="M525 123H605" class="edge"/>
+    <g transform="translate(625 52)">
+      <rect width="245" height="142" rx="20" fill="#fff" stroke="#4a5f86" stroke-width="2.5"/>
+      <text x="122" y="56" text-anchor="middle" class="head">Deliberation</text>
+      <text x="122" y="96" text-anchor="middle" class="body">reason · search · tools</text>
+    </g>
+    <path d="M870 123H950" class="edge"/>
+    <g transform="translate(970 52)">
+      <rect width="245" height="142" rx="20" fill="#fff" stroke="#4a5f86" stroke-width="2.5"/>
+      <text x="122" y="56" text-anchor="middle" class="head">Generated artifact</text>
+      <text x="122" y="96" text-anchor="middle" class="body">text · code · plan</text>
+    </g>
+    <text x="1340" y="102" text-anchor="middle" class="head">Best fit</text>
+    <text x="1340" y="140" text-anchor="middle" class="body">novel, ambiguous,</text>
+    <text x="1340" y="176" text-anchor="middle" class="body">compositional work</text>
+  </g>
+
+  <g transform="translate(270 762)">
+    <rect width="1060" height="76" rx="38" fill="#fff" stroke="#6a7379" stroke-width="3"/>
+    <text x="530" y="49" text-anchor="middle" class="head">Hybrid cascade: Jev decides when the slower path is worth paying for</text>
+  </g>
+  <path d="M800 422V454" class="edge"/>
+</svg>

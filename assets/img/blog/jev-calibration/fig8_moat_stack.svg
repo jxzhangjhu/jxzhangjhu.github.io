@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">A layered view of Jev's possible moat</title>
+  <desc id="desc">Four stacked layers separate the observable typed-decision contract, the current speed and cost wedge, possible proprietary technical moats, and a future adoption moat. Each layer is tagged by current evidence strength.</desc>
+  <defs>
+    <pattern id="unknown" width="18" height="18" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <rect width="18" height="18" fill="#f4ece8"/>
+      <line y2="18" stroke="#d8bdb1" stroke-width="5"/>
+    </pattern>
+    <style>
+      .title{font:700 48px Arial,Helvetica,sans-serif;fill:#20282e}
+      .subtitle{font:400 27px Arial,Helvetica,sans-serif;fill:#556169}
+      .eyebrow{font:700 24px Arial,Helvetica,sans-serif;letter-spacing:1.1px}
+      .head{font:700 30px Arial,Helvetica,sans-serif;fill:#20282e}
+      .body{font:400 25px Arial,Helvetica,sans-serif;fill:#354149}
+      .status{font:700 24px Arial,Helvetica,sans-serif;fill:#20282e}
+      .foot{font:700 25px Arial,Helvetica,sans-serif;fill:#556169}
+    </style>
+  </defs>
+
+  <rect width="1600" height="900" fill="#fbfaf6"/>
+  <text x="70" y="72" class="title">Where could the moat actually live?</text>
+  <text x="70" y="114" class="subtitle">Calibration is the value proposition; the durable advantage, if any, is likely the integrated stack.</text>
+
+  <g transform="translate(100 180)">
+    <g transform="translate(180 0)">
+      <rect width="1040" height="142" rx="24" fill="#f2edf5" stroke="#71517c" stroke-width="3"/>
+      <text x="28" y="42" class="eyebrow" fill="#71517c">LAYER 4 · ADOPTION MOAT</text>
+      <text x="28" y="84" class="head">Workflow integration and proprietary feedback loops</text>
+      <text x="28" y="120" class="body">Developer habits · task libraries · outcome data · switching cost</text>
+      <rect x="810" y="24" width="202" height="48" rx="24" fill="#fff" stroke="#71517c" stroke-width="2" stroke-dasharray="8 6"/>
+      <text x="911" y="57" text-anchor="middle" class="status">EMERGING</text>
+    </g>
+
+    <g transform="translate(120 166)">
+      <rect width="1160" height="142" rx="24" fill="url(#unknown)" stroke="#8b4a3c" stroke-width="3"/>
+      <text x="28" y="42" class="eyebrow" fill="#8b4a3c">LAYER 3 · POSSIBLE TECHNICAL MOAT</text>
+      <text x="28" y="84" class="head">Data, architecture, parallel sampler, and exact RLCD recipe</text>
+      <text x="28" y="120" class="body">Potentially defensible—but the contribution of each component is undisclosed</text>
+      <rect x="925" y="24" width="207" height="48" rx="24" fill="#fff" stroke="#8b4a3c" stroke-width="2"/>
+      <text x="1028" y="57" text-anchor="middle" class="status">UNKNOWN</text>
+    </g>
+
+    <g transform="translate(60 332)">
+      <rect width="1280" height="142" rx="24" fill="#f6efd8" stroke="#8b7125" stroke-width="3" stroke-dasharray="11 7"/>
+      <text x="28" y="42" class="eyebrow" fill="#8b7125">LAYER 2 · MARKET WEDGE</text>
+      <text x="28" y="84" class="head">Latency, price, parallel questions, and machine-native ergonomics</text>
+      <text x="28" y="120" class="body">Measured in demos and early independent benchmarks; generality still being tested</text>
+      <rect x="1030" y="24" width="222" height="48" rx="24" fill="#fff" stroke="#8b7125" stroke-width="2" stroke-dasharray="8 5"/>
+      <text x="1141" y="57" text-anchor="middle" class="status">MIXED–STRONG</text>
+    </g>
+
+    <g transform="translate(0 498)">
+      <rect width="1400" height="142" rx="24" fill="#e8f1ee" stroke="#176d62" stroke-width="3"/>
+      <text x="28" y="42" class="eyebrow" fill="#176d62">LAYER 1 · PRODUCT CONTRACT</text>
+      <text x="28" y="84" class="head">State + typed questions → probabilities → deterministic application logic</text>
+      <text x="28" y="120" class="body">Observable and falsifiable: schema validity, interface behavior, and returned distributions</text>
+      <rect x="1180" y="24" width="192" height="48" rx="24" fill="#fff" stroke="#176d62" stroke-width="2"/>
+      <text x="1276" y="57" text-anchor="middle" class="status">STRONG</text>
+    </g>
+  </g>
+
+  <g transform="translate(245 838)">
+    <line x1="0" y1="0" x2="1110" y2="0" stroke="#69747b" stroke-width="2"/>
+    <text x="555" y="39" text-anchor="middle" class="foot">Proper scoring rules are public knowledge; execution quality and integration may be the harder-to-copy assets.</text>
+  </g>
+</svg>

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Calibration methods across output, training, and deployment</title>
+  <desc id="desc">A landscape table places RLVR, RLCR, OpenJev-RLCD, CaOPD, Agentic Confidence Calibration, and Agentic Uncertainty Quantification along three axes: what uncertainty output they expose, where the intervention occurs, and how the signal is used at deployment.</desc>
+  <style>
+    .title{font:700 48px Arial,Helvetica,sans-serif;fill:#20282e}
+    .subtitle{font:400 27px Arial,Helvetica,sans-serif;fill:#556169}
+    .col{font:700 25px Arial,Helvetica,sans-serif;fill:#fff;letter-spacing:.8px}
+    .method{font:700 27px Arial,Helvetica,sans-serif;fill:#20282e}
+    .method-small{font:700 24px Arial,Helvetica,sans-serif;fill:#20282e}
+    .body{font:400 24px Arial,Helvetica,sans-serif;fill:#354149}
+    .tag{font:700 24px Arial,Helvetica,sans-serif}
+  </style>
+
+  <rect width="1600" height="900" fill="#fbfaf6"/>
+  <text x="60" y="70" class="title">Where calibration enters the stack</text>
+  <text x="60" y="112" class="subtitle">The methods solve different problems because they intervene at different layers.</text>
+
+  <g transform="translate(45 164)">
+    <rect width="1510" height="674" rx="24" fill="#fff" stroke="#59656c" stroke-width="3"/>
+    <path d="M0 24Q0 0 24 0H1486Q1510 0 1510 24V76H0Z" fill="#354149"/>
+    <text x="120" y="49" text-anchor="middle" class="col">METHOD</text>
+    <text x="440" y="49" text-anchor="middle" class="col">OUTPUT AXIS</text>
+    <text x="865" y="49" text-anchor="middle" class="col">TRAINING / INTERVENTION AXIS</text>
+    <text x="1290" y="49" text-anchor="middle" class="col">DEPLOYMENT AXIS</text>
+
+    <line x1="240" y1="0" x2="240" y2="674" stroke="#8c959a" stroke-width="2"/>
+    <line x1="640" y1="0" x2="640" y2="674" stroke="#8c959a" stroke-width="2"/>
+    <line x1="1090" y1="0" x2="1090" y2="674" stroke="#8c959a" stroke-width="2"/>
+
+    <g transform="translate(0 76)">
+      <rect width="1510" height="99" fill="#f5f6f6"/>
+      <rect x="18" y="20" width="204" height="59" rx="16" fill="#ece8e1" stroke="#6f675d" stroke-width="2.5"/>
+      <text x="120" y="59" text-anchor="middle" class="method">RLVR</text>
+      <text x="270" y="42" class="body">Answer / trajectory</text>
+      <text x="270" y="74" class="body">No explicit confidence</text>
+      <text x="670" y="42" class="body">RL on binary correctness</text>
+      <text x="670" y="74" class="body">Mode-seeking objective</text>
+      <text x="1120" y="42" class="body">Capability and candidate generation</text>
+      <text x="1120" y="74" class="body">Confidence often over-sharpens</text>
+    </g>
+
+    <g transform="translate(0 175)">
+      <rect width="1510" height="99" fill="#eef3f8"/>
+      <rect x="18" y="20" width="204" height="59" rx="16" fill="#dce8f3" stroke="#315f87" stroke-width="2.5"/>
+      <text x="120" y="59" text-anchor="middle" class="method">RLCR</text>
+      <text x="270" y="42" class="body">Answer + verbal</text>
+      <text x="270" y="74" class="body">success probability</text>
+      <text x="670" y="42" class="body">Correctness + bounded</text>
+      <text x="670" y="74" class="body">Brier calibration reward</text>
+      <text x="1120" y="42" class="body">Single-pass confidence</text>
+      <text x="1120" y="74" class="body">for reasoning answers</text>
+    </g>
+
+    <g transform="translate(0 274)">
+      <rect width="1510" height="99" fill="#e9f2ef"/>
+      <rect x="18" y="20" width="204" height="59" rx="16" fill="#d4e7e1" stroke="#176d62" stroke-width="2.5"/>
+      <text x="120" y="59" text-anchor="middle" class="method-small">OpenJev-RLCD</text>
+      <text x="270" y="42" class="body">Full typed distribution</text>
+      <text x="270" y="74" class="body">after each rationale</text>
+      <text x="670" y="42" class="body">Proper-score readout, then</text>
+      <text x="670" y="74" class="body">anchored rationale RL</text>
+      <text x="1120" y="42" class="body">Selective typed decisions</text>
+      <text x="1120" y="74" class="body">Independent Jev analogue</text>
+    </g>
+
+    <g transform="translate(0 373)">
+      <rect width="1510" height="99" fill="#f6f0df"/>
+      <rect x="18" y="20" width="204" height="59" rx="16" fill="#efe3bd" stroke="#8b7125" stroke-width="2.5"/>
+      <text x="120" y="59" text-anchor="middle" class="method">CaOPD</text>
+      <text x="270" y="42" class="body">Answer + verbal</text>
+      <text x="270" y="74" class="body">student confidence</text>
+      <text x="670" y="42" class="body">OPD target replacement with</text>
+      <text x="670" y="74" class="body">rollout success rate</text>
+      <text x="1120" y="42" class="body">Amortized single-pass</text>
+      <text x="1120" y="74" class="body">confidence for agents</text>
+    </g>
+
+    <g transform="translate(0 472)">
+      <rect width="1510" height="99" fill="#f2edf5"/>
+      <rect x="18" y="20" width="204" height="59" rx="16" fill="#e6d9eb" stroke="#71517c" stroke-width="2.5"/>
+      <text x="120" y="59" text-anchor="middle" class="method">ACC / HTC</text>
+      <text x="270" y="42" class="body">Trajectory success</text>
+      <text x="270" y="74" class="body">confidence</text>
+      <text x="670" y="42" class="body">Post-hoc process-feature</text>
+      <text x="670" y="74" class="body">calibrator</text>
+      <text x="1120" y="42" class="body">Diagnose, abstain, route;</text>
+      <text x="1120" y="74" class="body">transfer across agents</text>
+    </g>
+
+    <g transform="translate(0 571)">
+      <rect width="1510" height="103" fill="#f5ece7"/>
+      <rect x="18" y="21" width="204" height="59" rx="16" fill="#ead8cd" stroke="#8b4a3c" stroke-width="2.5"/>
+      <text x="120" y="60" text-anchor="middle" class="method">AUQ</text>
+      <text x="270" y="43" class="body">Step confidence +</text>
+      <text x="270" y="75" class="body">semantic explanation</text>
+      <text x="670" y="43" class="body">Training-free memory and</text>
+      <text x="670" y="75" class="body">targeted reflection controller</text>
+      <text x="1120" y="43" class="body">Turn uncertainty into</text>
+      <text x="1120" y="75" class="body">runtime corrective action</text>
+    </g>
+  </g>
+  <text x="800" y="878" text-anchor="middle" class="tag" fill="#556169">Output calibration, weight-space calibration, and runtime control are complementary—not interchangeable.</text>
+</svg>

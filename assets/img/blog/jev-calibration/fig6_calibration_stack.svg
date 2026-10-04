@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="940" viewBox="0 0 1400 940" role="img" aria-labelledby="title desc">
+  <title id="title">Four evidence layers from calibration to decision utility</title>
+  <desc id="desc">A four-card evidence chain separates marginal calibration, self-knowledge and knowledge-boundary behavior, probabilistic coherence, and decision utility. Each card states its test, a typical failure, and representative research.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M1 1l10 5-10 5z" fill="#28343a"/>
+    </marker>
+    <style>
+      .title{font:700 44px Arial,Helvetica,sans-serif;fill:#20282e}
+      .subtitle{font:400 25px Arial,Helvetica,sans-serif;fill:#556169}
+      .stage{font:700 15px Arial,Helvetica,sans-serif;letter-spacing:1.2px}
+      .head{font:700 25px Arial,Helvetica,sans-serif;fill:#20282e}
+      .head-small{font:700 21px Arial,Helvetica,sans-serif;fill:#20282e}
+      .section{font:700 16px Arial,Helvetica,sans-serif;letter-spacing:1px;fill:#4e5960}
+      .body{font:400 20px Arial,Helvetica,sans-serif;fill:#354149}
+      .body-small{font:400 18px Arial,Helvetica,sans-serif;fill:#354149}
+      .paper{font:700 17px Arial,Helvetica,sans-serif;fill:#354149}
+      .num{font:700 23px Arial,Helvetica,sans-serif;fill:#fff}
+      .tag{font:700 17px Arial,Helvetica,sans-serif;fill:#20282e}
+      .takeaway{font:700 23px Arial,Helvetica,sans-serif;fill:#20282e}
+      .foot{font:700 18px Arial,Helvetica,sans-serif;fill:#556169}
+      .edge{fill:none;stroke:#28343a;stroke-width:3.5;marker-end:url(#arrow)}
+    </style>
+  </defs>
+
+  <rect width="1400" height="940" fill="#fbfaf6"/>
+  <text x="48" y="64" class="title">Calibration is the first evidence layer—not the last</text>
+  <text x="48" y="104" class="subtitle">Reliable automation requires four distinct tests; passing one does not imply the next.</text>
+
+  <!-- Layer 1 -->
+  <g transform="translate(45 158)">
+    <rect width="310" height="620" rx="24" fill="#fff" stroke="#176d62" stroke-width="3"/>
+    <path d="M24 0H286Q310 0 310 24V94H0V24Q0 0 24 0Z" fill="#e8f1ee"/>
+    <circle cx="38" cy="45" r="24" fill="#176d62"/>
+    <text x="38" y="53" text-anchor="middle" class="num">1</text>
+    <text x="74" y="34" class="stage" fill="#176d62">LAYER ONE</text>
+    <text x="74" y="67" class="head">Marginal calibration</text>
+
+    <text x="22" y="128" class="section">TEST</text>
+    <text x="22" y="158" class="body">
+      <tspan x="22">Across comparable cases, do</tspan>
+      <tspan x="22" dy="28">forecasts near p succeed about</tspan>
+      <tspan x="22" dy="28">p of the time?</tspan>
+    </text>
+
+    <rect x="18" y="250" width="274" height="166" rx="17" fill="#f8efed" stroke="#8b4a3c" stroke-width="2.2" stroke-dasharray="8 6"/>
+    <text x="34" y="279" class="section" fill="#8b4a3c">TYPICAL FAILURE</text>
+    <text x="34" y="309" class="body-small">
+      <tspan x="34">Low aggregate ECE hides</tspan>
+      <tspan x="34" dy="26">class-, subgroup-, or</tspan>
+      <tspan x="34" dy="26">out-of-distribution error.</tspan>
+    </text>
+
+    <text x="22" y="455" class="section">REPRESENTATIVE EVIDENCE</text>
+    <text x="22" y="486" class="paper">Deußer et al. · Jev benchmark</text>
+    <text x="22" y="516" class="paper">Sys1Cal · prompt stress suite</text>
+    <rect x="18" y="552" width="274" height="48" rx="13" fill="#e8f1ee" stroke="#176d62" stroke-width="2"/>
+    <text x="155" y="582" text-anchor="middle" class="tag">Certifies frequency fit only</text>
+  </g>
+
+  <path d="M356 205H374" class="edge"/>
+
+  <!-- Layer 2 -->
+  <g transform="translate(378 158)">
+    <rect width="310" height="620" rx="24" fill="#fff" stroke="#8b7125" stroke-width="3"/>
+    <path d="M24 0H286Q310 0 310 24V94H0V24Q0 0 24 0Z" fill="#f6efd8"/>
+    <circle cx="38" cy="45" r="24" fill="#8b7125"/>
+    <text x="38" y="53" text-anchor="middle" class="num">2</text>
+    <text x="74" y="29" class="stage" fill="#8b7125">LAYER TWO</text>
+    <text x="74" y="58" class="head-small">Self-knowledge &amp;</text>
+    <text x="74" y="84" class="head-small">knowledge boundary</text>
+
+    <text x="22" y="128" class="section">TEST</text>
+    <text x="22" y="158" class="body">
+      <tspan x="22">Does confidence fall when</tspan>
+      <tspan x="22" dy="28">evidence is absent, post-cutoff,</tspan>
+      <tspan x="22" dy="28">or outside learned knowledge?</tspan>
+    </text>
+
+    <rect x="18" y="250" width="274" height="166" rx="17" fill="#f8efed" stroke="#8b4a3c" stroke-width="2.2" stroke-dasharray="8 6"/>
+    <text x="34" y="279" class="section" fill="#8b4a3c">TYPICAL FAILURE</text>
+    <text x="34" y="309" class="body-small">
+      <tspan x="34">Missing evidence still yields</tspan>
+      <tspan x="34" dy="26">a salient option near 0.8;</tspan>
+      <tspan x="34" dy="26">newer events stay</tspan>
+      <tspan x="34" dy="26">overconfident.</tspan>
+    </text>
+
+    <text x="22" y="455" class="section">REPRESENTATIVE EVIDENCE</text>
+    <text x="22" y="486" class="paper">Beyond Answer Confidence</text>
+    <text x="22" y="516" class="body-small">Shankaranarayana et al. · 2026</text>
+    <rect x="18" y="552" width="274" height="48" rx="13" fill="#f6efd8" stroke="#8b7125" stroke-width="2"/>
+    <text x="155" y="582" text-anchor="middle" class="tag">Tests whether uncertainty moves</text>
+  </g>
+
+  <path d="M689 205H707" class="edge"/>
+
+  <!-- Layer 3 -->
+  <g transform="translate(711 158)">
+    <rect width="310" height="620" rx="24" fill="#fff" stroke="#4a5f86" stroke-width="3"/>
+    <path d="M24 0H286Q310 0 310 24V94H0V24Q0 0 24 0Z" fill="#eef0f5"/>
+    <circle cx="38" cy="45" r="24" fill="#4a5f86"/>
+    <text x="38" y="53" text-anchor="middle" class="num">3</text>
+    <text x="74" y="29" class="stage" fill="#4a5f86">LAYER THREE</text>
+    <text x="74" y="58" class="head">Probabilistic</text>
+    <text x="74" y="84" class="head">coherence</text>
+
+    <text x="22" y="128" class="section">TEST</text>
+    <text x="22" y="158" class="body">
+      <tspan x="22">Do equivalent forms,</tspan>
+      <tspan x="22" dy="26">complements, and partitions</tspan>
+      <tspan x="22" dy="26">obey the same probability</tspan>
+      <tspan x="22" dy="26">contract?</tspan>
+    </text>
+
+    <rect x="18" y="250" width="274" height="166" rx="17" fill="#f8efed" stroke="#8b4a3c" stroke-width="2.2" stroke-dasharray="8 6"/>
+    <text x="34" y="279" class="section" fill="#8b4a3c">TYPICAL FAILURE</text>
+    <text x="34" y="309" class="body-small">
+      <tspan x="34">Event ↔ Choice can flip a</tspan>
+      <tspan x="34" dy="26">gated action; complements</tspan>
+      <tspan x="34" dy="26">need not sum to one.</tspan>
+    </text>
+
+    <text x="22" y="455" class="section">REPRESENTATIVE EVIDENCE</text>
+    <text x="22" y="486" class="paper">Probability Contracts · 2026</text>
+    <text x="22" y="516" class="paper">Beyond Calibration · 2026</text>
+    <rect x="18" y="552" width="274" height="48" rx="13" fill="#eef0f5" stroke="#4a5f86" stroke-width="2"/>
+    <text x="155" y="582" text-anchor="middle" class="tag">Tests consistency of beliefs</text>
+  </g>
+
+  <path d="M1022 205H1040" class="edge"/>
+
+  <!-- Layer 4 -->
+  <g transform="translate(1044 158)">
+    <rect width="310" height="620" rx="24" fill="#fff" stroke="#8b4a3c" stroke-width="3"/>
+    <path d="M24 0H286Q310 0 310 24V94H0V24Q0 0 24 0Z" fill="#f3e7e5"/>
+    <circle cx="38" cy="45" r="24" fill="#8b4a3c"/>
+    <text x="38" y="53" text-anchor="middle" class="num">4</text>
+    <text x="74" y="34" class="stage" fill="#8b4a3c">LAYER FOUR</text>
+    <text x="74" y="67" class="head">Decision utility</text>
+
+    <text x="22" y="128" class="section">TEST</text>
+    <text x="22" y="158" class="body">
+      <tspan x="22">At the target loss and threshold,</tspan>
+      <tspan x="22" dy="28">does act / defer / escalate beat</tspan>
+      <tspan x="22" dy="28">the available alternatives?</tspan>
+    </text>
+
+    <rect x="18" y="250" width="274" height="166" rx="17" fill="#f8efed" stroke="#8b4a3c" stroke-width="2.2" stroke-dasharray="8 6"/>
+    <text x="34" y="279" class="section" fill="#8b4a3c">TYPICAL FAILURE</text>
+    <text x="34" y="309" class="body-small">
+      <tspan x="34">Fallbacks may repeat</tspan>
+      <tspan x="34" dy="26">the same errors; in-scope</tspan>
+      <tspan x="34" dy="26">gates accept out-of-scope</tspan>
+      <tspan x="34" dy="26">traffic.</tspan>
+    </text>
+
+    <text x="22" y="455" class="section">REPRESENTATIVE EVIDENCE</text>
+    <text x="22" y="486" class="paper">Rao &amp; Callison-Burch · 2026</text>
+    <text x="22" y="516" class="paper">Rafe &amp; Das · 2026</text>
+    <rect x="18" y="552" width="274" height="48" rx="13" fill="#f3e7e5" stroke="#8b4a3c" stroke-width="2"/>
+    <text x="155" y="582" text-anchor="middle" class="tag">Certifies the deployed policy</text>
+  </g>
+
+  <g transform="translate(90 818)">
+    <rect width="1220" height="76" rx="21" fill="#fff" stroke="#354149" stroke-width="2.5"/>
+    <text x="610" y="33" text-anchor="middle" class="takeaway">Deployment claim = all four layers on the target distribution, version, prompt, and loss</text>
+    <text x="610" y="61" text-anchor="middle" class="body-small">Measure separately · publish raw outputs · pin thresholds · repeat after drift</text>
+  </g>
+  <text x="700" y="925" text-anchor="middle" class="foot">Calibration is evidence about probabilities; safe automation is evidence about a decision system.</text>
+</svg>
