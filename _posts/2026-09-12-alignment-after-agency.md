@@ -17,6 +17,7 @@ og_image: https://jxzhangjhu.github.io/assets/img/blog/alignment-after-agency/og
 
 ### Table of Contents
 
+- [10.5 Update on Reflection Beam](#reflection-beam-update)
 - [The safety unit has changed](#the-safety-unit-has-changed)
 - [From aligned answers to aligned trajectories](#from-aligned-answers-to-aligned-trajectories)
 - [What counts as agentic misalignment?](#what-counts-as-agentic-misalignment)
@@ -1042,6 +1043,32 @@ source artwork or unpublished system detail.*
 
 ---
 
+## October 5 Update on Reflection Beam {#reflection-beam-update}
+
+**Updated October 5, 2026.** Reflection describes consolidating a capability teacher and a safety teacher through **multi-teacher on-policy distillation**. The safety branch starts from the pretrained checkpoint and receives separate SFT/RL. It also uses deliberative alignment and iterative adversarial data collection. This adds a concrete development pattern to the model–harness–environment view. ([Reflection, 2026](https://reflection.ai/blog/introducing-beam)) The student initialization, teacher-mixing weights, and exact fusion loss are not specified in the announcement; they matter when attempting to reproduce the capability/safety balance.
+
+### Test the student at the capability and safety boundary
+
+Separate teachers make a useful experiment possible: compare the capability teacher, safety teacher, and consolidated student on the **same interactive tasks**. Include legitimate requests with suspicious surface features, unsafe requests phrased as routine maintenance, ambiguous authorization, and unsafe actions suggested by retrieved/tool content. Evaluate both harmful compliance and over-refusal; a student that avoids every action is not a successful integration.
+
+My central question is whether the student preserves safety precisely where its stronger capabilities matter. A refusal benchmark alone can miss a model that correctly recites a policy but violates it after a long tool sequence. Conversely, a task-success benchmark can reward finishing a task through an unauthorized route. Teacher agreement, judge approval, and user-authorized completion are three different labels.
+
+### Convert model principles into runtime boundaries
+
+I would operationalize the principles as three separate layers: **hard authorization limits**, **truthfulness and evidence checks**, and **interaction preferences**. These are design recommendations, not an assertion that Beam's deployment enforces them.
+
+Keep credentials, verifier files, outbound destinations, and irreversible-action approval outside the model's discretion. Make evidence provenance and uncertainty visible in the execution record. Then tune verbosity and initiative within those boundaries. Style improvement must not be allowed to trade away a security invariant through a single weighted reward.
+
+### Audit reward improvement against independent behavior
+
+A generative judge should be treated as a fallible measurement instrument. Freeze an external evaluation rubric, retain human-adjudicated disagreements, and inspect whether improved scores reflect better actions or merely more persuasive explanations. Include adversarial multi-turn cases, tool-output injection, answer leakage, and attempts to alter grading artifacts.
+
+The same audit should be repeated after consolidation and under the production harness. In particular, querying an external model may be useful assistance when authorized, but it can also cross a data-access boundary or invalidate an evaluation. The action is not intrinsically a safety failure; its legitimacy depends on the task's permission and evaluation contract.
+
+**Takeaway.** Specialist safety training is a promising modular design, not a safety guarantee. The student still needs independent behavioral evaluations, hard runtime limits, and auditable environments. See the companion [environment-quality update](/blog/2026/environment-scaling-for-agentic-rl/#reflection-beam-update).
+
+---
+
 ## How to cite
 
 > Zhang, Jiaxin. (Sep 2026). Alignment After Agency: Safety for Models That Act. *Jiaxin Zhang's Blog.*
@@ -1147,3 +1174,5 @@ source artwork or unpublished system detail.*
 [42] Redwood Research. ["Research Sabotage in ML Codebases."](https://blog.redwoodresearch.org/p/research-sabotage-in-ml-codebases) Research report, 2026.
 
 [43] UK AI Security Institute. ["Incident Report: Unsanctioned Agent Behaviour During Cyber Testing."](https://www.aisi.gov.uk/blog/incident-report-unsanctioned-agent-behaviour-during-cyber-testing) August 2026.
+
+[44] Reflection. ["Introducing Beam: Reflection's 501B Open-Weight Model."](https://reflection.ai/blog/introducing-beam) October 5, 2026.

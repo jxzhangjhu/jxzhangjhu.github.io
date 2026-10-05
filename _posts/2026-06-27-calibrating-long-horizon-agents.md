@@ -15,6 +15,7 @@ og_image: https://jxzhangjhu.github.io/assets/img/blog/calibrating-long-horizon-
 
 ### Table of Contents
 
+- [10.5 Update on Reflection Beam](#reflection-beam-update)
 - [Why long-horizon agents need calibrated uncertainty](#why-long-horizon-agents-need-calibrated-uncertainty)
 - [Problem setup: a formal vocabulary for agentic uncertainty](#problem-setup-a-formal-vocabulary-for-agentic-uncertainty)
   - [The agent as a partially observed process](#the-agent-as-a-partially-observed-process)
@@ -504,6 +505,40 @@ Long-horizon agents fail differently from single-turn models: their errors compo
 
 ---
 
+## October 5 Update on Reflection Beam {#reflection-beam-update}
+
+**Updated October 5, 2026.** Beam introduces an important distinction for this post: Reflection reports forecasting **RL reward improvement**, with correlation **r = 0.79**, versus **0.46** for a Best-of-N-ceiling baseline. That is not a reported confidence-calibration result. ([Reflection, 2026](https://reflection.ai/blog/introducing-beam))
+
+### Identify what the prediction is about
+
+| Prediction target | Question answered | Evidence I would require |
+|---|---|---|
+| Reward improvement after RL | Will this training intervention improve its scored behavior? | Held-out intervention forecasts and prediction error |
+| Trajectory success probability | How likely is this agent to finish correctly? | Proper scores and reliability curves against independent success labels |
+| Value of additional effort | Is another reasoning/tool step worth its cost? | Controlled budget interventions and net utility |
+
+*Three different prediction problems. Success in one does not establish success in the other two.*
+
+Correlation can be high even when predictions have the wrong scale or systematic bias. A judge-defined reward can also rise without independently measured task correctness improving. For agentic calibration, we still need a defined event, probabilities for that event, and labels collected outside the optimized reward channel.
+
+### Connect confidence to the value of more computation
+
+Reflection's accuracy–length plot shows an early phase with shorter, better solutions and a later phase where additional tokens support further gains. This is a useful reminder that “shorter is better” is not a universal training target. ([Reflection, 2026](https://reflection.ai/blog/introducing-beam))
+
+The research direction I would explore is **conditional value of computation**, not simply “high confidence means stop.” A task can have low success probability because further effort is useful, because a tool is unavailable, or because the problem is underspecified. Those cases require different actions.
+
+Build a controlled dataset by branching from the same prefix under several effort budgets. Hold model, tools, and permissions fixed; measure the extra verified success gained, additional latency, and token/tool cost. Train a predictor of that marginal gain, then compare its controller with a fixed budget, random allocation, and a confidence-only gate on unseen task families. This tests whether uncertainty improves allocation rather than merely correlating with difficulty.
+
+[Just Enough Thinking](https://arxiv.org/abs/2506.05256) supplies relevant prior work on solve-rate-dependent length penalties. It does not make task success confidence, local token certainty, and marginal value of effort interchangeable.
+
+### Recalibrate after changing the policy or harness
+
+For an efficient reasoning policy or a consolidated student, rerun the **accuracy–calibration–cost** evaluation jointly. For an ACC/HTC-style calibrator, shorter traces may change the meaning of token counts and other process features. For a CaOPD-style intervention, explicitly test whether calibration survives the new data mixture and deployment context. For an AUQ-style controller, measure the net benefit of verification and reflection, including correct answers damaged by unnecessary intervention. These are proposed experiments, not reported Beam results.
+
+**Takeaway.** Beam motivates a useful bridge from training predictability to runtime compute decisions. It does not yet show that its confidence estimates are calibrated, and it should not be treated as evidence for Jev/RLCD-style probability training.
+
+---
+
 ## How to cite
 
 > Zhang, Jiaxin. (Jun 2026). Calibrating Long-Horizon Agents: Confidence and Uncertainty at Inference Time. *Jiaxin Zhang's Blog.*
@@ -633,3 +668,7 @@ Or in BibTeX:
 [53] Andrew Zhao, et al. ["ExpeL: LLM Agents Are Experiential Learners."](https://arxiv.org/abs/2308.10144) AAAI 2024. arXiv:2308.10144.
 
 [54] Qiwei Zhao, et al. ["SAUP: Situation Awareness Uncertainty Propagation on LLM Agent."](https://arxiv.org/abs/2412.01033) ACL 2025. arXiv:2412.01033.
+
+[55] Reflection. ["Introducing Beam: Reflection's 501B Open-Weight Model."](https://reflection.ai/blog/introducing-beam) October 5, 2026.
+
+[56] Violet Xiang, et al. ["Just Enough Thinking: Efficient Reasoning with Adaptive Length Penalties Reinforcement Learning."](https://arxiv.org/abs/2506.05256) arXiv:2506.05256, 2025.

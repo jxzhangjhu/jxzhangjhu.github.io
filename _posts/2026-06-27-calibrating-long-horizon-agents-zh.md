@@ -10,7 +10,7 @@ tags: agents uncertainty calibration confidence llm reliability 中文
 categories: research-notes
 giscus_comments: true
 related_posts: false
-read_time: 45
+read_time: 48
 og_image: https://jxzhangjhu.github.io/assets/img/blog/calibrating-long-horizon-agents/fig1_agentic_reliability_loop.png
 ---
 
@@ -18,6 +18,7 @@ og_image: https://jxzhangjhu.github.io/assets/img/blog/calibrating-long-horizon-
 
 ### 目录
 
+- [10.5 更新 Reflection Beam](#reflection-beam-update)
 - [为什么长时程 Agent 需要经过校准的不确定性](#why-long-horizon-agents-need-calibrated-uncertainty)
 - [问题设定与 Agent 不确定性的形式化表达](#problem-setup-a-formal-vocabulary-for-agentic-uncertainty)
   - [把 Agent 看作部分可观测过程](#the-agent-as-a-partially-observed-process)
@@ -576,6 +577,40 @@ Oh 等分析了数十个 Agent benchmark，发现只有少部分提供单步标�
 
 ---
 
+## 10 月 5 日更新 Reflection Beam {#reflection-beam-update}
+
+**更新于 2026 年 10 月 5 日。** Beam 提出了一个与本文有关的重要区分：Reflection 披露的是预测 **RL reward improvement**，相关系数为 **r = 0.79**，而 Best-of-N ceiling baseline 为 **0.46**。这不是一个已经报告的置信度校准结果。（[Reflection, 2026](https://reflection.ai/blog/introducing-beam)）
+
+### 先确定预测的究竟是什么
+
+| 预测目标 | 回答的问题 | 我会要求的证据 |
+|---|---|---|
+| RL 后的 reward 增益 | 这次训练干预会改善被评分的行为吗？ | Held-out 干预的预测结果与预测误差 |
+| 轨迹成功概率 | 这个 Agent 有多大概率正确完成任务？ | 对照独立成功标签的 proper scores 与 reliability curves |
+| 增加 effort 的价值 | 再多一个 reasoning/tool step 值不值得？ | 受控 budget 干预与净效用 |
+
+*这是三个不同的预测问题。一个问题上表现好，不会自动证明另两个问题也解决了。*
+
+即使预测的尺度不对、存在系统性 bias，correlation 也可以很高。由 judge 定义的 reward 上升，也不一定意味着独立测量的任务正确率提高。对于 agentic calibration，我们仍需要清晰定义的事件、这个事件的概率，以及从被优化的 reward channel 之外获取的标签。
+
+### 把 confidence 与额外计算的价值联系起来
+
+Reflection 的 accuracy–length 图显示，早期可以做到解法更短、效果更好；后期则由更多 token 支持进一步提升。这提醒我们：“越短越好”并不是普遍适用的训练目标。（[Reflection, 2026](https://reflection.ai/blog/introducing-beam)）
+
+我想探索的研究方向是 **conditional value of computation（条件化的额外计算价值）**，而不只是“confidence 高就停止”。任务成功概率低，可能因为继续思考有帮助，也可能因为 tool 不可用，或者问题本身 underspecified。这些情况应采取不同的行动。
+
+可以从相同 prefix 出发，在几个不同 effort budget 下分支，构建受控数据集。固定 model、tools 和 permissions，测量额外获得的 verified success、增加的 latency，以及 token/tool cost。训练一个预测边际增益的 predictor，再在未见过的任务族上，将其 controller 与固定 budget、随机分配和 confidence-only gate 对比。这样检验的是 uncertainty 能否改善计算分配，而不是它是否仅仅与题目难度相关。
+
+[Just Enough Thinking](https://arxiv.org/abs/2506.05256) 提供了按 solve rate 调整长度惩罚的相关已有工作。但这不意味着任务成功置信度、局部 token certainty 与 effort 的边际价值是同一个东西。
+
+### Policy 或 harness 改变之后，要重新校准
+
+对于更高效的 reasoning policy 或融合后的 student，应联合重做 **accuracy–calibration–cost** 评测。对于 ACC/HTC 类型的 calibrator，更短的轨迹可能改变 token count 等过程特征的含义。对于 CaOPD 类型的干预，要显式检验 calibration 是否能保留到新的 data mixture 与 deployment context。对于 AUQ 类型的 controller，要衡量 verification 和 reflection 的净收益，包括不必要干预把正确答案改坏的情况。这些是建议实验，不是 Beam 已报告的结果。
+
+**要点。** Beam 启发我们把训练增益的可预测性与 runtime compute decision 联系起来，但目前不能据此认为它的 confidence 已经过校准，也不能把它当成 Jev/RLCD 式概率训练的证据。
+
+---
+
 ## 如何引用 {#how-to-cite}
 
 > Zhang, Jiaxin.（2026 年 6 月）. 长时程 Agent 的校准：推理时的置信度与不确定性. *Jiaxin Zhang's Blog*.
@@ -707,3 +742,7 @@ BibTeX：
 [53] Andrew Zhao, et al. ["ExpeL: LLM Agents Are Experiential Learners."](https://arxiv.org/abs/2308.10144) AAAI 2024. arXiv:2308.10144.
 
 [54] Qiwei Zhao, et al. ["SAUP: Situation Awareness Uncertainty Propagation on LLM Agent."](https://arxiv.org/abs/2412.01033) ACL 2025. arXiv:2412.01033.
+
+[55] Reflection. ["Introducing Beam: Reflection's 501B Open-Weight Model."](https://reflection.ai/blog/introducing-beam) October 5, 2026.
+
+[56] Violet Xiang, et al. ["Just Enough Thinking: Efficient Reasoning with Adaptive Length Penalties Reinforcement Learning."](https://arxiv.org/abs/2506.05256) arXiv:2506.05256, 2025.

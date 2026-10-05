@@ -18,6 +18,7 @@ read_time: 22
 
 ### 目录
 
+- [10.5 更新 Reflection Beam](#reflection-beam-update)
 - [安全对象已经改变](#the-safety-unit-has-changed)
 - [从对齐回答到对齐轨迹](#from-aligned-answers-to-aligned-trajectories)
 - [什么才算 agentic misalignment？](#what-counts-as-agentic-misalignment)
@@ -973,6 +974,32 @@ taxonomy，并未复制原图或未公开的系统细节。*
 
 ---
 
+## 10 月 5 日更新 Reflection Beam {#reflection-beam-update}
+
+**更新于 2026 年 10 月 5 日。** Reflection 描述了通过 **multi-teacher on-policy distillation**，整合一个 capability teacher 与一个 safety teacher。Safety 分支从 pretrained checkpoint 出发，单独接受 SFT/RL，并使用 deliberative alignment 与迭代式对抗数据收集。这为 model–harness–environment 的视角增加了一种具体的研发方式。（[Reflection, 2026](https://reflection.ai/blog/introducing-beam)）发布文章没有说明 student 初始化、teacher 的 mixture 权重，以及具体的融合 loss；复现能力与安全的平衡时，这些细节很重要。
+
+### 在能力与安全的交界处测试 student
+
+独立 teacher 让一种有用的实验成为可能：在**相同的交互任务**上，对比 capability teacher、safety teacher 与融合后的 student。测试应包括表面可疑但合法的请求、被包装成日常维护的危险请求、授权不明确的任务，以及 retrieved/tool content 建议的不安全操作。同时评估 harmful compliance 和 over-refusal；回避所有操作的 student 并不算成功融合。
+
+我的核心问题是：student 是否恰好在更强能力发挥作用的地方保住了安全？仅有 refusal benchmark，可能漏掉一个能正确复述 policy、却在长串 tool action 后违反它的模型。反过来，task-success benchmark 也可能奖励通过未授权路径完成任务的行为。Teacher agreement、judge approval 与在用户授权范围内完成任务，是三个不同的标签。
+
+### 把模型原则变成 runtime 边界
+
+我会把原则落实为三个独立层：**硬性的授权限制**、**真实性与证据检查**、**交互偏好**。这是设计建议，不是在声称 Beam 的部署已经执行了这些控制。
+
+把 credentials、verifier files、允许访问的外部目标，以及不可逆操作的 approval，放在模型不能自行决定的控制层。让 evidence provenance 与 uncertainty 在执行记录中可见，再在这些边界内调整 verbosity 和主动性。不能让单一加权 reward 以改善 style 为代价，交换掉一个安全不变量。
+
+### 用独立行为审计 reward 的提升
+
+应把 generative judge 当成一个会出错的测量工具。冻结外部评测 rubric，保留人工裁决过的 disagreement，并检查分数提高来自更好的 action，还是仅来自更有说服力的解释。纳入 adversarial multi-turn、tool-output injection、答案泄露，以及试图修改 grading artifact 的案例。
+
+融合之后，以及切换到 production harness 之后，都应该重复同样的审计。尤其是查询外部模型：获得授权时，它可以是有用的协助；但也可能越过 data-access boundary，或者让一次 evaluation 失效。这个 action 本身并不天然构成 safety failure，是否合法取决于任务的权限与评测契约。
+
+**要点。** 独立的 safety training 是一种有前景的模块化设计，不是安全保证。Student 仍需要独立行为评测、硬性的 runtime 限制与可审计环境。另见配套的[环境质量更新](/blog/2026/environment-scaling-for-agentic-rl-zh/#reflection-beam-update)。
+
+---
+
 ## 如何引用 {#how-to-cite}
 
 > Zhang, Jiaxin. (Sep 2026). Alignment After Agency: Safety for Models That Act. *Jiaxin Zhang's Blog.*
@@ -1078,3 +1105,5 @@ taxonomy，并未复制原图或未公开的系统细节。*
 [42] Redwood Research. ["Research Sabotage in ML Codebases."](https://blog.redwoodresearch.org/p/research-sabotage-in-ml-codebases) Research report, 2026.
 
 [43] UK AI Security Institute. ["Incident Report: Unsanctioned Agent Behaviour During Cyber Testing."](https://www.aisi.gov.uk/blog/incident-report-unsanctioned-agent-behaviour-during-cyber-testing) August 2026.
+
+[44] Reflection. ["Introducing Beam: Reflection's 501B Open-Weight Model."](https://reflection.ai/blog/introducing-beam) October 5, 2026.

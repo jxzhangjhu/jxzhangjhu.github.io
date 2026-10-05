@@ -15,6 +15,7 @@ og_image: https://jxzhangjhu.github.io/assets/img/blog/how-frontier-labs-train-l
 
 ### Table of Contents
 
+- [10.5 Update on Reflection Beam](#reflection-beam-update)
 - [Why read the tech reports?](#why-read-the-tech-reports)
 - [The shape of a frontier model](#the-shape-of-a-frontier-model)
   - [The settled core](#the-settled-core)
@@ -1319,6 +1320,45 @@ figures are original.*
 
 ---
 
+## October 5 Update on Reflection Beam {#reflection-beam-update}
+
+**Updated October 5, 2026.** Reflection's [Beam announcement](https://reflection.ai/blog/introducing-beam) is a useful new training case study, not yet a complete reproducible recipe. At announcement, weights and the technical report were scheduled for later in October. The reported model is a 501B-total / 23B-active MoE, pretrained on 23.8T tokens; its RL campaign produced over 100M rollouts. Treat these as first-party disclosures, not independent replication. ([Reflection, 2026](https://reflection.ai/blog/introducing-beam))
+
+### Prepare the base for the learning process
+
+My reading is that the most useful question is not just **how good is the base checkpoint?** It is **what can this checkpoint learn from the next unit of RL compute?** That changes the ablation: compare two starting checkpoints under the same environments, rewards, rollout budgets, and optimizer, rather than comparing their pre-RL scores alone. [OctoThinker](https://arxiv.org/abs/2506.20512) already studies how mid-training changes downstream RL outcomes; Beam makes this an important question at a much larger system scale.
+
+Keep two context budgets separate: Beam reports **1M-token context after mid-training**, but **256K maximum context in its large RL run**. A supported window is not the same as the horizon actually trained with RL, and neither establishes reliable million-token task execution. Long-context evaluations still need retrieval, cross-document reasoning, instruction retention, and short-context regression checks. ([Reflection, 2026](https://reflection.ai/blog/introducing-beam))
+
+| Development decision | What I would measure before copying it |
+|---|---|
+| Choose the pre-/mid-training mixture | Downstream learning curves under a fixed RL budget, not just base loss |
+| Allocate more rollout compute | Held-out capability gain per GPU-hour, with task quality held constant |
+| Consolidate specialist teachers | Capability retention, safety retention, and confidence calibration after fusion |
+| Select reasoning effort | Verified success, tail latency, and full cost per successful task |
+
+*A proposed audit table, not a disclosed Beam ablation. The key is to measure the interaction between stages.*
+
+### Separate stale policies from numerical mismatch
+
+Reflection reports stable asynchronous learning with experience more than a day old, using token-level policy-version tracking. It does not disclose enough here to reproduce the correction algorithm. ([Reflection, 2026](https://reflection.ai/blog/introducing-beam))
+
+Two different diagnostics are needed. **Policy staleness** means a token was sampled from an older policy than the one being optimized. **Numerical mismatch** means two engines give different probabilities even for the same checkpoint and prefix. Before blaming the RL objective, replay fixed prefixes with matched weights, tokenizer, masks, precision, and log-probability conventions. Then audit the distribution of sample age, not just its mean. A mixed-version trajectory requires more care than attaching one checkpoint ID to the entire episode.
+
+[BAPO](https://arxiv.org/abs/2510.18927) is relevant prior work on off-policy instability and adaptive clipping, but it would be incorrect to infer that Beam uses BAPO, PPO, or any particular unpublished loss. Numerical stability is also not proof that stale samples retain the same learning value as fresh ones.
+
+### Learn the design principles without declaring every component new
+
+Mid-training for RL, efficient reasoning, and teacher consolidation each have predecessors. [Just Enough Thinking](https://arxiv.org/abs/2506.05256) studies adaptive length penalties; [Nemotron-Cascade 2](https://arxiv.org/abs/2603.19220) uses multi-domain on-policy distillation to recover regressions. The interesting research opportunity is to identify which combinations remain effective as horizons, task distributions, and infrastructure scale change—not to rename each established component as a new invention.
+
+For data curation, I would audit **false rejections as well as false acceptances**: a filter can improve apparent cleanliness while deleting precisely the technical material needed for later agents. For inference efficiency, use measured end-to-end cost alongside an active-parameter FLOP proxy. Prompt prefill, attention, expert-weight memory, tool execution, retries, and serving utilization can reverse a ranking based only on generated tokens.
+
+**Takeaway.** Beam is worth studying as a coupled training system. The next evidence to seek is controlled ablations, the exact asynchronous correction and consolidation objectives, reproducible evaluation manifests, and safety results—not simply a larger leaderboard table.
+
+Related 10.5 updates: [environment quality](/blog/2026/environment-scaling-for-agentic-rl/#reflection-beam-update), [calibration and compute allocation](/blog/2026/calibrating-long-horizon-agents/#reflection-beam-update), and [alignment after consolidation](/blog/2026/alignment-after-agency/#reflection-beam-update).
+
+---
+
 ## How to cite
 
 > Zhang, Jiaxin. (Jun 2026). How Frontier Labs Train Large Language Models. *Jiaxin Zhang's Blog.*
@@ -1596,3 +1636,5 @@ figures are original.*
 [128] Yifei Zhou, et al. ["ArCHer: Training Language Model Agents via Hierarchical Multi-Turn RL"](https://arxiv.org/abs/2402.19446) arXiv:2402.19446, 2024.
 
 [129] Yuxin Zuo, et al. ["MedXpertQA: Benchmarking Expert-Level Medical Reasoning and Understanding"](https://arxiv.org/abs/2501.18362) arXiv:2501.18362, 2025.
+
+[130] Reflection. ["Introducing Beam: Reflection's 501B Open-Weight Model."](https://reflection.ai/blog/introducing-beam) October 5, 2026. Launch preview; technical report and weights announced for later in October.

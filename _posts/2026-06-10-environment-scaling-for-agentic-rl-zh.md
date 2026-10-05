@@ -8,7 +8,7 @@ tags: rl agents environment-scaling llm
 categories: research-notes
 giscus_comments: true
 related_posts: false
-read_time: 40
+read_time: 42
 og_image: https://jxzhangjhu.github.io/assets/img/blog/env-scaling/fig4_anatomy.png
 ---
 
@@ -16,6 +16,7 @@ og_image: https://jxzhangjhu.github.io/assets/img/blog/env-scaling/fig4_anatomy.
 
 ### 目录
 
+- [10.5 更新 Reflection Beam](#reflection-beam-update)
 - [为什么需要环境？](#为什么需要环境)
 - [环境的解剖](#环境的解剖)
 - [核心流水线](#核心流水线)
@@ -362,6 +363,30 @@ Verifier 是"可训练"成败之处，它的形态也是各领域之间最大的
 
 ---
 
+## 10 月 5 日更新 Reflection Beam {#reflection-beam-update}
+
+**更新于 2026 年 10 月 5 日。** Reflection 描述了迭代式任务质量过滤，以及对看似成功的解法进行独立复查、寻找 verifier exploit。这是 [Beam 发布文章](https://reflection.ai/blog/introducing-beam) 与 environment scaling 最直接相关的部分。（[Reflection, 2026](https://reflection.ai/blog/introducing-beam)）整体训练披露见[训练篇更新](/blog/2026/how-frontier-labs-train-llms-zh/#reflection-beam-update)。
+
+### 把 reward integrity 设成独立的验收关卡
+
+我建议把流水线扩展为：**获取任务 → 检查 specification 与可解性 → 估计 learnability → 运行 RL → 独立审计获得 reward 的轨迹 → 修复或淘汰任务 → 重复**。独立审计很重要，因为 verifier 通过只能回答它被写出来要检查的那个问题，不能自动证明 Agent 完成了真正的目标。
+
+对于 coding environment，我会区分四种结果：真实修复、偶然利用测试覆盖缺口、答案/解法泄露，以及主动篡改 verifier。检查文件系统修改与网络活动，在任务可写区域之外运行未被修改的 hidden tests，再在收紧权限后重放可疑成功。Learned judge 可以帮助分流，但不同 judge 仍可能犯相关的错误；它不能替代确定性的隔离或任务专属检查。
+
+### 统计有效经验，而不只是容器数量
+
+Environment pool、rollout 和 sandbox instance 是不同单位。一个任务可以产生很多轨迹，执行或评分一条轨迹也可能创建多个 sandbox。不能把这些数量相加，也不能把它们当成相互独立的任务多样性。
+
+对于自己的实验，我会报告完整漏斗：获取了多少任务、多少任务有效、多少处于可学习难度区间、多少 episode 完成，以及多少成功经过独立确认。把损耗按歧义、基础设施失败、泄露和可利用的 grader 分类。Curriculum 改变时保留一批固定的审计样本，避免过滤改善的同时，评测也悄悄变容易。
+
+### 测 transfer 时，不改变部署契约
+
+一个有用的 transfer 实验应固定起始 checkpoint 和 compute budget，从 RL 中排除目标任务族，并使用固定的 tool/harness 配置评测。在称其为 out-of-distribution 之前，检查 pre-/mid-training exposure 与语义重叠。即使 weights 不变，browser、context management、retry 或访问外部模型的权限发生变化，也会改变被测系统。
+
+**要点。** 值得借鉴的是一个有质量控制的经验工厂：分别审计 learnability、reward integrity 与 transfer。只有新增经验真的教会了预期行为，更多环境才有价值。
+
+---
+
 ## 如何引用
 
 > Zhang, Jiaxin. (Jun 2026). Environment Scaling for Agentic RL. *Jiaxin Zhang's Blog.*
@@ -437,3 +462,5 @@ Verifier 是"可训练"成败之处，它的形态也是各领域之间最大的
 [26] John Yang, Kilian Lieret, et al. ["SWE-smith: Scaling Data for Software Engineering Agents."](https://arxiv.org/abs/2504.21798) arXiv:2504.21798, 2025.
 
 [27] Shunyu Yao, Noah Shinn, et al. ["τ-bench: A Benchmark for Tool-Agent-User Interaction in Real-World Domains."](https://arxiv.org/abs/2406.12045) arXiv:2406.12045, 2024.
+
+[28] Reflection. ["Introducing Beam: Reflection's 501B Open-Weight Model."](https://reflection.ai/blog/introducing-beam) October 5, 2026.

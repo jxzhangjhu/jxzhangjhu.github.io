@@ -15,6 +15,7 @@ og_image: https://jxzhangjhu.github.io/assets/img/blog/how-frontier-labs-train-l
 
 ### 目录
 
+- [10.5 更新 Reflection Beam](#reflection-beam-update)
 - [为什么要读这些技术报告？](#为什么要读这些技术报告)
 - [前沿模型的样子](#前沿模型的样子)
   - [已经定型的核心](#已经定型的核心)
@@ -560,6 +561,45 @@ GLM-5.2 agentic 攀登背后的具体算法——**SAO，即 Single-rollout Asyn
 
 ---
 
+## 10 月 5 日更新 Reflection Beam {#reflection-beam-update}
+
+**更新于 2026 年 10 月 5 日。** Reflection 的 [Beam 发布文章](https://reflection.ai/blog/introducing-beam) 是一个值得研究的新训练案例，但还不是完整的可复现配方。发布当天，权重与技术报告仍计划在 10 月稍后公开。官方披露模型为总参数 501B、激活参数 23B 的 MoE，预训练使用 23.8T tokens，RL campaign 生成超过 100M rollouts。这些是官方披露，不是独立复现结果。（[Reflection, 2026](https://reflection.ai/blog/introducing-beam)）
+
+### 为后续学习过程准备基座
+
+我的理解是，最有价值的问题不只是**基座 checkpoint 现在多强**，而是**这个 checkpoint 能从下一单位 RL compute 中学到多少**。这会改变 ablation 的设计：让两个起始 checkpoint 使用相同环境、reward、rollout budget 和 optimizer，比较后续学习曲线，而不是只比较 RL 前的分数。[OctoThinker](https://arxiv.org/abs/2506.20512) 已经研究 mid-training 如何影响后续 RL；Beam 让这个问题在更大的系统规模下变得重要。
+
+必须分开两个 context budget：Beam 披露 **mid-training 后支持 1M-token context**，但其大规模 **RL run 的最大 context 是 256K**。支持的窗口不等于实际用 RL 训练过的时程，两者也都不能直接证明模型能可靠完成百万 token 的任务。长上下文评测仍需要检查检索、跨文档推理、原始 instruction 的保留，以及短上下文能力的 regression。（[Reflection, 2026](https://reflection.ai/blog/introducing-beam)）
+
+| 研发决策 | 在借鉴之前，我会测什么 |
+|---|---|
+| 选择 pre-/mid-training mixture | 固定 RL budget 下的后续学习曲线，而不只是 base loss |
+| 分配更多 rollout compute | 固定任务质量后的 held-out 能力增益 / GPU-hour |
+| 整合 specialist teachers | 融合后的能力保留、安全保留，以及置信度校准 |
+| 选择 reasoning effort | 经验证的成功率、尾部 latency，以及每个成功任务的完整成本 |
+
+*这是建议的审计表，不是 Beam 已披露的 ablation。重点是测量各阶段之间的相互作用。*
+
+### 区分旧策略样本与数值不一致
+
+Reflection 披露，通过记录 token 级 policy version，异步训练能稳定利用超过一天前产生的经验。不过，这篇文章还没有给出足以复现其修正算法的细节。（[Reflection, 2026](https://reflection.ai/blog/introducing-beam)）
+
+这里需要两套不同的诊断。**Policy staleness** 是采样 token 的 policy 比当前被优化的 policy 更旧；**numerical mismatch** 则是即使 checkpoint 和 prefix 相同，两个 engine 也会给出不同概率。在归因于 RL objective 之前，应先固定 weights、tokenizer、mask、precision 和 log-probability 的计算约定，重放相同 prefix。然后审计样本年龄的完整分布，而不只是平均值。一条轨迹如果混用了多个版本，仅给整个 episode 挂一个 checkpoint ID 就不够。
+
+[BAPO](https://arxiv.org/abs/2510.18927) 是处理 off-policy 不稳定与自适应 clipping 的相关已有工作，但不能据此推断 Beam 使用 BAPO、PPO 或某种未公开的 loss。数值稳定也不等于旧样本与新样本具有相同的学习价值。
+
+### 学习设计原则，而不是把每个组件都当成新发明
+
+为 RL 做 mid-training、提高 reasoning efficiency、整合 teacher，都有已有工作。[Just Enough Thinking](https://arxiv.org/abs/2506.05256) 研究自适应长度惩罚；[Nemotron-Cascade 2](https://arxiv.org/abs/2603.19220) 用 multi-domain on-policy distillation 修复 regression。值得研究的是：当时程、任务分布与基础设施规模变化时，哪些组合仍然有效，而不是给每个成熟组件重新起一个名字。
+
+在 data curation 上，我会同时审计 **false rejection 和 false acceptance**：过滤器可以让数据看起来更干净，却恰好删掉后续 Agent 所需要的技术材料。在 inference efficiency 上，应把激活参数的 FLOP proxy 与真实端到端成本一起看。Prompt prefill、attention、expert weights 的内存、工具执行、retry 与 serving utilization，都可能改变仅按生成 token 得出的排序。
+
+**要点。** Beam 值得作为一套相互耦合的训练系统来研究。下一步应关注受控 ablation、准确的异步修正与融合 objective、可复现的 evaluation manifest，以及安全结果，而不只是更大的榜单表格。
+
+相关的 10.5 更新：[环境质量](/blog/2026/environment-scaling-for-agentic-rl-zh/#reflection-beam-update)、[校准与计算分配](/blog/2026/calibrating-long-horizon-agents-zh/#reflection-beam-update)、[融合后的 alignment](/blog/2026/alignment-after-agency-zh/#reflection-beam-update)。
+
+---
+
 ## 如何引用
 
 > Zhang, Jiaxin.（2026 年 6 月）。How Frontier Labs Train Large Language Models。*Jiaxin Zhang's Blog.*
@@ -837,3 +877,5 @@ GLM-5.2 agentic 攀登背后的具体算法——**SAO，即 Single-rollout Asyn
 [128] Yifei Zhou, et al. ["ArCHer: Training Language Model Agents via Hierarchical Multi-Turn RL"](https://arxiv.org/abs/2402.19446) arXiv:2402.19446, 2024.
 
 [129] Yuxin Zuo, et al. ["MedXpertQA: Benchmarking Expert-Level Medical Reasoning and Understanding"](https://arxiv.org/abs/2501.18362) arXiv:2501.18362, 2025.
+
+[130] Reflection. ["Introducing Beam: Reflection's 501B Open-Weight Model."](https://reflection.ai/blog/introducing-beam) October 5, 2026. Launch preview; technical report and weights announced for later in October.

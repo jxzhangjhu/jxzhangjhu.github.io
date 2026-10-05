@@ -15,6 +15,7 @@ og_image: https://jxzhangjhu.github.io/assets/img/blog/env-scaling/fig4_anatomy.
 
 ### Table of Contents
 
+- [10.5 Update on Reflection Beam](#reflection-beam-update)
 - [Why environments?](#why-environments)
 - [Anatomy of an environment](#anatomy-of-an-environment)
 - [The core pipeline](#the-core-pipeline)
@@ -670,6 +671,30 @@ other figures are original.*
 
 ---
 
+## October 5 Update on Reflection Beam {#reflection-beam-update}
+
+**Updated October 5, 2026.** Reflection describes iterative task-quality filtering and independent checks of apparently successful solutions for verifier exploits. This is the part of the [Beam announcement](https://reflection.ai/blog/introducing-beam) most relevant to environment scaling. ([Reflection, 2026](https://reflection.ai/blog/introducing-beam)) The broader training disclosures are summarized in the [training update](/blog/2026/how-frontier-labs-train-llms/#reflection-beam-update).
+
+### Make reward integrity a separate acceptance gate
+
+My proposed extension to the pipeline is: **source tasks → check specification and solvability → estimate learnability → run RL → independently audit rewarded trajectories → repair or retire tasks → repeat**. The independent audit matters because a passing verifier answers only the question it was written to answer. It does not automatically establish that the agent achieved the intended goal.
+
+For a coding environment, I would distinguish four outcomes: a legitimate repair, accidental test coverage gaps, answer/solution leakage, and deliberate verifier tampering. Inspect filesystem changes and network activity, run untouched hidden tests outside the writable task area, and replay suspicious successes under tighter permissions. A learned judge can help triage, but correlated judge errors remain possible; it cannot replace deterministic isolation or task-specific checks.
+
+### Count useful experience rather than containers
+
+An environment pool, a rollout, and a sandbox instance are different units. One task can generate many trajectories, and executing or grading a trajectory can create several sandboxes. Their counts should not be added together or treated as independent task diversity.
+
+For my own runs, I would report the funnel: tasks sourced, valid tasks, tasks in a learnable difficulty band, completed episodes, and independently confirmed successes. Break down attrition by ambiguity, infrastructure failure, leakage, and exploitable grading. Keep a fixed audit sample across curriculum changes so that better filtering cannot silently make evaluation easier.
+
+### Test transfer without changing the deployment contract
+
+A useful transfer experiment holds the starting checkpoint and compute budget fixed, excludes the target task family from RL, and evaluates with a fixed tool/harness configuration. Check pre-/mid-training exposure and semantic overlap before calling the result out-of-distribution. Changing the browser, context management, retries, or access to external models can change the effective system even when model weights stay fixed.
+
+**Takeaway.** The lesson to carry forward is a quality-controlled experience factory: separately audit learnability, reward integrity, and transfer. More environments are valuable only when the additional experience teaches the intended behavior.
+
+---
+
 ## How to cite
 
 > Zhang, Jiaxin. (Jun 2026). Environment Scaling for Agentic RL. *Jiaxin Zhang's Blog.*
@@ -745,3 +770,5 @@ Or in BibTeX:
 [26] John Yang, Kilian Lieret, et al. ["SWE-smith: Scaling Data for Software Engineering Agents."](https://arxiv.org/abs/2504.21798) arXiv:2504.21798, 2025.
 
 [27] Shunyu Yao, Noah Shinn, et al. ["τ-bench: A Benchmark for Tool-Agent-User Interaction in Real-World Domains."](https://arxiv.org/abs/2406.12045) arXiv:2406.12045, 2024.
+
+[28] Reflection. ["Introducing Beam: Reflection's 501B Open-Weight Model."](https://reflection.ai/blog/introducing-beam) October 5, 2026.
