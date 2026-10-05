@@ -11,6 +11,8 @@ related_posts: false
 og_image: https://jxzhangjhu.github.io/assets/img/blog/calibrating-long-horizon-agents/fig1_agentic_reliability_loop.png
 ---
 
+<div class="lang-switch"><strong>English</strong> · <a href="/blog/2026/calibrating-long-horizon-agents-zh/">中文</a></div>
+
 ### Table of Contents
 
 - [Why long-horizon agents need calibrated uncertainty](#why-long-horizon-agents-need-calibrated-uncertainty)
@@ -37,6 +39,8 @@ og_image: https://jxzhangjhu.github.io/assets/img/blog/calibrating-long-horizon-
 - [Evaluate agentic calibration](#evaluate-agentic-calibration)
 - [Open challenges](#open-challenges)
 - [Summary](#summary)
+- [How to cite](#how-to-cite)
+- [References](#references)
 
 ---
 
