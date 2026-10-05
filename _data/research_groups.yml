@@ -11,6 +11,6 @@
   description: Joint improvement of models, harnesses, and training data, alongside earlier work on automated prompt optimization.
   focus: What should improve—the model, the harness, or both?
 - key: systems
-  title: Agent Systems, Evaluation & Efficiency
-  description: Long-horizon search, retrieval, multimodal evaluation, memory, and efficient agent execution.
-  focus: How do agents remain effective over long trajectories?
+  title: Agent & Multimodal Systems
+  description: Long-horizon search, retrieval, memory, multimodal understanding and generation, and system evaluation and efficiency.
+  focus: How do we build and evaluate capable, efficient systems?

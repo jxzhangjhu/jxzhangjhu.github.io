@@ -39,7 +39,7 @@ My technical roots lie deeply in extreme-scale computing. During my tenure as a 
 Beyond research, I am an active contributor to the open-source community, maintaining several heavily starred projects (3,000+ stars) focused on LLM RAG, Prompt Optimization, and Reliability.
  -->
 
-I am a **Senior Staff Research Scientist and Research Lead** at [Salesforce AI Research](https://blog.salesforceairesearch.com/). I study how to build **reliable, aligned, and self-improving AI agents** through agentic post-training, behavioral evaluation, and model–harness co-evolution. My work connects honesty, calibration, and uncertainty with learning and control in coding, tool-using, and long-horizon agents.
+I am a **Senior Staff Research Scientist and Research Lead** at [Salesforce AI Research](https://blog.salesforceairesearch.com/). I study how to build **trustworthy and self-improving AI agents**, with a focus on **safety, alignment, and reliability**. My work combines agentic post-training, behavioral evaluation, and model–harness co-evolution to connect honesty, calibration, and uncertainty with learning and control in coding, tool-using, and long-horizon agents.
 
 I am interested in the gap between **what an agent knows, what it does, and when it should stop or ask for help**. Addressing this gap requires more than a stronger model: training signals, evaluation protocols, the execution harness, and the environment all shape agent behavior.
 
