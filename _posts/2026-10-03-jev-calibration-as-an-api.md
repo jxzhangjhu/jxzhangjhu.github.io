@@ -1,7 +1,7 @@
 ---
 layout: post
 published: true
-title: "Jev and the Return of the Decision Model: When Calibration Becomes an API"
+title: "Jev: When Calibration Becomes an API"
 date: 2026-10-03 16:00:00
 author: Jiaxin Zhang
 description: "A living review of Jev and open System One decision models: calibration, RLCD, evidence quality, open models and methods, benchmarks, applications, failure modes, and the boundary between bounded decisions and generative reasoning."
@@ -42,12 +42,6 @@ og_image: https://jxzhangjhu.github.io/assets/img/blog/jev-calibration/og_card.p
 - [References](#references)
 
 ---
-
-> **V2 · literature snapshot: October 4, 2026.** The first version explained the interface and the calibration
-> thesis. This revision adds the fast-moving independent literature, a quality-weighted evidence table, an open
-> model and method map, benchmark and leaderboard guidance, and a broader application catalog. Jev is only weeks
-> old, and nearly all direct studies are unreviewed preprints. Treat every ranking and numerical result as a dated
-> snapshot—not as a permanent ordering.
 
 ## A different kind of AI interface
 
@@ -1571,12 +1565,12 @@ undisclosed implementation details.*
 
 ## How to cite
 
-> Zhang, Jiaxin. (Oct 2026). Jev and the Return of the Decision Model: When Calibration Becomes an API. *Jiaxin
+> Zhang, Jiaxin. (Oct 2026). Jev: When Calibration Becomes an API. *Jiaxin
 > Zhang's Blog.* https://jxzhangjhu.github.io/blog/2026/jev-calibration-as-an-api/
 
 ```bibtex
 @article{zhang2026jevcalibration,
-  title   = "Jev and the Return of the Decision Model: When Calibration Becomes an API",
+  title   = "Jev: When Calibration Becomes an API",
   author  = "Zhang, Jiaxin",
   journal = "Jiaxin Zhang's Blog",
   year    = "2026",

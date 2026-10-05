@@ -1,7 +1,7 @@
 ---
 layout: post
 published: true
-title: "Jev 与决策模型的回归：当 Calibration 成为 API"
+title: "Jev：当 Calibration 成为 API"
 date: 2026-10-03 16:00:00
 author: Jiaxin Zhang
 description: "一篇持续更新的 Jev 与开放 System One 决策模型综述：calibration、RLCD、证据质量、开放模型与方法、benchmark、应用、失效模式，以及 bounded decision 与 generative reasoning 的边界。"
@@ -42,11 +42,6 @@ og_image: https://jxzhangjhu.github.io/assets/img/blog/jev-calibration/og_card.p
 - [参考文献](#references)
 
 ---
-
-> **V2 · 文献快照：2026 年 10 月 4 日。** 第一版主要解释 Jev 的接口与 calibration 命题。这次修订加入了
-> 快速增长的独立研究、按证据质量加权的研究表、开放模型与方法地图、benchmark 与 leaderboard 的阅读指南，以及
-> 更完整的应用目录。Jev 问世仅数周，几乎所有直接研究都还是未经同行评审的 preprint。本文中的每项排名与数值结果，
-> 都应被视为带日期的快照，而不是永久排序。
 
 ## 一种不同的 AI 接口 {#a-different-kind-of-ai-interface}
 
@@ -1467,12 +1462,12 @@ TypeSafe 确认的 reconstruction。全部十张图均为原创 schematic；它�
 
 ## 如何引用 {#how-to-cite}
 
-> Zhang, Jiaxin. (Oct 2026). Jev and the Return of the Decision Model: When Calibration Becomes an API. *Jiaxin
+> Zhang, Jiaxin. (Oct 2026). Jev: When Calibration Becomes an API. *Jiaxin
 > Zhang's Blog.* https://jxzhangjhu.github.io/blog/2026/jev-calibration-as-an-api/
 
 ```bibtex
 @article{zhang2026jevcalibration,
-  title   = "Jev and the Return of the Decision Model: When Calibration Becomes an API",
+  title   = "Jev: When Calibration Becomes an API",
   author  = "Zhang, Jiaxin",
   journal = "Jiaxin Zhang's Blog",
   year    = "2026",

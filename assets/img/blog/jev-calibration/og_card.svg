@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
-  <title id="title">Jev and the return of the decision model</title>
+  <title id="title">Jev: When Calibration Becomes an API</title>
   <desc id="desc">Open Graph cover with a structured state card flowing through a Jev decision node into a probability distribution and three application branches: act, verify, and escalate.</desc>
   <defs>
     <marker id="arrow" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="9" markerHeight="9" orient="auto">
@@ -19,9 +19,8 @@
   <rect width="1200" height="630" fill="#fbfaf6"/>
   <rect x="34" y="34" width="1132" height="562" rx="34" fill="#fff" stroke="#d6d3cb" stroke-width="3"/>
   <text x="78" y="98" class="kicker">SYSTEM ONE · CALIBRATION · HYBRID AI</text>
-  <text x="78" y="176" class="title">Jev and the return of</text>
-  <text x="78" y="244" class="title">the decision model</text>
-  <text x="78" y="294" class="subtitle">When calibration becomes an API</text>
+  <text x="78" y="176" class="title">Jev: When Calibration</text>
+  <text x="78" y="244" class="title">Becomes an API</text>
 
   <g transform="translate(82 372)">
     <rect width="214" height="126" rx="20" fill="#f4efe5" stroke="#59656c" stroke-width="3"/>
