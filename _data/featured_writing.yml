@@ -11,6 +11,7 @@
 - title: "Calibrating Long-Horizon Agents"
   topic: Agent reliability
   url: /blog/2026/calibrating-long-horizon-agents/
+  zh_url: /blog/2026/calibrating-long-horizon-agents-zh/
   summary: Measuring trajectory uncertainty—and using it to reflect, abstain, ask, and route.
 - title: "Environment Scaling for Agentic RL"
   topic: Agentic post-training
