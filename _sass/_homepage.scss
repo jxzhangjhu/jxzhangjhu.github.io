@@ -58,7 +58,6 @@
   .writing-summary { font-size: .92rem; line-height: 1.55; color: var(--global-text-color-light); }
   .writing-links { display: flex; gap: 1rem; margin-top: auto; font-size: .87rem; }
 }
-.publication-legend { display: block; margin-top: .35rem; }
 .research-publication-group {
   scroll-margin-top: 85px;
   margin: 2rem 0 2.5rem;
@@ -74,16 +73,6 @@
   .links .btn { font-size: .75rem; padding: .2rem .6rem; margin-bottom: .25rem; }
   .badge { white-space: normal; line-height: 1.4; font-size: .75rem; }
   .abbr { height: auto !important; }
-}
-.first-author-label {
-  display: inline-block;
-  font-size: .73rem;
-  line-height: 1.6;
-  color: var(--global-theme-color);
-  border: 1px solid var(--global-divider-color);
-  border-radius: 4px;
-  padding: 0 .4rem;
-  margin: .15rem 0 .2rem;
 }
 .publication-takeaway { font-size: .9rem; line-height: 1.5; margin: .25rem 0 .2rem; color: var(--global-text-color-light); }
 .publication-filters {

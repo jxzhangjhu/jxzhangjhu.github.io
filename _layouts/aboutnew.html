@@ -45,9 +45,9 @@ layout: default
 
     <!-- Selected Publications -->
     {% if page.selected_papers -%}
-      <h2 id="research-publications" class="homepage-section-title"><a href="{{ '/publications/' | relative_url }}" style="color: inherit;">Research Publications</a></h2>
+      <h2 id="research-publications" class="homepage-section-title"><a href="{{ '/publications/' | relative_url }}" style="color: inherit;">Selected Publications</a></h2>
       <hr style="border: none; border-top: 2px solid var(--global-divider-color); margin-top: 0; margin-bottom: 1rem;">
-      <p class="section-intro">Relevant work grouped by research direction, including first-author papers and earlier foundations. See the <a href="{{ '/publications/' | relative_url }}">complete chronological archive</a> or <a href="https://scholar.google.com/citations?user=LiDm8jEAAAAJ&hl=en" target="_blank" rel="noopener">Google Scholar</a>. <span class="publication-legend">First-author papers are marked; submissions are labeled under review.</span></p>
+      <p class="section-intro">For the full publication list, see <a href="https://scholar.google.com/citations?user=LiDm8jEAAAAJ&hl=en" target="_blank" rel="noopener">Google Scholar</a>.</p>
       {%- include selected_papers.html %}
     {%- endif %}
 

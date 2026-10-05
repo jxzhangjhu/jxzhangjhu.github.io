@@ -155,13 +155,9 @@
         <div class="periodical">
           {{ entry.note | strip }}
         </div>
-        {% assign first_author = entry.author_array | first %}
-        {% if site.scholar.last_name contains first_author.last and site.scholar.first_name contains first_author.first %}
-          <span class="first-author-label">First author</span>
-        {% endif %}
         {% if entry.takeaway %}<p class="publication-takeaway">{{ entry.takeaway }}</p>{% endif %}
 
-          <!-- Links/Buttons and Category -->
+          <!-- Links/Buttons -->
           <div class="links" style="margin-top: 0.5rem;">
           {%- if entry.abstract %}
             <a class="abstract btn btn-sm z-depth-0" role="button">Abs</a>
@@ -220,12 +216,6 @@
             <a href="{{ entry.website }}" class="btn btn-sm z-depth-0" role="button">Website</a>
             {%- endif -%}
           {%- endif %}
-          {%- if entry.category -%}
-            {%- assign categories = entry.category | split: ', ' -%}
-            {%- for cat in categories -%}
-              <span style="display: inline-block; color: #ff8c00; border: 1px solid #ff8c00; padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 500; background-color: transparent; margin-left: 0.5rem; margin-right: 0.5rem;">{{cat}}</span>
-            {%- endfor -%}
-          {%- endif -%}
           {%- if entry.highlight -%}
             <span style="display: inline-block; color: #dc3545; border: 1px solid #dc3545; padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 500; background-color: transparent; margin-left: 0.5rem; margin-right: 0.5rem;">{{entry.highlight}}</span>
           {%- endif -%}
