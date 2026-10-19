@@ -42,7 +42,6 @@ Buttons:
 @article{zhang2026caopd,
   research_group={post_training},
   takeaway={Separating capability gains from confidence calibration in on-policy distillation.},
-  note={Under review at ICLR 2027.},
   title={The Illusion of Certainty: Decoupling Capability and Calibration in On-Policy Distillation},
   author={Zhang, Jiaxin and Peng, Xiangyu and Chen, Qinglin and Ye, Qinyuan and Xiong, Caiming and Wu, Chien-Sheng},
   year = {2026},
@@ -168,29 +167,34 @@ Buttons:
   abstract={Recent advances in multimodal foundation models have unified image understanding and generation, opening exciting pathways for handling a wide range of vision-language tasks within a single framework. Despite progress, existing unified models typically require extensive pretraining and struggle to match the performance of models specialized for each task. Additionally, many of these models exhibit slow image generation speeds, limiting their practical applications in real-time or resource-constrained environments. In this work, we propose LaTtE-Flow, a novel and efficient architecture that unifies image understanding and generation in a single multimodal model. LaTtE-Flow builds upon strong pretrained vision-language models (VLMs), inheriting powerful multimodal understanding capabilities, and extends these capabilities through a novel layerwise timestep-expert flow-based architecture for efficient image generation. LaTtE-Flow distributes the flow matching process across specialized transformer layer groups, with each group responsible for different timestep subsets. This design significantly improves sampling efficiency by activating only a small number of layers at each sampling timestep. To further enhance performance, we propose a timestep-conditioned residual attention mechanism for efficient information reuse across layers. Experiments demonstrate that LaTtE-Flow excels in multimodal understanding tasks while maintaining competitive image generation quality, with inference speed approximately 6x faster than recent unified multimodal models.} 
 }
 
-# New manuscripts: local homepage review; no unverified publication links.
+# Recent manuscripts and arXiv preprints.
 @misc{zhang2026self_retrospection,
   title={Self-Retrospection Distillation: Turning Post-hoc Experiences into Prior Foresight},
   author={Zhang, Haoxiang and Chen, Qinglin and Hayashi, Hiroaki and Li, Zhuofeng and Zhang, Siming and Zhang, Jiaxin and Chen, Jixuan and Wu, Fang and Lu, Pan and Savarese, Silvio and McAuley, Julian and Wu, Chien-Sheng},
   year={2026},
-  abbr={Under review},
-  note={Submitted to ICLR 2027.},
+  abbr={arXiv 2026},
+  arxiv={2610.08077},
+  pdf={https://arxiv.org/pdf/2610.08077},
+  code={https://github.com/SalesforceAIResearch/SRD},
   research_group={post_training},
   category={Distillation, Reasoning},
   takeaway={Distilling post-hoc experience into prior foresight, without requiring the privileged experience at inference time.},
-  selected={true}
+  selected={true},
+  abstract={Reinforcement learning with verifiable rewards (RLVR) turns agent experience into learning signals primarily through scalar outcome rewards after interaction. For group-relative objectives, however, this signal vanishes when all rollouts receive the same reward, even though their trajectories may reveal useful information about what the task requires and how the agent fails. We ask a complementary question: can hindsight teach an agent what it could have anticipated before acting? We introduce prospective learning, which uses post-hoc experience to supervise foresight predictions from the pre-interaction view, and instantiate it with Self-Retrospection Distillation (SRD). Intuitively, a completed trajectory reveals knowledge that would have been useful and pitfalls that should be avoided; SRD distills this privileged hindsight into trajectory-blind foresight of the same policy. Foresight serves only as a training target and need not be explicitly generated at inference time. Across 10 tool-integrated reasoning and long-horizon agentic tasks, SRD complements RLVR and self-distillation baselines with gains of up to 24.2 pp. Its advantage is especially pronounced when reward contrast is scarce: when 37--98\% of rollout groups are reward-uniform across model scales, yet SRD can still exploit learning signal from sampled trajectories. In the 2B setting, where 98\% of groups are all-failure, the RLVR training ends up at 0.0\% success, while adding SRD reaches 60.6\% under the same rollout budget. Our results suggest that post-hoc agent experience is useful not only for evaluating or improving behavior, but also for shaping predictive representations before available interaction.}
 }
 
 @misc{chen2026agentic_self_awareness,
   title={Agentic Self-Awareness: Aligning Knowing, Acting, and Holding},
   author={Chen, Qinglin and Hayashi, Hiroaki and Zhang, Jiaxin and Wu, Chien-Sheng},
   year={2026},
-  abbr={Under review},
-  note={Submitted to ICLR 2027.},
+  abbr={arXiv 2026},
+  arxiv={2610.19226},
+  pdf={https://arxiv.org/pdf/2610.19226},
   research_group={reliability},
   category={Behavioral Alignment, Harness, Evaluation},
   takeaway={Testing the gap between recognizing blocked tasks and actually withholding unauthorized or infeasible actions.},
-  selected={true}
+  selected={true},
+  abstract={Frontier AI agents increasingly act in environments where seemingly solvable tasks may lack prerequisites, contain conflicting requirements, or reveal blockers only during execution. We formulate agentic self-awareness (ASA) as the alignment of task-grounded feasibility judgments (know), warranted behavior (act), and responses to reconsideration (hold), distinguishing what a task permits from what an agent can solve. We build paired feasible and blocked tasks in Terminal-Bench 2.1 and retail tau²-bench and introduce an authorship-aware M0--M3 rubric that separates recognizing a blocker from taking the certified deferral action for the correct reason. Separate probes assess stated feasibility beliefs and responses to a single challenge. In a Terminal-Bench protocol baseline, blocker recognition reaches 84.4\%, but strict self-awareness (SA) reaches only 40.6\%. Harness search without model-weight updates increases strict SA from 45.3\% to 93.8\% on reused Terminal-Bench search tasks; selection for abstention alone, however, can reduce success on feasible tasks. Independently initialized joint-objective searches improve both blocked-task SA and feasible-task solve on their own search sets. Retail held-out gains remain limited, and Terminal-Bench blocked-task transfer is not measured. This evaluation pipeline makes the recognition-action gap measurable and sets a two-sided target for improving agent decisions under changing task evidence.}
 }
 
 @misc{peng2026mds_zero,
@@ -207,40 +211,45 @@ Buttons:
 
 @misc{lei2026belief_shift,
   title={Fork Where the Model Changes Its Mind: Belief-Shift Branching for Tree-Structured Reinforcement Learning},
-  author={Lei, Bin and Li, Yu and Choubey, Prafulla Kumar and Zhang, Jiaxin and Peng, Xiangyu and Ye, Qinyuan and Narayan, Kartik and Ding, Caiwen and Savarese, Silvio and Wu, Chien-Sheng},
+  author={Lei, Bin and Li, Yu and Choubey, Prafulla Kumar and Zhang, Jiaxin and Peng, Becky Xiangyu and Ye, Qinyuan and Narayan, Kartik and Ding, Caiwen and Savarese, Silvio and Wu, Chien-Sheng},
   year={2026},
-  abbr={Under review},
-  note={Submitted to ICLR 2027.},
+  abbr={arXiv 2026},
+  arxiv={2609.11061},
+  pdf={https://arxiv.org/pdf/2609.11061},
   research_group={post_training},
   category={RL, Reasoning, Exploration},
   takeaway={Allocating tree-structured exploration to points where the model's answer belief changes.},
-  selected={true}
+  selected={true},
+  abstract={Tree-structured rollouts give critic-free reinforcement learning with verifiable rewards (RLVR) step-level credit: fork a chain at an intermediate point, and sibling outcome differences estimate step value. Each fork adds sampling cost, so realistic budgets typically allow only a few forks per chain. A fork placed where the outcome is already largely settled yields siblings that mostly agree and provide almost no credit signal; hence, for a given tree size, where forks are placed largely determines how much step-level RL can gain. Most existing mainstream methods place forks by structure, such as fixed lengths, midpoints, and delimiters, or by next-token entropy. We formalize fork placement as locating the pivots of the chain's value curve, where the expected outcome turns. We propose belief-shift branching: read the model's answer belief at candidate boundaries and fork just before the step where consecutive beliefs diverge most. Three instantiations, none needing step-level supervision, span access levels: a black-box probe, a logit-lens depth profile, and a learned activation direction, which is fit offline and therefore used only in the validation before RL training. The signal only places forks, and the probe costs about 1\% of step compute on mathematics and under 5\% on code when it runs inside the rollout engine. In that validation, against Monte-Carlo value curves, a belief-shift signal ranks first in each of the eight model-by-benchmark panels, ahead of entropy, structural, and LLM-judge baselines. In RL across three model families and two domains, belief-shift forking leads every mathematics aggregate, on OLMo-3-7B by +2.6 aggregate and +2.9 on AIME 2026 over the strongest baseline, and sweeps every OLMo code column, by +6.5 on LiveCodeBench-medium.}
 }
 
 @misc{li2026speculate_memory,
   title={Speculate with Memory: Lossless Acceleration for LLM Agents},
   author={Li, Yu and Ye, Qinyuan and Choubey, Prafulla Kumar and Zhang, Jiaxin and Wu, Chien-Sheng},
   year={2026},
-  abbr={Under review},
-  note={Submitted to ICLR 2027.},
+  abbr={arXiv 2026},
+  arxiv={2607.12236},
+  pdf={https://arxiv.org/pdf/2607.12236},
   research_group={systems},
   category={Memory, Agents, Efficiency},
   takeaway={Using memory to improve a speculative executor, with exact-match acceptance and read-only tool constraints.},
-  selected={true}
+  selected={true},
+  abstract={Speculative execution accelerates LLM agents by using a smaller, cheaper model to predict and pre-launch the next step while the environment is idle. However, existing speculators are stateless and discard all information between tasks, preventing prediction quality from improving with experience. We equip the speculator with three online memory systems that learn from past agent trajectories: a contrastive transition table tracking action-sequence statistics, an episodic memory retrieving contextually similar segments, and a confusion tracker suppressing recurring errors. We evaluate this approach on six benchmarks spanning three speculation types: action prediction, observation prediction, and chained prediction. Memory-augmented speculation yields a 19--39\% relative accuracy improvement on action prediction and up to a 2.5× increase on observation prediction tasks with repetitive action spaces. These gains grow continuously as memory accumulates and generalize across speculator models of varying cost. All speculation is lossless because it runs during idle time at zero added wall-clock cost, and the actor's trajectory is identical to non-speculative execution.}
 }
 
 @misc{ye2026fragility,
   title={On the Fragility of Self-Improving Agents: Variance, Task Order, and Underspecification},
   author={Ye, Qinyuan and Li, Yu and Pruksachatkun, Yada and Zhang, Jiaxin and Wu, Chien-Sheng},
   year={2026},
-  abbr={Under review},
-  note={Submitted to ICLR 2027.},
+  abbr={arXiv 2026},
   arxiv={2608.18066},
   pdf={https://arxiv.org/pdf/2608.18066},
+  code={https://github.com/SalesforceAIResearch/self-improve-fragility},
   research_group={self_improvement},
   category={Self-improvement, Memory, Evaluation},
   takeaway={Examining how randomness, task order, and underspecified memory updates undermine reproducible self-improvement.},
-  selected={true}
+  selected={true},
+  abstract={Memory-based self-improving agents--those that learn from an online stream of tasks and improve over time by maintaining a textual memory bank--have shown great promise in recent literature. However, the reliability aspects of these methods have been critically overlooked. In this work, we conduct a comprehensive re-evaluation of two memory-based methods, broadening the scope of evaluation along two axes: (1) including multiple self-improving runs to quantify variance, and (2) shuffling the tasks to investigate the effect of task order. Through these experiments, we make two observations that expose the fragility of current methods: First, agent evaluation is inherently noisy in complex environments and on multi-step tasks, and stacking a self-improving loop on top can further amplify this noise. Second, the agent's improvement is highly dependent on task order. Prior works often adopt default orderings that impose an implicit curriculum, acting as a hidden prerequisite for success. To better understand this fragility, we manually examine the agents' memory and hypothesize that task and environment underspecification contribute to this fragility. We validate this hypothesis by incorporating information that enables better specification, such as detailed rubrics and environment feedback, into the memory construction process. While this added information partially closes the performance degradation in previous experiments, significant gaps still remain, suggesting that other uncharacterized factors contribute to this fragility. Looking ahead, our work advocates for more rigorous evaluation protocols for self-improving agents by reporting results across multiple runs and stress-testing them under challenging conditions. Moreover, our findings on underspecification call for systems and interfaces that enable effective human oversight, preventing agents from failing in unforeseeable ways.}
 }
 
 @misc{narayan2026agentic_post_training,
@@ -259,12 +268,14 @@ Buttons:
   title={CoTrace: Data Recipes for Training Terminal Agents with Harness--Model Co-Evolution},
   author={Chen, Jixuan and Zhang, Jiaxin and Ye, Qinyuan and Pruksachatkun, Yada and Zhang, Haoxiang and Zhuo, Jingming and Zhang, Yifan and Dai, Yutong and Tan, Juntao and Peng, Xiangyu and Savarese, Silvio and Chen, Zeyuan and Qin, Lianhui and Wu, Chien-Sheng},
   year={2026},
-  abbr={Under review},
-  note={Submitted to ICLR 2027.},
+  abbr={arXiv 2026},
+  arxiv={2610.10426},
+  pdf={https://arxiv.org/pdf/2610.10426},
   research_group={self_improvement},
   category={Harness, Data, Coding, RL},
   takeaway={Routing failures into harness changes, runtime-matched training traces, and fresh online RL rollouts.},
-  selected={true}
+  selected={true},
+  abstract={Terminal-agent capability depends jointly on model weights and the runtime harness that formats prompts, binds tools, and handles error recovery. Existing harness-model co-evolution approaches improve both components, yet often treat trajectories produced during harness search as an undifferentiated replay buffer. This practice overlooks that a trajectory's value for model training depends on the harness under which it was generated. To systematically analyze this interface, we establish an alternating co-evolution framework that decouples harness search and policy training through component-wise promotion decisions. Within this framework, we introduce CoTrace, a harness-aware data recipe that explicitly governs trajectory routing, provenance matching, and curriculum refresh. Under CoTrace, recurring execution failures guide harness synthesis, while policy training is strictly conditioned on verified rollouts matched to the adopted runtime for supervised fine-tuning (SFT) or fresh online interactions for reinforcement learning (RL). On the Tmax promotion split, CoTrace advances Qwen3.5-9B from 78 to 88 solved tasks under supervised fine-tuning while an online reinforcement variant reaches 90. Specifically, a compact harness-matched corpus produces steady model gains at substantially lower compute than much larger corpora pooled across sibling harnesses. Furthermore, evaluations on Terminal-Bench 2.1 and SWE-bench Lite show that out-of-distribution transfer depends fundamentally on harness compatibility, where maintaining consistency between training and evaluation runtimes prevents procedural execution breakdowns observed under foreign scaffolds.}
 }
 
 # 2025 Papers
